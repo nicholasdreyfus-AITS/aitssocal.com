@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="description" content="AITS SoCal — Advanced Intelligent Technology Solutions. We help San Diego small and mid-sized businesses deploy AI and modernize their technology so they compete with companies five times their size."/>
+<meta name="keywords" content="AI integration San Diego, SMB AI deployment, small business AI, IT solutions San Diego, AI automation, AITS SoCal"/>
+<meta property="og:title" content="AITS SoCal — AI that works for your business, not just tech teams"/>
+<meta property="og:description" content="We help small and mid-sized businesses deploy AI and modernize their technology so they compete with companies five times their size."/>
+<meta property="og:url" content="https://aitssocal.com"/>
+<title>AITS SoCal — Advanced Intelligent Technology Solutions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   AITS SoCal — aitssocal.com
+   Advanced Intelligent Technology Solutions
+   Built: 2025
+   To update: edit this file and re-upload to GitHub
+============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #06060A;
+  --bg2:      #0E0E16;
+  --bg3:      #14141F;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.13);
+  --text:     #F0EFF8;
+  --muted:    #9896B0;
+  --accent:   #5B4FE8;
+  --accent2:  #8B7FF4;
+  --aglow:    rgba(91,79,232,0.22);
+  --teal:     #1ECFB0;
+  --tdim:     rgba(30,207,176,0.10);
+  --syne:     'Syne', sans-serif;
+  --dm:       'DM Sans', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--dm);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ---- NAV ---- */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 5vw; height: 64px;
+  background: rgba(6,6,10,0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 0.5px solid var(--border);
+}
+.logo {
+  font-family: var(--syne); font-weight: 800; font-size: 16px;
+  letter-spacing: -0.02em; color: var(--text);
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.logo-mark {
+  width: 30px; height: 30px; background: var(--accent);
+  border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; font-size: 11px; font-weight: 800; color: #fff;
+  flex-shrink: 0;
+}
+.logo-text {}
+.logo-name { line-height: 1.2; }
+.logo-full {
+  font-size: 10px; color: var(--muted); font-weight: 300;
+  letter-spacing: 0.01em; line-height: 1.2;
+}
+.nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+.nav-links a {
+  font-size: 13px; color: var(--muted); text-decoration: none;
+  transition: color .2s; font-weight: 400;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-cta {
+  background: var(--accent) !important; color: #fff !important;
+  padding: 8px 18px; border-radius: 8px;
+  font-weight: 500 !important; font-size: 13px !important;
+  transition: background .2s !important;
+}
+.nav-cta:hover { background: var(--accent2) !important; color: #fff !important; }
+
+/* ---- HERO ---- */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 120px 5vw 80px;
+  position: relative; overflow: hidden;
+  text-align: center;
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 0%, transparent 80%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 0%, transparent 80%);
+  pointer-events: none;
+}
+.hero-glow {
+  position: absolute; width: 700px; height: 700px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(91,79,232,0.16) 0%, transparent 70%);
+  top: 50%; left: 50%; transform: translate(-50%, -55%);
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--bg3); border: 0.5px solid var(--border2);
+  border-radius: 100px; padding: 6px 14px;
+  font-size: 11px; color: var(--teal); font-weight: 500;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  margin-bottom: 28px; position: relative;
+}
+.badge-dot {
+  width: 6px; height: 6px; background: var(--teal);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .5; transform: scale(1.3); }
+}
+.hero h1 {
+  font-family: var(--syne);
+  font-size: clamp(38px, 6.5vw, 76px);
+  font-weight: 800; line-height: 1.05;
+  letter-spacing: -0.03em; color: var(--text);
+  max-width: 920px; position: relative; margin-bottom: 20px;
+}
+.hero h1 em { font-style: normal; color: var(--accent2); }
+.hero-pos {
+  position: relative; margin-bottom: 36px; max-width: 640px;
+}
+.hero-pos-line {
+  font-size: clamp(14px, 1.6vw, 18px);
+  color: var(--muted); font-weight: 300; line-height: 1.65;
+}
+.hero-name {
+  font-size: 11px; color: rgba(139,127,244,0.6);
+  letter-spacing: 0.07em; text-transform: uppercase;
+  margin-bottom: 40px; position: relative;
+}
+.hero-actions {
+  display: flex; align-items: center; gap: 14px;
+  flex-wrap: wrap; justify-content: center; position: relative;
+}
+.btn-primary {
+  background: var(--accent); color: #fff;
+  padding: 14px 28px; border-radius: 10px;
+  font-size: 15px; font-weight: 500; text-decoration: none;
+  border: none; cursor: pointer;
+  transition: background .2s, transform .1s;
+  font-family: var(--dm); display: inline-block;
+}
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+.btn-ghost {
+  background: transparent; color: var(--muted);
+  padding: 14px 28px; border-radius: 10px;
+  font-size: 15px; font-weight: 400; text-decoration: none;
+  border: 0.5px solid var(--border2); cursor: pointer;
+  transition: color .2s, border-color .2s;
+  font-family: var(--dm); display: inline-block;
+}
+.btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,.28); }
+
+/* ---- PROOF BAR ---- */
+.proof-bar {
+  border-top: 0.5px solid var(--border);
+  border-bottom: 0.5px solid var(--border);
+  padding: 20px 5vw;
+  display: flex; align-items: center; justify-content: center;
+  gap: 40px; flex-wrap: wrap;
+}
+.proof-item {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 13px; color: var(--muted);
+}
+.proof-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--teal); flex-shrink: 0;
+}
+
+/* ---- SHARED SECTION ---- */
+section { padding: 88px 5vw; }
+.section-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent2); font-weight: 500; margin-bottom: 14px; display: block;
+}
+.section-heading {
+  font-family: var(--syne);
+  font-size: clamp(26px, 3.8vw, 44px);
+  font-weight: 700; letter-spacing: -0.025em; line-height: 1.1;
+  color: var(--text); max-width: 680px; margin-bottom: 14px;
+}
+.section-sub {
+  font-size: 16px; color: var(--muted);
+  max-width: 540px; margin-bottom: 52px;
+  font-weight: 300; line-height: 1.65;
+}
+.divider { border: none; border-top: 0.5px solid var(--border); margin: 0; }
+
+/* ---- RESULTS ---- */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+.result-card {
+  background: var(--bg2); border: 0.5px solid var(--border);
+  border-radius: 14px; padding: 28px;
+  transition: border-color .2s;
+}
+.result-card:hover { border-color: var(--border2); }
+.result-card.hl {
+  border-color: rgba(91,79,232,0.4);
+  background: linear-gradient(145deg, var(--bg2), rgba(91,79,232,0.06));
+}
+.result-icon { font-size: 26px; margin-bottom: 16px; display: block; }
+.rtag {
+  display: inline-block;
+  background: var(--tdim); border: 0.5px solid rgba(30,207,176,0.2);
+  color: var(--teal); font-size: 10px; font-weight: 600;
+  padding: 3px 10px; border-radius: 100px;
+  letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 14px;
+}
+.rtag.p {
+  background: var(--aglow); border-color: rgba(91,79,232,0.25);
+  color: var(--accent2);
+}
+.result-title {
+  font-family: var(--syne); font-size: 17px; font-weight: 700;
+  color: var(--text); margin-bottom: 8px; line-height: 1.25;
+}
+.result-desc {
+  font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 18px;
+}
+.rstat { display: flex; align-items: baseline; gap: 6px; }
+.rstat .big {
+  font-family: var(--syne); font-size: 32px; font-weight: 800;
+  color: var(--accent2); letter-spacing: -0.03em;
+}
+.rstat .lbl { font-size: 13px; color: var(--muted); }
+
+/* ---- TEAM TRUST ---- */
+.team-trust {
+  background: var(--bg2);
+  border-top: 0.5px solid var(--border);
+  border-bottom: 0.5px solid var(--border);
+  padding: 88px 5vw;
+}
+.trust-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 64px; align-items: start;
+}
+.trust-headline {
+  font-family: var(--syne);
+  font-size: clamp(24px, 3.5vw, 40px);
+  font-weight: 700; letter-spacing: -0.025em; line-height: 1.15;
+  color: var(--text); margin-bottom: 16px;
+}
+.trust-headline em { font-style: normal; color: var(--teal); }
+.trust-body {
+  font-size: 15px; color: var(--muted);
+  line-height: 1.7; font-weight: 300; margin-bottom: 20px;
+}
+.trust-quote {
+  border-left: 2px solid var(--accent);
+  padding: 16px 20px;
+  background: rgba(91,79,232,0.06);
+  border-radius: 0 10px 10px 0;
+  font-size: 15px; color: var(--text); line-height: 1.6; font-style: italic;
+}
+.trust-quote cite {
+  display: block; margin-top: 10px; font-size: 12px;
+  color: var(--muted); font-style: normal; letter-spacing: 0.04em;
+}
+.trust-steps { display: flex; flex-direction: column; gap: 20px; }
+.trust-step { display: flex; gap: 16px; align-items: flex-start; }
+.ts-num {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--bg3); border: 0.5px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--syne); font-size: 12px; font-weight: 700; color: var(--accent2);
+}
+.ts-content h4 {
+  font-family: var(--syne); font-size: 14px; font-weight: 600;
+  color: var(--text); margin-bottom: 4px;
+}
+.ts-content p { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* ---- SERVICES ---- */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+.service-card {
+  background: var(--bg2); border: 0.5px solid var(--border);
+  border-radius: 14px; padding: 28px 24px;
+  transition: border-color .2s, background .2s;
+  position: relative; overflow: hidden;
+}
+.service-card:hover { border-color: var(--border2); background: var(--bg3); }
+.service-card.feat {
+  border-color: rgba(91,79,232,0.45);
+  background: linear-gradient(135deg, var(--bg3), rgba(91,79,232,0.07));
+}
+.sicon {
+  width: 42px; height: 42px; border-radius: 10px;
+  background: var(--aglow); border: 0.5px solid rgba(91,79,232,0.25);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 18px; font-size: 18px;
+}
+.sicon.teal { background: var(--tdim); border-color: rgba(30,207,176,0.22); }
+.service-title {
+  font-family: var(--syne); font-size: 17px; font-weight: 600;
+  color: var(--text); margin-bottom: 8px; letter-spacing: -0.01em;
+}
+.service-desc { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 16px; }
+.tag {
+  display: inline-block;
+  background: rgba(91,79,232,0.12); border: 0.5px solid rgba(91,79,232,0.22);
+  color: var(--accent2); font-size: 10px; font-weight: 500;
+  padding: 3px 9px; border-radius: 6px;
+  letter-spacing: 0.03em; text-transform: uppercase;
+  margin-right: 5px; margin-bottom: 5px;
+}
+.tag.t {
+  background: var(--tdim); border-color: rgba(30,207,176,0.18); color: var(--teal);
+}
+.feat-badge {
+  position: absolute; top: 14px; right: 14px;
+  background: var(--accent); color: #fff; font-size: 9px; font-weight: 700;
+  padding: 4px 10px; border-radius: 100px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* ---- HOW IT WORKS ---- */
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 32px;
+}
+.how-step { padding-right: 16px; }
+.step-num {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--bg3); border: 0.5px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--syne); font-size: 13px; font-weight: 700;
+  color: var(--accent2); margin-bottom: 14px;
+}
+.step-title {
+  font-family: var(--syne); font-size: 15px; font-weight: 600;
+  color: var(--text); margin-bottom: 7px;
+}
+.step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.step-badge {
+  display: inline-block; margin-top: 10px;
+  background: var(--tdim); border: 0.5px solid rgba(30,207,176,0.2);
+  color: var(--teal); font-size: 10px; padding: 3px 10px;
+  border-radius: 100px; font-weight: 500; letter-spacing: 0.04em;
+}
+
+/* ---- INDUSTRIES ---- */
+.industry-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.industry-pill {
+  background: var(--bg3); border: 0.5px solid var(--border2);
+  border-radius: 100px; padding: 9px 18px; font-size: 13px; color: var(--muted);
+  display: flex; align-items: center; gap: 7px; transition: all .2s;
+}
+.industry-pill:hover { color: var(--text); border-color: rgba(255,255,255,.25); }
+.industry-pill span { color: var(--teal); font-size: 10px; }
+
+/* ---- WHY AITS ---- */
+.diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.diff-card {
+  background: var(--bg2); border: 0.5px solid var(--border);
+  border-radius: 14px; padding: 24px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.diff-icon {
+  flex-shrink: 0; width: 34px; height: 34px; border-radius: 9px;
+  background: var(--tdim); display: flex; align-items: center;
+  justify-content: center; font-size: 15px;
+}
+.diff-text h4 {
+  font-family: var(--syne); font-size: 14px; font-weight: 600;
+  color: var(--text); margin-bottom: 5px;
+}
+.diff-text p { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* ---- CTA ---- */
+.cta-section {
+  background: var(--bg2);
+  border-top: 0.5px solid var(--border);
+  padding: 96px 5vw; text-align: center;
+  position: relative; overflow: hidden;
+}
+.cta-glow {
+  position: absolute; width: 500px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(91,79,232,0.10) 0%, transparent 70%);
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  pointer-events: none;
+}
+.cta-eyebrow {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--accent2); font-weight: 500; margin-bottom: 14px;
+  display: block; position: relative;
+}
+.cta-h2 {
+  font-family: var(--syne);
+  font-size: clamp(26px, 3.8vw, 46px);
+  font-weight: 800; letter-spacing: -0.025em; color: var(--text);
+  max-width: 680px; margin: 0 auto 10px; line-height: 1.1; position: relative;
+}
+.cta-h2 em { font-style: normal; color: var(--accent2); }
+.cta-sub {
+  font-size: 16px; color: var(--muted); max-width: 480px;
+  margin: 0 auto 36px; font-weight: 300; position: relative; line-height: 1.65;
+}
+.cta-btns {
+  display: flex; justify-content: center; gap: 14px;
+  flex-wrap: wrap; position: relative;
+}
+.cta-fine { font-size: 12px; color: var(--muted); margin-top: 16px; position: relative; }
+
+/* ---- FOOTER ---- */
+footer {
+  padding: 44px 5vw;
+  border-top: 0.5px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 20px;
+}
+.footer-logo {
+  font-family: var(--syne); font-weight: 800; font-size: 14px;
+  color: var(--text); margin-bottom: 4px;
+}
+.footer-tagline { font-size: 11px; color: var(--muted); }
+.footer-links { display: flex; gap: 24px; list-style: none; }
+.footer-links a {
+  font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s;
+}
+.footer-links a:hover { color: var(--text); }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 768px) {
+  .trust-layout { grid-template-columns: 1fr; gap: 40px; }
+  .diff-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .hero h1 { font-size: 36px; }
+  .proof-bar { gap: 20px; padding: 16px 5vw; }
+  .proof-item { font-size: 12px; }
+  .how-grid { grid-template-columns: 1fr 1fr; }
+  .cta-h2 { font-size: 28px; }
+}
+@media (max-width: 480px) {
+  section { padding: 64px 5vw; }
+  .hero { padding: 100px 5vw 60px; }
+  .how-grid { grid-template-columns: 1fr; }
+  .results-grid { grid-template-columns: 1fr; }
+  .services-grid { grid-template-columns: 1fr; }
+  .hero-actions { flex-direction: column; width: 100%; }
+  .btn-primary, .btn-ghost { width: 100%; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAVIGATION
+============================================================ -->
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark">AI</div>
+    <div class="logo-text">
+      <div class="logo-name">AITS SoCal</div>
+      <div class="logo-full">Advanced Intelligent Technology Solutions</div>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#results">Results</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#team">Your team</a></li>
+    <li><a href="https://calendly.com/nicholasdreyfus/30min" target="_blank" rel="noopener" class="nav-cta">Free assessment</a></li>
+  </ul>
+</nav>
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-badge">
+    <div class="badge-dot"></div>
+    San Diego SMB specialists
+  </div>
+
+  <h1>AI that works for your business,<br/><em>not just tech teams</em></h1>
+
+  <div class="hero-pos">
+    <p class="hero-pos-line">We help small and mid-sized businesses deploy AI and modernize their technology so they compete with companies five times their size.</p>
+  </div>
+
+  <p class="hero-name">Advanced Intelligent Technology Solutions &mdash; San Diego, CA</p>
+
+  <div class="hero-actions">
+    <a href="https://calendly.com/nicholasdreyfus/30min" target="_blank" rel="noopener" class="btn-primary">Get your free AI assessment</a>
+    <a href="#results" class="btn-ghost">See real results</a>
+  </div>
+</div>
+
+<!-- ============================================================
+     PROOF BAR
+============================================================ -->
+<div class="proof-bar">
+  <div class="proof-item"><div class="proof-dot"></div>AI receptionists deployed for local SD businesses</div>
+  <div class="proof-item"><div class="proof-dot"></div>Appointment automation live in under 30 days</div>
+  <div class="proof-item"><div class="proof-dot"></div>Social media and brand content on autopilot</div>
+  <div class="proof-item"><div class="proof-dot"></div>No long-term contracts, ever</div>
+</div>
+
+<!-- ============================================================
+     REAL RESULTS
+============================================================ -->
+<section id="results">
+  <span class="section-label">Real outcomes, San Diego businesses</span>
+  <h2 class="section-heading">We do not run pilots. We deliver results.</h2>
+  <p class="section-sub">Every engagement starts with an early win your entire team can see and feel. Here is what that looks like in practice.</p>
+
+  <div class="results-grid">
+
+    <div class="result-card hl">
+      <span class="result-icon">&#128222;</span>
+      <span class="rtag p">AI Receptionist</span>
+      <div class="result-title">A local SD business never misses a lead again</div>
+      <div class="result-desc">Their AI receptionist answers every call, qualifies the caller, captures key information, and schedules the right next step &mdash; 24 hours a day, without a single staff member involved.</div>
+      <div class="rstat"><span class="big">24/7</span><span class="lbl">coverage with zero added headcount</span></div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-icon">&#128197;</span>
+      <span class="rtag">Appointment automation</span>
+      <div class="result-title">Scheduling removed from the team&rsquo;s plate entirely</div>
+      <div class="result-desc">Scheduling, confirmation, reminders, and pre-meeting information gathering all automated. Staff stopped doing this manually within the first 30 days of deployment.</div>
+      <div class="rstat"><span class="big">&lt;30</span><span class="lbl">days from kickoff to live automation</span></div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-icon">&#128241;</span>
+      <span class="rtag">Social media</span>
+      <div class="result-title">Consistent brand presence without a marketing hire</div>
+      <div class="result-desc">Content creation, scheduling, and brand awareness running on autopilot. The business shows up professionally online every week without anyone on staff spending time on it.</div>
+      <div class="rstat"><span class="big">0hrs</span><span class="lbl">of staff time per week on social content</span></div>
+    </div>
+
+    <div class="result-card">
+      <span class="result-icon">&#128203;</span>
+      <span class="rtag">Meeting prep</span>
+      <div class="result-title">Every meeting starts with the right information already gathered</div>
+      <div class="result-desc">AI handles pre-meeting intake, collects needed documents and context, and delivers a clean brief before the meeting starts. No more back-and-forth emails chasing information.</div>
+      <div class="rstat"><span class="big">100%</span><span class="lbl">of meetings arrive with full context ready</span></div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ============================================================
+     TEAM TRUST
+============================================================ -->
+<div class="team-trust" id="team">
+  <div class="trust-layout">
+
+    <div>
+      <span class="section-label">The honest conversation</span>
+      <h2 class="trust-headline">AI does not replace<br/><em>your people.</em><br/>It replaces their worst tasks.</h2>
+      <p class="trust-body">The number one reason AI deployments fail at small businesses has nothing to do with the technology. It is that the team never bought in. Employees hear &ldquo;AI&rdquo; and quietly worry about their jobs. That resistance kills adoption before it starts.</p>
+      <p class="trust-body">Our entire deployment model is built around this reality. We start with the tasks your team hates most, automate those first, and make sure every person sees the benefit to them personally before we touch anything else.</p>
+      <div class="trust-quote">
+        &ldquo;The first thing we automated was appointment scheduling. Within two weeks, three employees told me it was the best thing that had happened at work in years. That momentum changed everything.&rdquo;
+        <cite>&mdash; Business owner, San Diego (identity withheld at client request)</cite>
+      </div>
+    </div>
+
+    <div>
+      <span class="section-label">How we bring your team along</span>
+      <div class="trust-steps">
+        <div class="trust-step">
+          <div class="ts-num">01</div>
+          <div class="ts-content">
+            <h4>We ask your team what they hate doing</h4>
+            <p>Not what you want automated &mdash; what they want automated. Those become our first targets. When AI removes their pain, they become your biggest advocates.</p>
+          </div>
+        </div>
+        <div class="trust-step">
+          <div class="ts-num">02</div>
+          <div class="ts-content">
+            <h4>We deliver a visible win in the first 30 days</h4>
+            <p>One meaningful automation, live and working, fast enough that the whole team sees the value before skepticism has time to set in.</p>
+          </div>
+        </div>
+        <div class="trust-step">
+          <div class="ts-num">03</div>
+          <div class="ts-content">
+            <h4>We train your team to work with AI, not around it</h4>
+            <p>Your people learn to use these tools with confidence. They stop feeling like bystanders and start feeling like they have a superpower at work.</p>
+          </div>
+        </div>
+        <div class="trust-step">
+          <div class="ts-num">04</div>
+          <div class="ts-content">
+            <h4>We scale with a team that is now pulling for it</h4>
+            <p>Phase two goes faster because your team is requesting new automations, not resisting them.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     SERVICES
+============================================================ -->
+<section id="services">
+  <span class="section-label">What we deploy</span>
+  <h2 class="section-heading">AI-first. Infrastructure underneath it.</h2>
+  <p class="section-sub">We lead with the outcomes your business needs and make sure the technology foundation supports them reliably.</p>
+
+  <div class="services-grid">
+
+    <div class="service-card feat">
+      <div class="feat-badge">Core</div>
+      <div class="sicon">&#129302;</div>
+      <div class="service-title">AI Integration &amp; Deployment</div>
+      <div class="service-desc">We identify, build, and deploy the highest-leverage AI automations for your workflows. Receptionists, scheduling, content, intake, reporting and more &mdash; all with measurable outcomes attached.</div>
+      <span class="tag">Workflow automation</span>
+      <span class="tag">AI receptionist</span>
+      <span class="tag">Custom tools</span>
+    </div>
+
+    <div class="service-card">
+      <div class="sicon">&#128506;</div>
+      <div class="service-title">AI Strategy &amp; Roadmap</div>
+      <div class="service-desc">A structured assessment of your operation that identifies your top AI opportunities, estimates ROI for each, and gives you a phased deployment plan. Starts free.</div>
+      <span class="tag">Free to start</span>
+      <span class="tag">ROI-backed plan</span>
+    </div>
+
+    <div class="service-card">
+      <div class="sicon">&#128227;</div>
+      <div class="service-title">AI Marketing &amp; Brand Automation</div>
+      <div class="service-desc">Social media content, brand awareness campaigns, and lead nurturing on autopilot. Professional presence without a full-time marketing hire.</div>
+      <span class="tag">Social media</span>
+      <span class="tag">Content creation</span>
+      <span class="tag">Brand awareness</span>
+    </div>
+
+    <div class="service-card">
+      <div class="sicon teal">&#128421;</div>
+      <div class="service-title">Managed IT Infrastructure</div>
+      <div class="service-desc">Computers, servers, networks, and security &mdash; the foundation your AI tools run on. Month-to-month, local support when you need a human on-site.</div>
+      <span class="tag t">Computers</span>
+      <span class="tag t">Servers</span>
+      <span class="tag t">Security</span>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ============================================================
+     HOW IT WORKS
+============================================================ -->
+<section>
+  <span class="section-label">The process</span>
+  <h2 class="section-heading">From assessment to live automation in weeks, not months</h2>
+  <p class="section-sub">Built to move at the speed of a real business, with a first win your team sees before you have spent significant time or budget.</p>
+
+  <div class="how-grid">
+    <div class="how-step">
+      <div class="step-num">01</div>
+      <div class="step-title">Free AI assessment</div>
+      <div class="step-desc">30 minutes. We map your workflows, understand where time is being lost, and listen to what your team wants off their plate.</div>
+      <span class="step-badge">Free, no obligation</span>
+    </div>
+    <div class="how-step">
+      <div class="step-num">02</div>
+      <div class="step-title">Opportunity report</div>
+      <div class="step-desc">You receive a prioritized list of AI opportunities ranked by ROI, with clear investment and outcome projections for each one.</div>
+    </div>
+    <div class="how-step">
+      <div class="step-num">03</div>
+      <div class="step-title">First automation live</div>
+      <div class="step-desc">We deploy your highest-value automation first, with a goal to have it live and delivering results within 30 days of kickoff.</div>
+      <span class="step-badge">30-day target</span>
+    </div>
+    <div class="how-step">
+      <div class="step-num">04</div>
+      <div class="step-title">Scale with momentum</div>
+      <div class="step-desc">Once your team sees real results, we expand into the next phase with a team that is pulling for the technology, not tolerating it.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ============================================================
+     INDUSTRIES
+============================================================ -->
+<section>
+  <span class="section-label">Who we serve</span>
+  <h2 class="section-heading">Every industry has tasks AI should be doing</h2>
+  <p class="section-sub">We bring specific experience to the industries that make up Southern California&rsquo;s small business economy.</p>
+
+  <div class="industry-row">
+    <div class="industry-pill"><span>&#9670;</span>Healthcare &amp; Medical Practices</div>
+    <div class="industry-pill"><span>&#9670;</span>Manufacturing &amp; Distribution</div>
+    <div class="industry-pill"><span>&#9670;</span>Financial Services</div>
+    <div class="industry-pill"><span>&#9670;</span>Professional Services</div>
+    <div class="industry-pill"><span>&#9670;</span>Nonprofits</div>
+    <div class="industry-pill"><span>&#9670;</span>Retail &amp; E-commerce</div>
+    <div class="industry-pill"><span>&#9670;</span>Legal &amp; Compliance</div>
+    <div class="industry-pill"><span>&#9670;</span>Startups &amp; Growth-stage</div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ============================================================
+     WHY AITS
+============================================================ -->
+<section>
+  <span class="section-label">Why AITS SoCal</span>
+  <h2 class="section-heading">We sell outcomes. The technology is how we get there.</h2>
+  <p class="section-sub">Most technology vendors lead with tools. We lead with your business problem and work backwards to the right solution.</p>
+
+  <div class="diff-grid">
+    <div class="diff-card">
+      <div class="diff-icon">&#128205;</div>
+      <div class="diff-text">
+        <h4>Local to San Diego</h4>
+        <p>We are in your market, know your business community, and can be on-site when something needs a human. Not a remote help desk.</p>
+      </div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-icon">&#9889;</div>
+      <div class="diff-text">
+        <h4>Results in 30 days</h4>
+        <p>Our model is built around delivering a meaningful, visible automation your whole team can see within the first month &mdash; before you have spent serious budget.</p>
+      </div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-icon">&#128275;</div>
+      <div class="diff-text">
+        <h4>No lock-in contracts</h4>
+        <p>Month-to-month. You stay because the results justify it, not because you signed something that makes leaving painful.</p>
+      </div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-icon">&#129309;</div>
+      <div class="diff-text">
+        <h4>Team adoption is part of the work</h4>
+        <p>We do not hand you software and walk away. We make sure your team embraces the tools and uses them confidently before we consider the job done.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CTA
+============================================================ -->
+<div class="cta-section" id="assess">
+  <div class="cta-glow"></div>
+  <span class="cta-eyebrow">Free AI assessment</span>
+  <h2 class="cta-h2">AI that works for your business,<br/><em>not just tech teams</em></h2>
+  <p class="cta-sub">We help small and mid-sized businesses deploy AI and modernize their technology so they compete with companies five times their size. Start with a free 30-minute conversation.</p>
+  <div class="cta-btns">
+    <a href="https://calendly.com/nicholasdreyfus/30min" target="_blank" rel="noopener" class="btn-primary">Book your free 30-minute assessment</a>
+    <a href="#results" class="btn-ghost">See real results first</a>
+  </div>
+  <p class="cta-fine">No pitch. No jargon. A real plan you can act on immediately.</p>
+</div>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer>
+  <div>
+    <div class="footer-logo">AITS SoCal</div>
+    <div class="footer-tagline">Advanced Intelligent Technology Solutions &mdash; San Diego, CA</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="#results">Results</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#team">Your team</a></li>
+    <li><a href="https://calendly.com/nicholasdreyfus/30min" target="_blank" rel="noopener">Free assessment</a></li>
+  </ul>
+</footer>
+
+</body>
+</html>
