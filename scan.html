@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="Free AI Risk Scan — Find out which AI tools are running in your organization, score your exposure, and get a free 30-minute review with AITS.">
+  <meta property="og:title" content="Free AI Risk Scan — AITS">
+  <meta property="og:description" content="90 seconds. Instant risk score. Find out what AI is running in your business right now.">
+  <meta property="og:url" content="https://aitssocal.com">
+  <meta property="og:type" content="website">
+  <title>AITS — Free AI Risk Scan</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{-webkit-text-size-adjust:100%}
+    body{background:#080C10;color:#E8F4F8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;padding:24px 16px 60px;display:flex;flex-direction:column;align-items:center}
+    .wrap{max-width:520px;width:100%}
+    .header{text-align:center;margin-bottom:22px}
+    .header-brand{font-family:monospace;font-size:10px;color:#00D4FF;letter-spacing:3px;margin-bottom:8px}
+    .header-logo{width:48px;height:48px;background:#0A2A35;border:1px solid #00D4FF;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+    .header-title{font-size:26px;font-weight:800;letter-spacing:-0.5px}
+    .header-status{font-family:monospace;font-size:11px;color:#3A5A6A;margin-top:5px;min-height:18px}
+    .panel{background:#0D1117;border:1px solid #1C2A3A;border-radius:12px;overflow:hidden;box-shadow:0 24px 48px rgba(0,0,0,0.6);margin-bottom:16px}
+    .panel-body{padding:26px 22px}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+    .tag{font-family:monospace;font-size:10px;border:1px solid;padding:3px 8px;border-radius:3px;letter-spacing:1px;white-space:nowrap}
+    .tag-blue{color:#00D4FF;border-color:#00D4FF}
+    .tag-warn{color:#FF6B35;border-color:#FF6B35}
+    .tag-ok{color:#00FF88;border-color:#00FF88}
+    .tag-danger{color:#FF2D55;border-color:#FF2D55}
+    .intro-title{font-size:20px;font-weight:800;line-height:1.3;margin-bottom:12px}
+    .intro-sub{color:#7A9BAD;line-height:1.75;font-size:15px;margin-bottom:20px}
+    .checklist{background:#0A2A35;border:1px solid rgba(0,212,255,0.15);border-radius:8px;padding:14px 16px;margin-bottom:20px}
+    .checklist-label{font-family:monospace;font-size:9px;color:#00D4FF;letter-spacing:2px;margin-bottom:10px}
+    .checklist-item{font-size:14px;color:#7A9BAD;line-height:2}
+    .checklist-item::before{content:"✓ ";color:#00FF88;font-weight:bold}
+    .trust-bar{display:flex;gap:14px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+    .trust-item{font-size:12px;color:#3A5A6A;display:flex;align-items:center;gap:5px}
+    .trust-dot{width:5px;height:5px;border-radius:50%;background:#00D4FF;flex-shrink:0}
+    .btn-main{display:block;width:100%;padding:16px;background:#00D4FF;color:#080C10;border:none;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;-webkit-appearance:none;text-align:center}
+    .btn-secondary{display:block;width:100%;padding:13px;background:transparent;color:#7A9BAD;border:1px solid #1C2A3A;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:10px;-webkit-appearance:none;font-family:inherit}
+    .progress-wrap{height:4px;background:#1C2A3A}
+    .progress-fill{height:100%;background:#00D4FF;transition:width 0.4s ease}
+    .q-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .q-count{font-family:monospace;font-size:10px;color:#3A5A6A}
+    .q-dots{display:flex;gap:5px}
+    .q-dot{width:7px;height:7px;border-radius:50%;background:#1C2A3A}
+    .q-dot.active{background:#00D4FF}
+    .q-dot.done{background:#00D4FF;opacity:0.4}
+    .q-label{font-size:17px;font-weight:700;line-height:1.4;margin-bottom:16px}
+    .q-note{font-family:monospace;font-size:11px;color:#3A5A6A;margin-bottom:12px;margin-top:-8px}
+    .options{display:flex;flex-direction:column;gap:8px}
+    .opt-btn{width:100%;padding:13px 15px;background:transparent;border:1px solid #1C2A3A;border-radius:8px;color:#7A9BAD;text-align:left;cursor:pointer;font-size:14px;font-family:inherit;-webkit-appearance:none;display:flex;align-items:center;gap:10px}
+    .opt-btn.selected{background:#0A2A35;border-color:#00D4FF;color:#00D4FF}
+    .scan-header{font-family:monospace;font-size:12px;color:#00D4FF;letter-spacing:2px;margin-bottom:16px;min-height:20px}
+    .scan-bar-wrap{background:#1C2A3A;border-radius:3px;height:5px;margin-bottom:20px;overflow:hidden}
+    .scan-bar-fill{height:100%;background:linear-gradient(90deg,#00D4FF,#00FF88);transition:width 0.25s linear;border-radius:3px}
+    .terminal{background:#050810;border:1px solid #1C2A3A;border-radius:8px;padding:16px;min-height:190px;font-family:monospace;font-size:12px;line-height:2.2}
+    .t-default{color:#7A9BAD}.t-ai{color:#00D4FF}.t-done{color:#00FF88}
+    .scan-pct{text-align:center;margin-top:12px;font-family:monospace;font-size:11px;color:#3A5A6A}
+    .results-top{background:linear-gradient(135deg,#0A2A35,transparent);border-bottom:1px solid #1C2A3A;padding:14px 22px;display:flex;justify-content:space-between;align-items:center}
+    .results-eyebrow{font-family:monospace;font-size:9px;color:#00D4FF;letter-spacing:3px;margin-bottom:2px}
+    .results-title{font-size:14px;font-weight:700}
+    .score-row{display:flex;gap:12px;margin-bottom:20px;align-items:flex-start}
+    .score-col{flex-shrink:0}
+    .stats-col{flex:1;display:flex;flex-direction:column;gap:10px;min-width:0}
+    .stat-box{border-radius:8px;padding:10px 12px}
+    .stat-box-warn{background:#2A1A0D;border:1px solid rgba(255,107,53,0.25)}
+    .stat-box-danger{background:#2A0D15;border:1px solid rgba(255,45,85,0.25)}
+    .stat-label{font-family:monospace;font-size:9px;letter-spacing:2px;margin-bottom:3px}
+    .stat-label-warn{color:#FF6B35}
+    .stat-label-danger{color:#FF2D55}
+    .stat-val{font-size:13px;font-weight:700}
+    .stat-val-big{font-size:24px;font-weight:800;color:#FF2D55}
+    .findings-label{font-family:monospace;font-size:9px;color:#3A5A6A;letter-spacing:2px;margin-bottom:10px}
+    .finding{border-radius:8px;padding:13px 14px;margin-bottom:8px}
+    .finding-warn{background:#2A1A0D;border:1px solid rgba(255,107,53,0.3)}
+    .finding-danger{background:#2A0D15;border:1px solid rgba(255,45,85,0.3)}
+    .finding-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+    .finding-num{font-family:monospace;font-size:9px;color:#3A5A6A}
+    .finding-headline{font-weight:700;font-size:14px;line-height:1.4;margin-bottom:5px}
+    .finding-detail{color:#7A9BAD;font-size:13px;line-height:1.6}
+    .locked{background:#0D1117;border:1px solid #1C2A3A;border-radius:8px;padding:13px 14px;margin-bottom:8px;position:relative;overflow:hidden}
+    .locked-ghost{opacity:0.08}
+    .ghost-bar{height:7px;background:#1C2A3A;border-radius:4px;margin-bottom:6px}
+    .locked-overlay{position:absolute;inset:0;background:rgba(13,17,23,0.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+    .lock-label{font-family:monospace;font-size:10px;color:#3A5A6A;letter-spacing:1px}
+    .analyst-box{background:#0A0510;border:1px solid rgba(139,92,246,0.22);border-radius:8px;padding:12px 14px;margin:6px 0 18px}
+    .analyst-label{font-family:monospace;font-size:9px;color:#8B5CF6;letter-spacing:2px;margin-bottom:3px}
+    .analyst-text{font-size:13px;color:#7A9BAD;line-height:1.6}
+    .cta-section{transition:opacity 0.6s ease,transform 0.6s ease}
+    .cta-note{text-align:center;margin-bottom:14px}
+    .cta-note-top{font-family:monospace;font-size:9px;color:#3A5A6A;margin-bottom:4px}
+    .cta-note-sub{font-size:13px;color:#7A9BAD;line-height:1.5}
+    .btn-cta{display:block;width:100%;padding:16px;background:#00D4FF;color:#080C10;border-radius:8px;text-align:center;font-weight:800;font-size:15px;text-decoration:none;border:none;cursor:pointer;font-family:inherit;-webkit-appearance:none}
+    /* Calendly modal */
+    .cal-overlay{display:none;position:fixed;inset:0;background:rgba(8,12,16,0.95);z-index:999;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+    .cal-overlay.active{display:flex}
+    .cal-box{background:#0D1117;border:1px solid #1C2A3A;border-radius:12px;width:100%;max-width:520px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column}
+    .cal-header{padding:14px 18px;border-bottom:1px solid #1C2A3A;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+    .cal-title{font-family:monospace;font-size:10px;color:#00D4FF;letter-spacing:2px}
+    .cal-close{background:transparent;border:none;color:#7A9BAD;font-size:20px;cursor:pointer;padding:0 4px;line-height:1}
+    .cal-frame{flex:1;border:none;width:100%;min-height:500px}
+    .footer{text-align:center;font-family:monospace;font-size:10px;color:#3A5A6A;margin-top:6px;line-height:2}
+    .footer a{color:#3A5A6A;text-decoration:none}
+    .error-msg{color:#FF2D55;font-family:monospace;font-size:12px;margin-bottom:14px;padding:10px 14px;background:#2A0D15;border-radius:6px;border:1px solid rgba(255,45,85,0.3)}
+    @media(max-width:360px){.intro-title{font-size:17px}.panel-body{padding:20px 16px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="header-brand">AITS — ADVANCED INTELLIGENT TECHNOLOGY SOLUTIONS</div>
+    <div class="header-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="5" fill="#00D4FF" opacity="0.9"/>
+        <circle cx="14" cy="14" r="10" stroke="#00D4FF" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <circle cx="14" cy="4" r="2" fill="#00D4FF" opacity="0.5"/>
+        <circle cx="24" cy="19" r="2" fill="#00D4FF" opacity="0.5"/>
+        <circle cx="4" cy="19" r="2" fill="#00D4FF" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="header-title">AI Risk Scan</div>
+    <div class="header-status" id="status">▮ SYSTEM READY</div>
+  </div>
+
+  <div class="panel" id="mainPanel">
+    <!-- INTRO -->
+    <div id="introScreen" class="panel-body">
+      <div class="tags">
+        <span class="tag tag-blue">SHADOW AI DETECTION</span>
+        <span class="tag tag-blue">COMPLIANCE ANALYSIS</span>
+        <span class="tag tag-blue">RISK SCORING</span>
+      </div>
+      <div class="intro-title">Is AI running inside your organization without your knowledge?</div>
+      <div class="intro-sub">Most businesses have 3-7 unsanctioned AI tools active across their team right now. This 90-second scan identifies your exposure, scores your risk, and surfaces your top finding — instantly and free.</div>
+      <div class="checklist">
+        <div class="checklist-label">WHAT YOU GET INSTANTLY</div>
+        <div class="checklist-item">AI Risk Score (0–100)</div>
+        <div class="checklist-item">Your #1 security finding</div>
+        <div class="checklist-item">Shadow AI exposure estimate</div>
+        <div class="checklist-item">Compliance flags detected</div>
+      </div>
+      <div class="trust-bar">
+        <div class="trust-item"><div class="trust-dot"></div>No software to install</div>
+        <div class="trust-item"><div class="trust-dot"></div>No data stored</div>
+        <div class="trust-item"><div class="trust-dot"></div>90 seconds</div>
+      </div>
+      <div id="introError"></div>
+      <button class="btn-main" id="startBtn">START MY FREE AI RISK SCAN →</button>
+    </div>
+
+    <!-- QUESTIONS -->
+    <div id="questionScreen" style="display:none">
+      <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="panel-body">
+        <div class="q-header">
+          <div class="q-count" id="qCount">Q 1 / 6</div>
+          <div class="q-dots" id="qDots"></div>
+        </div>
+        <div class="q-label" id="qLabel"></div>
+        <div class="q-note" id="qNote" style="display:none"></div>
+        <div class="options" id="optionsList"></div>
+        <button class="btn-secondary" id="multiNextBtn" style="display:none">Skip →</button>
+      </div>
+    </div>
+
+    <!-- SCANNING -->
+    <div id="scanScreen" style="display:none" class="panel-body">
+      <div class="scan-header" id="scanHeader">▮ SCANNING IN PROGRESS</div>
+      <div class="scan-bar-wrap"><div class="scan-bar-fill" id="scanFill" style="width:0%"></div></div>
+      <div class="terminal" id="terminal"><span id="cursor" style="color:#00D4FF">_</span></div>
+      <div class="scan-pct" id="scanPct">0% complete</div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsScreen" style="display:none">
+      <div class="results-top">
+        <div>
+          <div class="results-eyebrow">SCAN COMPLETE</div>
+          <div class="results-title">AI Risk Assessment Report</div>
+        </div>
+        <span class="tag tag-warn" id="riskTag">HIGH</span>
+      </div>
+      <div class="panel-body">
+        <div class="score-row">
+          <div class="score-col">
+            <svg width="165" height="100" viewBox="0 0 165 100">
+              <path d="M 15 88 A 70 70 0 0 1 150 88" fill="none" stroke="#1C2A3A" stroke-width="10" stroke-linecap="round"/>
+              <path id="meterArc" d="M 15 88 A 70 70 0 0 1 150 88" fill="none" stroke="#00D4FF" stroke-width="10" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/>
+              <circle id="meterDot" cx="82" cy="18" r="7" fill="#00D4FF"/>
+              <text id="meterScore" x="82" y="86" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="26" fill="#00D4FF">0</text>
+              <text id="meterLabel" x="82" y="99" text-anchor="middle" font-family="monospace" font-size="9" fill="#00D4FF" letter-spacing="3">--</text>
+            </svg>
+          </div>
+          <div class="stats-col">
+            <div class="stat-box stat-box-warn">
+              <div class="stat-label stat-label-warn">SHADOW AI ESTIMATE</div>
+              <div class="stat-val" id="shadowEst">—</div>
+            </div>
+            <div class="stat-box stat-box-danger">
+              <div class="stat-label stat-label-danger">COMPLIANCE FLAGS</div>
+              <div class="stat-val stat-val-big" id="compFlags">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="findings-label">FINDINGS IDENTIFIED</div>
+        <div class="finding finding-warn" id="finding1">
+          <div class="finding-top">
+            <span class="tag tag-warn" id="f1Tag">RISK</span>
+            <span class="finding-num">FINDING 01</span>
+          </div>
+          <div class="finding-headline" id="f1Head"></div>
+          <div class="finding-detail" id="f1Detail"></div>
+        </div>
+        <div id="lockedFindings"></div>
+
+        <div class="analyst-box">
+          <div class="analyst-label">ANALYST NOTE</div>
+          <div class="analyst-text" id="urgencyText"></div>
+        </div>
+
+        <div class="cta-section" id="ctaSection" style="opacity:0;transform:translateY(12px)">
+          <div class="cta-note">
+            <div class="cta-note-top" id="ctaTop">2 ADDITIONAL FINDINGS REQUIRE REVIEW</div>
+            <div class="cta-note-sub">Full report includes affected systems, user exposure detail, and a remediation roadmap. Book a free 30-minute session to unlock everything.</div>
+          </div>
+          <button class="btn-cta" id="bookBtn">REVIEW MY FULL REPORT — BOOK 30 MIN →</button>
+          <div class="footer" style="margin-top:10px">Free · No obligation · aitssocal.com</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">AITS · aitssocal.com · (858) 337-2866<br><a href="mailto:nick@aitssocal.com">nick@aitssocal.com</a></div>
+</div>
+
+<!-- CALENDLY MODAL -->
+<div class="cal-overlay" id="calOverlay">
+  <div class="cal-box">
+    <div class="cal-header">
+      <div class="cal-title">▮ BOOK YOUR FREE 30-MIN REVIEW</div>
+      <button class="cal-close" id="calClose">✕</button>
+    </div>
+    <iframe class="cal-frame" id="calFrame"
+      src="https://calendly.com/nickdre/30min?embed_domain=aitssocal.com&embed_type=Inline&hide_gdpr_banner=1"
+      frameborder="0" scrolling="yes"></iframe>
+  </div>
+</div>
+
+<!-- Calendly event listener for redirect after booking -->
+<script>
+window.addEventListener("message", function(e) {
+  if (e.data && e.data.event && e.data.event === "calendly.event_scheduled") {
+    window.location.href = "/thank-you.html";
+  }
+});
+</script>
+
+<script>
+// GAVIN: Replace with your Cloudflare Worker URL after step 2 in DEPLOY.md
+var PROXY_URL = "https://aits-scan.nicholasdreyfus.workers.dev";
+
+var QUESTIONS = [
+  {id:"size",label:"How many people are in your organization?",type:"single",options:["1-10 employees","11-25 employees","26-50 employees","51-100 employees","101-250 employees","250+ employees"]},
+  {id:"industry",label:"What industry are you in?",type:"single",options:["Healthcare / Medical","Legal / Law Firm","Financial Services","Manufacturing","Professional Services","Nonprofit","Retail / E-Commerce","Technology","Other"]},
+  {id:"tools",label:"Which AI tools does your team currently use?",type:"multi",note:"Select all that apply — skip if unsure",options:["ChatGPT","Microsoft Copilot","Claude (Anthropic)","Google Gemini","Grammarly AI","Jasper / Copy.ai","GitHub Copilot","Midjourney / DALL-E"]},
+  {id:"policy",label:"Does your organization have a formal AI usage policy?",type:"single",options:["Yes, fully documented","In progress / informal","No policy exists","I don't know"]},
+  {id:"personal",label:"Do employees use personal accounts to access AI tools for work?",type:"single",options:["Definitely yes","Probably yes","Probably not","No / we restrict this","Unsure"]},
+  {id:"sensitivity",label:"How sensitive is the data your team works with daily?",type:"single",options:["Low — general business info","Medium — client data, financials","High — medical, legal, or PII","Regulated — HIPAA, CJIS, CMMC"]},
+];
+
+var MSGS = [
+  {t:"[ INIT ] Connecting to AITS scan engine...",c:"t-default"},
+  {t:"[ SCAN ] Profiling organizational AI exposure...",c:"t-default"},
+  {t:"[ SCAN ] Detecting shadow AI traffic patterns...",c:"t-default"},
+  {t:"[ SCAN ] Cross-referencing known AI tool signatures...",c:"t-default"},
+  {t:"[ SCAN ] Analyzing data sensitivity risk vectors...",c:"t-default"},
+  {t:"[ SCAN ] Checking compliance framework gaps...",c:"t-default"},
+  {t:"[ AI   ] Running risk classification model...",c:"t-ai"},
+  {t:"[ AI   ] Generating executive risk profile...",c:"t-ai"},
+  {t:"[ DONE ] Scan complete. Compiling findings...",c:"t-done"},
+];
+
+var currentQ=0, answers={}, scanProg=0, scanTick=null, blinkOn=true;
+
+// Blink cursor
+setInterval(function(){
+  blinkOn=!blinkOn;
+  var ph=document.getElementById("status").dataset.phase||"intro";
+  if(ph==="intro") document.getElementById("status").textContent=blinkOn?"▮ SYSTEM READY":"  SYSTEM READY";
+  if(ph==="scanning") document.getElementById("scanHeader").textContent=blinkOn?"▮ SCANNING IN PROGRESS":"  SCANNING IN PROGRESS";
+  var cu=document.getElementById("cursor");
+  if(cu) cu.textContent=blinkOn?"_":" ";
+},600);
+
+// Screen switcher
+function show(id){
+  ["introScreen","questionScreen","scanScreen","resultsScreen"].forEach(function(s){
+    document.getElementById(s).style.display=s===id?"block":"none";
+  });
+}
+
+// Calendly modal
+document.getElementById("status").dataset.phase="intro";
+document.getElementById("startBtn").addEventListener("click",function(){
+  document.getElementById("status").dataset.phase="questions";
+  loadQ();
+  show("questionScreen");
+});
+
+document.getElementById("bookBtn").addEventListener("click",function(){
+  document.getElementById("calOverlay").classList.add("active");
+});
+document.getElementById("calClose").addEventListener("click",function(){
+  document.getElementById("calOverlay").classList.remove("active");
+});
+document.getElementById("calOverlay").addEventListener("click",function(e){
+  if(e.target===this) this.classList.remove("active");
+});
+
+// Questions
+function loadQ(){
+  var q=QUESTIONS[currentQ];
+  document.getElementById("progressFill").style.width=((currentQ/QUESTIONS.length)*100)+"%";
+  document.getElementById("qCount").textContent="Q "+(currentQ+1)+" / "+QUESTIONS.length;
+  document.getElementById("qLabel").textContent=q.label;
+  var ne=document.getElementById("qNote");
+  if(q.note){ne.textContent=q.note;ne.style.display="block";}else{ne.style.display="none";}
+  document.getElementById("qDots").innerHTML=QUESTIONS.map(function(_,i){
+    return '<div class="q-dot'+(i<currentQ?" done":i===currentQ?" active":"")+'"></div>';
+  }).join("");
+  var sel=answers[q.id]||(q.type==="multi"?[]:"");
+  document.getElementById("optionsList").innerHTML=q.options.map(function(opt){
+    var isSel=q.type==="multi"?sel.indexOf(opt)>=0:sel===opt;
+    return '<button class="opt-btn'+(isSel?" selected":"")+'" data-val="'+encodeURIComponent(opt)+'">'
+      +'<span style="font-size:11px;flex-shrink:0">'+(isSel?"▪":"○")+"</span>"+opt+"</button>";
+  }).join("");
+  document.querySelectorAll(".opt-btn").forEach(function(btn){
+    btn.addEventListener("click",function(){handleAnswer(decodeURIComponent(btn.dataset.val));});
+  });
+  var nb=document.getElementById("multiNextBtn");
+  if(q.type==="multi"){
+    nb.style.display="block";
+    nb.textContent=sel.length>0?"Continue ("+sel.length+" selected) →":"Skip →";
+    nb.onclick=advanceQ;
+  }else{nb.style.display="none";}
+}
+
+function handleAnswer(val){
+  var q=QUESTIONS[currentQ];
+  if(q.type==="multi"){
+    var cur=answers[q.id]||[];
+    var idx=cur.indexOf(val);
+    answers[q.id]=idx>=0?cur.filter(function(v){return v!==val;}):[].concat(cur,[val]);
+    loadQ();
+  }else{
+    answers[q.id]=val;
+    setTimeout(advanceQ,200);
+  }
+}
+
+function advanceQ(){
+  if(currentQ<QUESTIONS.length-1){currentQ++;loadQ();}
+  else{startScan();}
+}
+
+// Scan
+function startScan(){
+  document.getElementById("status").dataset.phase="scanning";
+  show("scanScreen");
+  scanProg=0;
+  scanTick=setInterval(function(){
+    scanProg=Math.min(scanProg+1.4,93);
+    document.getElementById("scanFill").style.width=scanProg+"%";
+    document.getElementById("scanPct").textContent=Math.round(scanProg)+"% complete";
+  },80);
+  MSGS.forEach(function(msg,i){
+    setTimeout(function(){
+      var term=document.getElementById("terminal");
+      var cur=document.getElementById("cursor");
+      var div=document.createElement("div");
+      div.className=msg.c;div.textContent=msg.t;
+      term.insertBefore(div,cur);
+    },i*550+400);
+  });
+  callAPI();
+}
+
+function callAPI(){
+  var fa=answers;
+  var prompt="You are an enterprise AI risk analyst for AITS (Advanced Intelligent Technology Solutions), a San Diego-based managed IT and AI services firm.\n\n"
+    +"A business just completed a free AI readiness scan on aitssocal.com. Analyze their responses and return ONLY a valid JSON object, no markdown, no backticks, no explanation.\n\n"
+    +"Scan responses:\n"
+    +"- Company size: "+(fa.size||"Unknown")+"\n"
+    +"- Industry: "+(fa.industry||"Unknown")+"\n"
+    +"- Known AI tools in use: "+((fa.tools||[]).join(", ")||"None identified")+"\n"
+    +"- AI usage policy status: "+(fa.policy||"Unknown")+"\n"
+    +"- Personal account usage for work AI: "+(fa.personal||"Unknown")+"\n"
+    +"- Data sensitivity level: "+(fa.sensitivity||"Unknown")+"\n\n"
+    +'Return exactly this JSON:\n{"riskScore":<integer 0-100>,"riskLevel":"<LOW|MODERATE|HIGH|CRITICAL>","topFinding":{"category":"<short name>","headline":"<10-15 words specific to their industry and tools>","detail":"<2 sentences specific to their situation>"},"hiddenFindings":["<category 2>","<category 3>"],"shadowAIEstimate":"<specific estimate>","complianceFlags":<integer>,"urgencyStatement":"<12-18 words punchy>"}';
+
+  fetch(PROXY_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({messages:[{role:"user",content:prompt}]})
+  }).then(function(res){
+    if(!res.ok) throw new Error("API "+res.status);
+    return res.json();
+  }).then(function(data){
+    var raw=(data.content&&data.content[0]&&data.content[0].text)||"{}";
+    var parsed=JSON.parse(raw.replace(/```json|```/g,"").trim());
+    clearInterval(scanTick);
+    scanProg=100;
+    document.getElementById("scanFill").style.width="100%";
+    document.getElementById("scanPct").textContent="100% complete";
+    setTimeout(function(){showResults(parsed);},700);
+  }).catch(function(err){
+    clearInterval(scanTick);
+    document.getElementById("introError").innerHTML='<div class="error-msg">Scan error: '+err.message+'. Please try again.</div>';
+    show("introScreen");
+    document.getElementById("status").dataset.phase="intro";
+  });
+}
+
+// Results
+function showResults(r){
+  var color=r.riskScore>=75?"#FF2D55":r.riskScore>=50?"#FF6B35":r.riskScore>=25?"#FFD700":"#00FF88";
+  var label=r.riskScore>=75?"CRITICAL":r.riskScore>=50?"HIGH":r.riskScore>=25?"MODERATE":"LOW";
+  var arcLen=220,filled=(r.riskScore/100)*arcLen;
+  var angle=-180+(r.riskScore/100)*180,rad=angle*Math.PI/180;
+  var cx=82+70*Math.cos(rad),cy=88+70*Math.sin(rad);
+  document.getElementById("meterArc").style.stroke=color;
+  document.getElementById("meterArc").setAttribute("stroke-dashoffset",arcLen-filled);
+  document.getElementById("meterDot").setAttribute("cx",cx);
+  document.getElementById("meterDot").setAttribute("cy",cy);
+  document.getElementById("meterDot").style.fill=color;
+  document.getElementById("meterScore").textContent=r.riskScore;
+  document.getElementById("meterScore").style.fill=color;
+  document.getElementById("meterLabel").textContent=label;
+  document.getElementById("meterLabel").style.fill=color;
+  var tc=r.riskScore>=75?"tag-danger":r.riskScore>=50?"tag-warn":"tag-ok";
+  document.getElementById("riskTag").className="tag "+tc;
+  document.getElementById("riskTag").textContent=r.riskLevel;
+  document.getElementById("shadowEst").textContent=r.shadowAIEstimate||"—";
+  document.getElementById("compFlags").textContent=r.complianceFlags||"0";
+  var fc=r.riskScore>=75?"finding-danger":"finding-warn";
+  var ft=r.riskScore>=75?"tag-danger":"tag-warn";
+  document.getElementById("finding1").className="finding "+fc;
+  document.getElementById("f1Tag").className="tag "+ft;
+  document.getElementById("f1Tag").textContent=(r.topFinding&&r.topFinding.category)||"Risk";
+  document.getElementById("f1Head").textContent=(r.topFinding&&r.topFinding.headline)||"";
+  document.getElementById("f1Detail").textContent=(r.topFinding&&r.topFinding.detail)||"";
+  document.getElementById("lockedFindings").innerHTML=(r.hiddenFindings||[]).map(function(f,i){
+    return '<div class="locked"><div class="locked-ghost">'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:7px"><span class="tag tag-blue">'+f+'</span><span class="finding-num">FINDING 0'+(i+2)+'</span></div>'
+      +'<div class="ghost-bar" style="width:70%"></div><div class="ghost-bar" style="width:52%"></div></div>'
+      +'<div class="locked-overlay"><div style="font-size:20px">🔒</div><div class="lock-label">UNLOCKED IN REVIEW SESSION</div></div></div>';
+  }).join("");
+  document.getElementById("urgencyText").textContent=r.urgencyStatement||"";
+  document.getElementById("ctaTop").textContent=(r.hiddenFindings||[]).length+" ADDITIONAL FINDINGS REQUIRE REVIEW";
+  show("resultsScreen");
+  document.getElementById("status").textContent="▮ SCAN COMPLETE";
+  document.getElementById("status").dataset.phase="results";
+  setTimeout(function(){
+    var cta=document.getElementById("ctaSection");
+    cta.style.opacity="1";cta.style.transform="translateY(0)";
+  },900);
+}
+</script>
+</body>
+</html>
