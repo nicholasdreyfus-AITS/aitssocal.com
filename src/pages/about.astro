@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS } from '../consts';
+---
+
+<BaseLayout
+  title="About"
+  description="AITS — Advanced Intelligent Technology Solutions. Founded by Gavin Dreyfus, backed by a board with 80+ combined years in managed services and AI deployment."
+  path="/about"
+>
+  <section class="section">
+    <div class="container prose">
+      <p class="section-label">About AITS</p>
+      <h1>We sell outcomes. The technology is how we get there.</h1>
+      <p>
+        AITS — Advanced Intelligent Technology Solutions — helps small and mid-sized businesses
+        deploy AI and modernize their technology so they compete with companies five times their
+        size. We are AI-first, with the infrastructure underneath it: we lead with the outcomes your
+        business needs and make sure the technology foundation supports them reliably.
+      </p>
+
+      <h2>We do not run pilots. We deliver results.</h2>
+      <p>
+        Every engagement starts with an early win your entire team can see and feel. We start with
+        the tasks your team hates most, automate those first, and make sure every person sees the
+        benefit before we touch anything else. That is how adoption sticks — and adoption is where
+        most AI deployments quietly fail.
+      </p>
+
+      <h2>Built by a next-generation founder. Backed by decades of real-world results.</h2>
+      <p>
+        {BUSINESS.founder} launched AITS with the vision and energy of a builder who grew up inside
+        the technology industry. Behind him stands a board with over 80 combined years of managed
+        services, AI deployment, and business leadership across North America.
+      </p>
+
+      <h2>Local, and in your corner.</h2>
+      <p>
+        We serve {BUSINESS.areasServed.join(', ')}. We are in your market, know your business
+        community, and can be on-site when something needs a human — not a remote help desk. And we
+        work month-to-month: you stay because the results justify it.
+      </p>
+
+      <a href="/contact" class="btn-primary">Get your free AI assessment</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin: 12px 0 24px;
+  }
+  h2 {
+    font-size: 1.5rem;
+    margin: 36px 0 12px;
+  }
+  .prose p {
+    color: var(--muted);
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+  }
+  .btn {
+    margin-top: 24px;
+  }
+</style>

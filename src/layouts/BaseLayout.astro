@@ -1,0 +1,140 @@
+---
+import { SITE, BUSINESS } from '../consts';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ScanPopup from '../components/ScanPopup.astro';
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+  /** Canonical path, e.g. "/about". Defaults to the current URL path. */
+  path?: string;
+  image?: string;
+  /** "website" (default) or "article" for blog posts. */
+  ogType?: 'website' | 'article';
+  /** Extra JSON-LD objects (e.g. Article, FAQPage) injected into <head>. */
+  schemas?: Record<string, unknown>[];
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = SITE.description,
+  path,
+  image = SITE.defaultOgImage,
+  ogType = 'website',
+  schemas = [],
+  noindex = false,
+} = Astro.props;
+
+const canonicalPath = path ?? Astro.url.pathname;
+const canonical = new URL(canonicalPath, SITE.url).href;
+const ogImage = new URL(image, SITE.url).href;
+const fullTitle = title === SITE.name ? SITE.title : `${title} | ${SITE.name}`;
+
+// Site-wide schema graph: Organization + LocalBusiness + WebSite.
+// These are the entity-clarity signals that answer engines (AEO) rely on.
+const baseSchemas: Record<string, unknown>[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${SITE.url}/#organization`,
+    name: SITE.legalName,
+    alternateName: SITE.name,
+    url: SITE.url,
+    description: SITE.description,
+    founder: { '@type': 'Person', name: BUSINESS.founder },
+    email: BUSINESS.email,
+    telephone: BUSINESS.phone,
+    areaServed: BUSINESS.areasServed,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ProfessionalService',
+    '@id': `${SITE.url}/#localbusiness`,
+    name: SITE.legalName,
+    image: ogImage,
+    url: SITE.url,
+    telephone: BUSINESS.phone,
+    email: BUSINESS.email,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: BUSINESS.city,
+      addressRegion: BUSINESS.region,
+      addressCountry: 'US',
+    },
+    areaServed: BUSINESS.areasServed.map((name) => ({ '@type': 'AdministrativeArea', name })),
+    priceRange: '$$',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE.url}/#website`,
+    url: SITE.url,
+    name: SITE.name,
+    publisher: { '@id': `${SITE.url}/#organization` },
+  },
+];
+
+const allSchemas = [...baseSchemas, ...schemas];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={SITE.locale} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.name} Blog`} href="/rss.xml" />
+
+    <!-- Structured data (JSON-LD) -->
+    {
+      allSchemas.map((s) => (
+        <script type="application/ld+json" set:html={JSON.stringify(s)} />
+      ))
+    }
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="bg-base"></div>
+      <div class="bg-grid"></div>
+      <img class="bg-logo" src="/images/bg-logo.png" alt="" />
+    </div>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <ScanPopup />
+  </body>
+</html>

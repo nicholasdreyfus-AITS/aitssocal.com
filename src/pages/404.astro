@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found" description="The page you were looking for could not be found." noindex>
+  <section class="section">
+    <div class="container prose" style="text-align:center">
+      <p class="section-label">404</p>
+      <h1>That page isn't here.</h1>
+      <p style="color:var(--muted)">The link may be old or the page may have moved.</p>
+      <a href="/" class="btn-primary">Back to home</a>
+    </div>
+  </section>
+</BaseLayout>

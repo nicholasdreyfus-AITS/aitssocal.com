@@ -1,0 +1,191 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE, BUSINESS } from '../../consts';
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { data } = post;
+const url = new URL(`/blog/${post.id}`, SITE.url).href;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+// Article schema — tells search + answer engines this is authored, dated content.
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: data.title,
+  description: data.description,
+  datePublished: data.pubDate.toISOString(),
+  dateModified: (data.updatedDate ?? data.pubDate).toISOString(),
+  author: { '@type': data.author === SITE.name ? 'Organization' : 'Person', name: data.author },
+  publisher: { '@id': `${SITE.url}/#organization` },
+  mainEntityOfPage: url,
+  ...(data.image ? { image: new URL(data.image, SITE.url).href } : {}),
+};
+
+// FAQPage schema — high-value for AEO; lets engines lift direct Q&A answers.
+const faqSchema =
+  data.faq && data.faq.length
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: data.faq.map((f) => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: { '@type': 'Answer', text: f.answer },
+        })),
+      }
+    : null;
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.url },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE.url}/blog` },
+    { '@type': 'ListItem', position: 3, name: data.title, item: url },
+  ],
+};
+
+const schemas = [articleSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  path={`/blog/${post.id}`}
+  ogType="article"
+  image={data.image ?? SITE.defaultOgImage}
+  schemas={schemas}
+>
+  <article class="section">
+    <div class="container prose">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a> <span aria-hidden="true">/</span>
+        <a href="/blog">Blog</a>
+      </nav>
+
+      <header class="post-head">
+        {data.tags.length > 0 && (
+          <div class="tags">{data.tags.map((t) => <span class="tag">{t}</span>)}</div>
+        )}
+        <h1>{data.title}</h1>
+        <p class="byline">
+          <time datetime={data.pubDate.toISOString()}>{fmt(data.pubDate)}</time>
+          <span aria-hidden="true">·</span> {data.author}
+          {data.updatedDate && <span class="updated"> · Updated {fmt(data.updatedDate)}</span>}
+        </p>
+      </header>
+
+      <div class="content">
+        <Content />
+      </div>
+
+      {
+        data.faq && data.faq.length > 0 && (
+          <section class="faq" aria-labelledby="faq-h">
+            <h2 id="faq-h">Frequently asked questions</h2>
+            {data.faq.map((f) => (
+              <details>
+                <summary>{f.question}</summary>
+                <p>{f.answer}</p>
+              </details>
+            ))}
+          </section>
+        )
+      }
+
+      <aside class="cta-block">
+        <p class="section-label">Next step</p>
+        <h2>See what AI should be doing in your business.</h2>
+        <p>
+          Get a free assessment from AITS. No pitch, no jargon — a real plan you can act on
+          immediately.
+        </p>
+        <a href="/contact" class="btn-primary">Get your free AI assessment</a>
+        <p class="muted">{BUSINESS.areasServed.join(' · ')}</p>
+      </aside>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .crumbs {
+    font-family: var(--jak);
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .crumbs a {
+    color: var(--muted);
+  }
+  .post-head {
+    margin-bottom: 32px;
+  }
+  .tags {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    margin-bottom: 14px;
+  }
+  .byline {
+    font-family: var(--jak);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .updated {
+    color: var(--accent);
+  }
+  .faq {
+    margin-top: 56px;
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+  }
+  .faq h2 {
+    margin-bottom: 16px;
+  }
+  .faq details {
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+  }
+  .faq summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .faq p {
+    color: var(--muted);
+    margin-top: 10px;
+  }
+  .cta-block {
+    margin-top: 56px;
+    background: linear-gradient(135deg, var(--bg2), transparent);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+  }
+  .cta-block h2 {
+    font-size: 1.5rem;
+    margin: 6px 0 12px;
+  }
+  .cta-block p {
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+  .cta-block .muted {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 14px 0 0;
+  }
+</style>

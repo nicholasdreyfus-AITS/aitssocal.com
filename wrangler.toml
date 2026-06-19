@@ -1,0 +1,5 @@
+# Cloudflare Pages project config for the AITS website.
+# `pages_build_output_dir` lets `wrangler pages deploy` find the build with no flags.
+name = "aits-website"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-06-18"

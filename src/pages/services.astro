@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+
+const services = [
+  {
+    h: 'AI assessment & roadmap',
+    p: 'We map where AI should be working in your business, score your exposure to shadow AI and compliance gaps, and hand you a prioritized plan you can act on immediately.',
+  },
+  {
+    h: 'Task automation',
+    p: 'We automate the work your team hates most first — the repetitive, manual tasks that drain hours every week — and prove the value before expanding.',
+  },
+  {
+    h: 'Technology modernization',
+    p: 'AI-first, with the infrastructure underneath it. We make sure the foundation your business runs on is reliable, secure, and ready to scale.',
+  },
+  {
+    h: 'Team enablement & adoption',
+    p: 'We train your people to work with AI confidently. Adoption is part of the engagement — not an afterthought you are left to manage alone.',
+  },
+  {
+    h: 'AI governance & risk',
+    p: 'AI usage policy, shadow-AI controls, and compliance alignment (HIPAA, CJIS, CMMC and more) so your team can move fast without creating exposure.',
+  },
+  {
+    h: 'Ongoing managed support',
+    p: 'Month-to-month, local, and responsive. We stay because the results justify it — not because you signed a contract that makes leaving painful.',
+  },
+];
+
+// ItemList of services strengthens topical clarity for search + answer engines.
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'AITS Services',
+  itemListElement: services.map((s, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: { '@type': 'Service', name: s.h, description: s.p, provider: { '@id': `${SITE.url}/#organization` } },
+  })),
+};
+---
+
+<BaseLayout
+  title="Services"
+  description="AI assessment, task automation, technology modernization, team enablement, AI governance, and managed support for small and mid-sized businesses."
+  path="/services"
+  schemas={[serviceSchema]}
+>
+  <section class="section">
+    <div class="container">
+      <p class="section-label">What we do</p>
+      <h1>Every industry has tasks AI should be doing.</h1>
+      <p class="lede prose">
+        We lead with the outcome your business needs and work backwards to the right solution. Most
+        vendors lead with tools — we lead with your problem.
+      </p>
+      <div class="grid">
+        {
+          services.map((s) => (
+            <div class="card">
+              <h2>{s.h}</h2>
+              <p>{s.p}</p>
+            </div>
+          ))
+        }
+      </div>
+      <div class="cta">
+        <a href="/contact" class="btn-primary">Get your free AI assessment</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .lede {
+    color: var(--muted);
+    font-size: 1.2rem;
+    margin: 16px 0 40px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .grid h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  .grid p {
+    color: var(--muted);
+  }
+  .cta {
+    margin-top: 40px;
+  }
+</style>

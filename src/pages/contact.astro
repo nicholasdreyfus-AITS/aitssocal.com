@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS } from '../consts';
+
+const contactSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Contact AITS',
+  description: 'Book a free AI assessment with AITS.',
+};
+---
+
+<BaseLayout
+  title="Contact"
+  description="Book a free AI assessment with AITS. No pitch, no jargon — a real plan you can act on immediately. Serving San Diego, Southern California, Arizona, and Nevada."
+  path="/contact"
+  schemas={[contactSchema]}
+>
+  <section class="section">
+    <div class="container prose">
+      <p class="section-label">Free assessment</p>
+      <h1>Answer a few questions and we'll make the 30 minutes count.</h1>
+      <p class="lede">No pitch. No jargon. A real plan you can act on immediately.</p>
+
+      <div class="contact-grid">
+        <a class="card contact-card" href={`tel:${BUSINESS.phone}`}>
+          <span class="label">Call</span>
+          <span class="value">{BUSINESS.phoneDisplay}</span>
+        </a>
+        <a class="card contact-card" href={`mailto:${BUSINESS.email}`}>
+          <span class="label">Email</span>
+          <span class="value">{BUSINESS.email}</span>
+        </a>
+        <div class="card contact-card">
+          <span class="label">Serving</span>
+          <span class="value">{BUSINESS.areasServed.join(' · ')}</span>
+        </div>
+      </div>
+
+      <!--
+        Booking: drop the Calendly inline embed or scan funnel here.
+        The original site used: https://calendly.com/nickdre/30min
+      -->
+      <div class="booking card">
+        <p class="section-label">Book your free 30-min review</p>
+        <p class="muted">
+          Calendly booking embed goes here (carried over from the current site). For now, call or
+          email above and we'll get you scheduled.
+        </p>
+        <a
+          href="https://calendly.com/nickdre/30min"
+          class="btn-primary"
+          target="_blank"
+          rel="noopener">Book 30 minutes</a
+        >
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  h1 {
+    font-size: clamp(1.9rem, 5vw, 2.8rem);
+    margin: 12px 0 12px;
+  }
+  .lede {
+    color: var(--muted);
+    font-size: 1.2rem;
+    margin-bottom: 36px;
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .contact-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: inherit;
+  }
+  .contact-card:hover {
+    border-color: var(--accent);
+    text-decoration: none;
+  }
+  .label {
+    font-family: var(--jak);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .value {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .booking .muted {
+    color: var(--muted);
+    margin: 8px 0 18px;
+  }
+</style>

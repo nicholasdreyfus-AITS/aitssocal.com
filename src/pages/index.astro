@@ -1,0 +1,785 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const results = [
+  {
+    icon: '📞',
+    tag: 'AI Receptionist',
+    hl: true,
+    title: 'A local SD business never misses a lead again',
+    desc: 'Their AI receptionist answers every call, qualifies the caller, captures key information, and schedules the right next step — 24 hours a day, without a single staff member involved.',
+    big: '24/7',
+    lbl: 'coverage with zero added headcount',
+  },
+  {
+    icon: '📅',
+    tag: 'Appointment automation',
+    title: "Scheduling removed from the team's plate entirely",
+    desc: 'Scheduling, confirmation, reminders, and pre-meeting information gathering all automated. Staff stopped doing this manually within the first 30 days of deployment.',
+    big: '<30',
+    lbl: 'days from kickoff to live automation',
+  },
+  {
+    icon: '📱',
+    tag: 'Social media',
+    title: 'Consistent brand presence without a marketing hire',
+    desc: 'Content creation, scheduling, and brand awareness running on autopilot. The business shows up professionally online every week without anyone on staff spending time on it.',
+    big: '0hrs',
+    lbl: 'of staff time per week on social content',
+  },
+  {
+    icon: '📋',
+    tag: 'Meeting prep',
+    title: 'Every meeting starts with the right information already gathered',
+    desc: 'AI handles pre-meeting intake, collects needed documents and context, and delivers a clean brief before the meeting starts. No more back-and-forth emails chasing information.',
+    big: '100%',
+    lbl: 'of meetings arrive with full context ready',
+  },
+];
+
+const steps = [
+  { n: '01', h: 'We ask your team what they hate doing', p: 'Not what you want automated — what they want automated. Those become our first targets.' },
+  { n: '02', h: 'We deliver a visible win in the first 30 days', p: 'One meaningful automation, live and working, fast enough that the whole team sees the value before skepticism has time to set in.' },
+  { n: '03', h: 'We train your team to work with AI, not around it', p: 'Your people learn to use these tools with confidence. They stop feeling like bystanders and start feeling like they have a superpower at work.' },
+  { n: '04', h: 'We scale with a team that is now pulling for it', p: 'Phase two goes faster because your team is requesting new automations, not resisting them.' },
+];
+
+const services = [
+  { icon: '🤖', feat: true, title: 'AI Integration & Deployment', desc: 'We identify, build, and deploy the highest-leverage AI automations for your workflows. Receptionists, scheduling, content, intake, reporting and more — all with measurable outcomes attached.', tags: ['Workflow automation', 'AI receptionist', 'Custom tools'] },
+  { icon: '🗺️', title: 'AI Strategy & Roadmap', desc: 'A structured assessment of your operation that identifies your top AI opportunities, estimates ROI for each, and gives you a phased deployment plan. Starts free.', tags: ['Free to start', 'ROI-backed plan'] },
+  { icon: '📢', title: 'AI Marketing & Brand Automation', desc: 'Social media content, brand awareness campaigns, and lead nurturing on autopilot. Professional presence without a full-time marketing hire.', tags: ['Social media', 'Content creation', 'Brand awareness'] },
+  { icon: '🖥️', teal: true, title: 'Managed IT Infrastructure', desc: 'Computers, servers, networks, and security — the foundation your AI tools run on. Month-to-month, local support when you need a human on-site.', tags: ['Computers', 'Servers', 'Security'] },
+];
+
+const process = [
+  { n: '01', h: 'Free AI assessment', p: '30 minutes. We map your workflows, understand where time is being lost, and listen to what your team wants off their plate.', badge: 'Free, no obligation' },
+  { n: '02', h: 'Opportunity report', p: 'You receive a prioritized list of AI opportunities ranked by ROI, with clear investment and outcome projections for each one.' },
+  { n: '03', h: 'First automation live', p: 'We deploy your highest-value automation first, with a goal to have it live and delivering results inside the first 30 days.' },
+  { n: '04', h: 'Scale with your team', p: 'With an early win behind us and your team on board, we expand into the next opportunities — faster, because momentum is on your side.' },
+];
+
+const team = [
+  { img: '/images/gavin.jpg', pos: 'center 28%', role: 'Founder & Principal', roleClass: 'ceo', name: 'Gavin Dreyfus', title: 'Founder & Principal', bio: "Gavin founded AITS with a clear conviction: AI should be accessible to every small business, not just enterprise companies with dedicated IT departments. As Founder and Principal, he leads day-to-day client strategy and operations, deploying AI quickly and practically for SMB owners who need results, not roadmaps." },
+  { img: '/images/nick.jpg', pos: 'center 20%', role: 'Co-Founder & Board Member', roleClass: 'board', name: 'Nick Dreyfus', title: 'Co-Founder, Board Member & VP of Business Development, i-NETT', bio: 'Nick brings over twelve years as a systems administrator and a decade of consulting and network architecture experience to the AITS board. As VP of Business Development at i-NETT, he approaches every client relationship from a position of technical authority — educating and strategizing the way an in-house CTO would.', linkedin: 'https://www.linkedin.com/in/nicholas-dreyfus/' },
+  { img: '/images/dale.png', pos: 'center 15%', role: 'Board Member', roleClass: 'board', name: 'Dale Stein', title: 'Board Member • CEO, LensLock • CEO, Technology Assurance Group • Partner, i-NETT', bio: 'Dale Stein is one of the most recognized names in managed technology services in North America. As CEO of LensLock and TAG, and Partner at i-NETT, he leads organizations representing over $1 billion in combined annual products and services.', linkedin: 'https://www.linkedin.com/in/steindale/' },
+];
+---
+
+<BaseLayout title="AITS" path="/">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge"><span class="badge-dot"></span>San Diego SMB specialists</div>
+    <h1>AI that works for your business,<br /><em>not just tech teams</em></h1>
+    <div class="hero-divider"></div>
+    <p class="hero-sub">
+      We help small and mid-sized businesses deploy AI and modernize their technology so they
+      compete with companies five times their size.
+    </p>
+    <p class="hero-name">San Diego • Southern California • Arizona • Nevada</p>
+    <div class="hero-actions">
+      <a href="/contact" class="btn-primary">Get your free AI assessment</a>
+      <a href="#results" class="btn-ghost">See real results</a>
+    </div>
+  </section>
+
+  <!-- PROOF BAR -->
+  <div class="proof-bar">
+    <div class="container proof-inner">
+      <div class="proof-item"><span class="proof-dot"></span>AI receptionists deployed for local SD businesses</div>
+      <div class="proof-item"><span class="proof-dot"></span>Appointment automation live in under 30 days</div>
+      <div class="proof-item"><span class="proof-dot"></span>Social media and brand content on autopilot</div>
+      <div class="proof-item"><span class="proof-dot"></span>No long-term contracts, ever</div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <section class="section" id="results">
+    <div class="container">
+      <span class="section-label">Real outcomes, San Diego businesses</span>
+      <h2 class="section-heading">We do not run pilots. We deliver results.</h2>
+      <p class="section-sub">Every engagement starts with an early win your entire team can see and feel.</p>
+      <div class="grid-auto">
+        {
+          results.map((r) => (
+            <div class:list={['card', { hl: r.hl }]}>
+              <span class="result-icon">{r.icon}</span>
+              <span class:list={['rtag', { p: r.hl }]}>{r.tag}</span>
+              <div class="result-title">{r.title}</div>
+              <p class="result-desc">{r.desc}</p>
+              <div class="rstat"><span class="big">{r.big}</span><span class="lbl">{r.lbl}</span></div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- THE HONEST CONVERSATION -->
+  <div class="section band">
+    <div class="container trust-layout">
+      <div>
+        <span class="section-label">The honest conversation</span>
+        <h2 class="trust-headline">AI does not replace<br /><em>your people.</em><br />It replaces their worst tasks.</h2>
+        <p class="trust-body">
+          The number one reason AI deployments fail at small businesses has nothing to do with the
+          technology. It is that the team never bought in. Employees hear "AI" and quietly worry
+          about their jobs. That resistance kills adoption before it starts.
+        </p>
+        <p class="trust-body">
+          Our entire deployment model is built around this reality. We start with the tasks your
+          team hates most, automate those first, and make sure every person sees the benefit to them
+          personally before we touch anything else.
+        </p>
+        <blockquote class="trust-quote">
+          "The first thing we automated was appointment scheduling. Within two weeks, three
+          employees told me it was the best thing that had happened at work in years. That momentum
+          changed everything."
+          <cite>— Business owner, San Diego (identity withheld at client request)</cite>
+        </blockquote>
+      </div>
+      <div>
+        <span class="section-label">How we bring your team along</span>
+        <div class="trust-steps">
+          {
+            steps.map((s) => (
+              <div class="trust-step">
+                <div class="ts-num">{s.n}</div>
+                <div><h4>{s.h}</h4><p>{s.p}</p></div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- SERVICES -->
+  <section class="section" id="services">
+    <div class="container">
+      <span class="section-label">What we deploy</span>
+      <h2 class="section-heading">AI-first. Infrastructure underneath it.</h2>
+      <p class="section-sub">We lead with the outcomes your business needs and make sure the technology foundation supports them reliably.</p>
+      <div class="grid-auto">
+        {
+          services.map((s) => (
+            <div class:list={['card', 'service-card', { feat: s.feat }]}>
+              {s.feat && <span class="feat-badge">Core</span>}
+              <div class:list={['sicon', { teal: s.teal }]}>{s.icon}</div>
+              <div class="service-title">{s.title}</div>
+              <p class="result-desc">{s.desc}</p>
+              <div>{s.tags.map((t) => <span class:list={['tag', { t: s.teal }]}>{t}</span>)}</div>
+            </div>
+          ))
+        }
+      </div>
+      <div class="more"><a href="/services" class="btn-ghost">Explore all services</a></div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- PROCESS -->
+  <section class="section">
+    <div class="container">
+      <span class="section-label">The process</span>
+      <h2 class="section-heading">From assessment to live automation in weeks, not months</h2>
+      <p class="section-sub">Built to move at the speed of a real business, with a first win your team sees before you have spent significant time or budget.</p>
+      <div class="how-grid">
+        {
+          process.map((s) => (
+            <div class="how-step">
+              <div class="step-num">{s.n}</div>
+              <div class="step-title">{s.h}</div>
+              <p class="step-desc">{s.p}</p>
+              {s.badge && <span class="step-badge">{s.badge}</span>}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- TEAM -->
+  <section class="section" id="team">
+    <div class="container">
+      <div class="team-intro">
+        <span class="section-label">The people behind AITS</span>
+        <h2 class="section-heading">Built by a next-generation founder. Backed by decades of real-world results.</h2>
+        <p class="section-sub">
+          Gavin Dreyfus launched AITS with the vision and energy of a builder who grew up inside the
+          technology industry. Behind him stands a board with over 80 combined years of managed
+          services, AI deployment, and business leadership across North America.
+        </p>
+      </div>
+      <div class="team-grid">
+        {
+          team.map((m) => (
+            <div class:list={['team-card', { ceo: m.roleClass === 'ceo' }]}>
+              <div class="team-photo-wrap">
+                <img src={m.img} alt={`${m.name}, ${m.role}`} style={`object-position:${m.pos}`} loading="lazy" />
+                <div class="team-photo-overlay" />
+              </div>
+              <div class="team-info">
+                <span class:list={['team-role-badge', `role-${m.roleClass}`]}>{m.role}</span>
+                <div class="team-name">{m.name}</div>
+                <div class="team-title">{m.title}</div>
+                <p class="team-bio">{m.bio}</p>
+                {m.linkedin && (
+                  <a href={m.linkedin} target="_blank" rel="noopener" class="team-linkedin">Connect on LinkedIn →</a>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <div class="board-note">
+        <strong>A note on Gavin's backing:</strong> Nick Dreyfus and Dale Stein are not passive
+        advisors — they are active operators with decades of proven results serving the same market
+        AITS is built to serve. When you work with Gavin, you are working with a team whose combined
+        expertise spans managed services, AI deployment, cybersecurity, national technology
+        partnerships, and over 40 years of SMB business leadership.
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-glow"></div>
+    <span class="section-label" style="text-align:center">Free AI assessment</span>
+    <h2 class="cta-h2">AI that works for your business,<br /><em>not just tech teams</em></h2>
+    <div class="hero-divider" style="margin-inline:auto"></div>
+    <p class="cta-sub">
+      We help small and mid-sized businesses deploy AI and modernize their technology so they
+      compete with companies five times their size. Answer a few questions and we will make the 30
+      minutes count.
+    </p>
+    <div class="hero-actions" style="justify-content:center">
+      <a href="/contact" class="btn-primary">Get your free AI assessment</a>
+      <a href="#results" class="btn-ghost">See real results first</a>
+    </div>
+    <p class="cta-fine">No pitch. No jargon. A real plan you can act on immediately.</p>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .hero {
+    min-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 140px 5vw 90px;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(59, 110, 240, 0.12);
+    border: 0.5px solid rgba(59, 110, 240, 0.32);
+    border-radius: 100px;
+    padding: 7px 16px;
+    font-size: 12px;
+    color: var(--accent3);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--teal);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--teal);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+  .hero h1 {
+    font-family: var(--fran);
+    font-size: clamp(38px, 5.5vw, 68px);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    max-width: 860px;
+    margin-bottom: 10px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+  .hero-divider {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--teal));
+    border-radius: 2px;
+    margin: 20px 0 26px;
+  }
+  .hero-sub {
+    font-size: clamp(16px, 1.8vw, 20px);
+    color: var(--text2);
+    max-width: 620px;
+    margin-bottom: 14px;
+  }
+  .hero-name {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 44px;
+    font-weight: 500;
+  }
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Proof bar */
+  .proof-bar {
+    border-block: 0.5px solid var(--border2);
+    background: rgba(7, 9, 15, 0.75);
+    backdrop-filter: blur(12px);
+  }
+  .proof-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 44px;
+    flex-wrap: wrap;
+    padding-block: 20px;
+  }
+  .proof-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .proof-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 6px var(--teal);
+  }
+
+  .band {
+    background: rgba(12, 15, 26, 0.85);
+    backdrop-filter: blur(10px);
+    border-block: 0.5px solid var(--border2);
+  }
+
+  .grid-auto {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 16px;
+  }
+  .more {
+    margin-top: 28px;
+  }
+
+  /* Result cards */
+  .card.hl {
+    border-color: rgba(59, 110, 240, 0.4);
+    box-shadow: 0 0 32px rgba(59, 110, 240, 0.08);
+  }
+  .result-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .rtag {
+    display: inline-block;
+    background: var(--tdim);
+    border: 0.5px solid rgba(0, 201, 167, 0.25);
+    color: var(--teal2);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 100px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .rtag.p {
+    background: var(--aglow);
+    border-color: rgba(59, 110, 240, 0.3);
+    color: var(--accent3);
+  }
+  .result-title {
+    font-family: var(--fran);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .result-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .rstat {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .rstat .big {
+    font-family: var(--fran);
+    font-size: 34px;
+    font-weight: 600;
+    color: var(--accent2);
+  }
+  .rstat .lbl {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* Trust layout */
+  .trust-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 72px;
+    align-items: start;
+  }
+  .trust-headline {
+    font-family: var(--fran);
+    font-size: clamp(26px, 3.2vw, 42px);
+    font-weight: 600;
+    line-height: 1.18;
+    margin-bottom: 20px;
+  }
+  .trust-headline em {
+    font-style: italic;
+    color: var(--teal2);
+  }
+  .trust-body {
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 22px;
+  }
+  .trust-quote {
+    border-left: 3px solid var(--accent);
+    padding: 18px 22px;
+    background: rgba(59, 110, 240, 0.06);
+    border-radius: 0 12px 12px 0;
+    font-family: var(--fran);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--text2);
+    line-height: 1.65;
+  }
+  .trust-quote cite {
+    display: block;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    font-style: normal;
+    font-family: var(--jak);
+  }
+  .trust-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .trust-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .ts-num {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--aglow);
+    border: 0.5px solid rgba(59, 110, 240, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+  .trust-step h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 5px;
+  }
+  .trust-step p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* Services */
+  .service-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .service-card.feat {
+    border-color: rgba(59, 110, 240, 0.4);
+  }
+  .feat-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 4px 11px;
+    border-radius: 100px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .sicon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--aglow);
+    border: 0.5px solid rgba(59, 110, 240, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+  .sicon.teal {
+    background: var(--tdim);
+    border-color: rgba(0, 201, 167, 0.25);
+  }
+  .service-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+
+  /* Process */
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 36px;
+  }
+  .step-num {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--aglow);
+    border: 0.5px solid rgba(59, 110, 240, 0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 16px;
+  }
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .step-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .step-badge {
+    display: inline-block;
+    margin-top: 12px;
+    background: var(--tdim);
+    border: 0.5px solid rgba(0, 201, 167, 0.22);
+    color: var(--teal2);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 100px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* Team */
+  .team-intro {
+    max-width: 760px;
+    margin-bottom: 48px;
+  }
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .team-card {
+    background: rgba(12, 15, 26, 0.85);
+    backdrop-filter: blur(10px);
+    border: 0.5px solid var(--border2);
+    border-radius: 18px;
+    overflow: hidden;
+    transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  }
+  .team-card:hover {
+    border-color: var(--border3);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  }
+  .team-card.ceo {
+    border-color: rgba(59, 110, 240, 0.38);
+    box-shadow: 0 0 32px rgba(59, 110, 240, 0.08);
+  }
+  .team-photo-wrap {
+    position: relative;
+    height: 360px;
+    overflow: hidden;
+    background: var(--bg3);
+  }
+  .team-photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .team-photo-overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 60px;
+    background: linear-gradient(transparent, rgba(12, 15, 26, 0.9));
+  }
+  .team-info {
+    padding: 26px;
+  }
+  .team-role-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 12px;
+  }
+  .role-ceo {
+    background: var(--aglow);
+    border: 0.5px solid rgba(59, 110, 240, 0.3);
+    color: var(--accent3);
+  }
+  .role-board {
+    background: var(--tdim);
+    border: 0.5px solid rgba(0, 201, 167, 0.22);
+    color: var(--teal2);
+  }
+  .team-name {
+    font-family: var(--fran);
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .team-title {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .team-bio {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 18px;
+  }
+  .team-linkedin {
+    font-size: 13px;
+    color: var(--accent2);
+    font-weight: 600;
+  }
+  .board-note {
+    background: rgba(12, 15, 26, 0.85);
+    backdrop-filter: blur(8px);
+    border: 0.5px solid var(--border2);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 14px 14px 0;
+    padding: 24px 28px;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 880px;
+  }
+  .board-note strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* CTA */
+  .cta-section {
+    background: rgba(7, 9, 15, 0.75);
+    backdrop-filter: blur(16px);
+    border-top: 0.5px solid var(--border2);
+    padding: 104px 5vw;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-glow {
+    position: absolute;
+    width: 600px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 110, 240, 0.12) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .cta-section > * {
+    position: relative;
+  }
+  .cta-h2 {
+    font-family: var(--fran);
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 600;
+    color: var(--text);
+    max-width: 720px;
+    margin: 0 auto 12px;
+    line-height: 1.15;
+  }
+  .cta-h2 em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+  .cta-sub {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto 40px;
+  }
+  .cta-fine {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 18px;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 768px) {
+    .trust-layout {
+      grid-template-columns: 1fr;
+      gap: 44px;
+    }
+    .proof-inner {
+      gap: 20px;
+    }
+  }
+</style>

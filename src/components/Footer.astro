@@ -1,0 +1,83 @@
+---
+import { SITE, BUSINESS, NAV } from '../consts';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container inner">
+    <div class="footer-brand">
+      <img class="footer-logo" src="/images/logo.png" alt="AITS" width="38" height="38" />
+      <div>
+        <div class="footer-name">{SITE.name}</div>
+        <div class="footer-tagline">{SITE.legalName} — {BUSINESS.city}, {BUSINESS.region}</div>
+      </div>
+    </div>
+    <ul class="footer-links">
+      {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      <li><a href={`tel:${BUSINESS.phone}`}>{BUSINESS.phoneDisplay}</a></li>
+    </ul>
+  </div>
+  <div class="container legal">
+    <span>© {year} {SITE.legalName}. All rights reserved.</span>
+    <span>{BUSINESS.areasServed.join(' · ')}</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 0.5px solid var(--border2);
+    background: rgba(7, 9, 15, 0.9);
+    margin-top: 32px;
+  }
+  .inner {
+    padding-block: 48px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .footer-logo {
+    height: 38px;
+    width: auto;
+  }
+  .footer-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .footer-tagline {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .footer-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+    flex-wrap: wrap;
+  }
+  .footer-links a {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .footer-links a:hover {
+    color: var(--text);
+  }
+  .legal {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-block: 20px 40px;
+    border-top: 0.5px solid var(--border);
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+</style>
