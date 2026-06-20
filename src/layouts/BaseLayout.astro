@@ -44,10 +44,20 @@ const baseSchemas: Record<string, unknown>[] = [
     alternateName: SITE.name,
     url: SITE.url,
     description: SITE.description,
+    slogan: SITE.tagline,
     founder: { '@type': 'Person', name: BUSINESS.founder },
     email: BUSINESS.email,
     telephone: BUSINESS.phone,
     areaServed: BUSINESS.areasServed,
+    knowsAbout: [
+      'Artificial intelligence deployment',
+      'AI workflow automation',
+      'Shadow AI risk and governance',
+      'AI strategy and roadmap',
+      'Managed IT services',
+      'Cybersecurity for small business',
+      'Technology modernization for small and mid-sized businesses',
+    ],
   },
   {
     '@context': 'https://schema.org',
@@ -86,6 +96,12 @@ const allSchemas = [...baseSchemas, ...schemas];
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#07090f" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

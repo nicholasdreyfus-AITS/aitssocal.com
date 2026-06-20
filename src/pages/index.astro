@@ -1,5 +1,43 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS } from '../consts';
+
+const faqs = [
+  {
+    q: 'How much does it cost for a small business to deploy AI?',
+    a: 'It starts with a free 30-minute AI assessment and an ROI-ranked plan, so you see the value before spending. Engagements are month-to-month with no lock-in — you stay because the results justify it, not because of a contract.',
+  },
+  {
+    q: 'How long until we see results from AI?',
+    a: 'Our model is built around a visible win in the first 30 days. We deploy your highest-value automation first — often something like an AI receptionist, scheduling, or meeting prep — so the whole team feels the benefit fast.',
+  },
+  {
+    q: 'Will AI replace my employees?',
+    a: 'No. AI does not replace your people — it replaces their worst tasks. We automate the repetitive grunt work your team hates so your experts can focus on the high-value work they were actually hired to do.',
+  },
+  {
+    q: 'Is it safe to use AI with our business data?',
+    a: 'Only if it is deployed correctly. We set up a secure, governed AI environment with clear policy, access controls, and monitoring — so your team gets the productivity gains without leaking client data, financials, or IP into public tools.',
+  },
+  {
+    q: 'Do we need a big IT team or budget to start?',
+    a: 'No. AITS is built specifically for small and mid-sized businesses without a dedicated IT department. We handle the strategy, deployment, and team training, and it starts with a free assessment.',
+  },
+  {
+    q: 'What areas does AITS serve?',
+    a: `AITS serves ${BUSINESS.areasServed.join(', ')}. We are local to San Diego — in your market, part of your business community, and able to be on-site when something needs a human.`,
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
 
 const results = [
   {
@@ -65,7 +103,7 @@ const team = [
 ];
 ---
 
-<BaseLayout title="AITS" path="/">
+<BaseLayout title="AITS" path="/" schemas={[faqSchema]}>
   <!-- HERO -->
   <section class="hero">
     <div class="hero-badge"><span class="badge-dot"></span>San Diego SMB specialists</div>
@@ -244,6 +282,26 @@ const team = [
         AITS is built to serve. When you work with Gavin, you are working with a team whose combined
         expertise spans managed services, AI deployment, cybersecurity, national technology
         partnerships, and over 40 years of SMB business leadership.
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="container">
+      <span class="section-label">Common questions</span>
+      <h2 class="section-heading">AI for your business, answered plainly</h2>
+      <div class="faq-list">
+        {
+          faqs.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))
+        }
       </div>
     </div>
   </section>
@@ -771,6 +829,48 @@ const team = [
     color: var(--muted);
     margin-top: 18px;
     letter-spacing: 0.02em;
+  }
+
+  /* FAQ */
+  .faq-list {
+    max-width: 820px;
+    margin-top: 8px;
+  }
+  .faq-item {
+    border-bottom: 0.5px solid var(--border2);
+    padding: 18px 0;
+  }
+  .faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--jak);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-item summary::after {
+    content: '+';
+    color: var(--accent2);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .faq-item[open] summary::after {
+    content: '−';
+  }
+  .faq-item p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-top: 12px;
+    max-width: 720px;
   }
 
   @media (max-width: 768px) {

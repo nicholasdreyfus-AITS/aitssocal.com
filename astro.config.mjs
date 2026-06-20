@@ -7,7 +7,22 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://aits.llc',
   trailingSlash: 'never',
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      changefreq: 'weekly',
+      lastmod: new Date(),
+      serialize(item) {
+        if (item.url === 'https://aits.llc/') {
+          item.priority = 1.0;
+        } else if (item.url.includes('/blog/') && item.url !== 'https://aits.llc/blog') {
+          item.priority = 0.7;
+        } else {
+          item.priority = 0.8;
+        }
+        return item;
+      },
+    }),
+  ],
   build: {
     inlineStylesheets: 'auto',
   },
