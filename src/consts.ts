@@ -9,7 +9,7 @@ export const SITE = {
   title: 'AITS — AI for Small & Mid-Sized Business',
   tagline: 'AI that works for your business, not just tech teams.',
   description:
-    'AITS helps small and mid-sized businesses deploy AI and modernize their technology so they compete with companies five times their size. Serving San Diego, Southern California, Arizona, and Nevada.',
+    'AITS gives small and mid-sized businesses every tool they need to grow — CRM, marketing automation, AI receptionist, booking, reviews, and reporting — managed for one flat monthly fee. Headquartered in San Diego, serving businesses nationwide.',
   // Default social share image (place a 1200x630 PNG at /public/og-default.png).
   defaultOgImage: '/og-default.png',
   locale: 'en_US',
@@ -21,7 +21,8 @@ export const BUSINESS = {
   email: 'gavin@aits.llc',
   founder: 'Gavin Dreyfus',
   // Geographic service area (used in LocalBusiness schema + copy).
-  areasServed: ['San Diego', 'Southern California', 'Arizona', 'Nevada'],
+  // HQ is San Diego; service area is nationwide (per Nick, 2026-06-30).
+  areasServed: ['San Diego', 'Southern California', 'United States'],
   region: 'CA',
   city: 'San Diego',
   // Add street address + lat/long when available to strengthen local SEO.

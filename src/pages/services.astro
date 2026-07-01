@@ -4,6 +4,10 @@ import { SITE } from '../consts';
 
 const services = [
   {
+    h: 'All-in-one growth platform, managed',
+    p: 'CRM and sales pipeline, email and SMS marketing, AI receptionist, appointment booking, review management, missed-call text-back, websites and funnels, and reporting — delivered as one managed platform for one flat monthly fee, with the engineering time to run it included. We build it, test it regularly, monitor uptime, and jump on issues so you never manage a pile of subscriptions again.',
+  },
+  {
     h: 'AI assessment & roadmap',
     p: 'We map where AI should be working in your business, score your exposure to shadow AI and compliance gaps, and hand you a prioritized plan you can act on immediately.',
   },
@@ -25,7 +29,7 @@ const services = [
   },
   {
     h: 'Ongoing managed support',
-    p: 'Month-to-month, local, and responsive. We stay because the results justify it — not because you signed a contract that makes leaving painful.',
+    p: 'Month-to-month and responsive. Every automation we deploy is tested on a regular schedule and monitored for uptime, and when something needs attention our engineers are on it — you are never left running the tools alone. We stay because the results justify it, not because you signed a contract that makes leaving painful.',
   },
 ];
 
@@ -44,7 +48,7 @@ const serviceSchema = {
 
 <BaseLayout
   title="Services"
-  description="AI assessment, task automation, technology modernization, team enablement, AI governance, and managed support for small and mid-sized businesses."
+  description="An all-in-one managed growth platform for one flat monthly fee — plus AI assessment, task automation, technology modernization, team enablement, AI governance, and managed support for small and mid-sized businesses."
   path="/services"
   schemas={[serviceSchema]}
 >
@@ -54,7 +58,9 @@ const serviceSchema = {
       <h1>Every industry has tasks AI should be doing.</h1>
       <p class="lede prose">
         We lead with the outcome your business needs and work backwards to the right solution. Most
-        vendors lead with tools — we lead with your problem.
+        vendors lead with tools — we lead with your problem. And instead of selling you a stack of
+        separate subscriptions, one flat monthly fee covers the platform <em>and</em> the people
+        who keep it working.
       </p>
       <div class="grid">
         {

@@ -1,0 +1,67 @@
+---
+// Newsletter capture block, shown on the blog index and under every post.
+//
+// TODO: Replace CRM_FORM_EMBED_SRC with the real form embed URL from our
+// CRM once the newsletter form is built (see docs/crm-integration.md for
+// step-by-step). Until then this renders a mailto subscribe link so the
+// block is never a dead form.
+const CRM_FORM_EMBED_SRC = 'CRM_NEWSLETTER_FORM_EMBED_SRC_HERE';
+const isConnected = !CRM_FORM_EMBED_SRC.includes('_HERE');
+
+const mailto =
+  'mailto:gavin@aits.llc?subject=Subscribe%20me%20to%20the%20AITS%20newsletter&body=Please%20add%20me%20to%20the%20newsletter%20list.';
+---
+
+<aside class="newsletter" aria-labelledby="nl-h">
+  <p class="section-label">The newsletter</p>
+  <h2 id="nl-h">Practical AI guidance, in your inbox.</h2>
+  <p class="nl-sub">
+    The same clear, no-jargon insights from this blog — delivered when we publish. Written for
+    the people who run the business, not the people who run the servers.
+  </p>
+
+  {
+    isConnected ? (
+      <iframe
+        src={CRM_FORM_EMBED_SRC}
+        title="Subscribe to the AITS newsletter"
+        loading="lazy"
+        class="nl-frame"
+      />
+    ) : (
+      <a href={mailto} class="btn-primary">Subscribe by email</a>
+    )
+  }
+  <p class="nl-fine">No spam. No selling your address. Unsubscribe anytime.</p>
+</aside>
+
+<style>
+  .newsletter {
+    margin-top: 56px;
+    background: rgba(59, 110, 240, 0.06);
+    border: 0.5px solid rgba(59, 110, 240, 0.28);
+    border-radius: 16px;
+    padding: 32px;
+  }
+  .newsletter h2 {
+    font-size: 1.5rem;
+    margin: 6px 0 12px;
+  }
+  .nl-sub {
+    color: var(--muted);
+    margin-bottom: 20px;
+    max-width: 560px;
+  }
+  .nl-frame {
+    width: 100%;
+    min-height: 320px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+  }
+  .nl-fine {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 14px;
+  }
+</style>

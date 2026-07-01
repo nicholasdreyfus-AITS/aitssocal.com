@@ -1,11 +1,48 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { BUSINESS } from '../consts';
+
+const platform = [
+  { icon: '📇', title: 'CRM & sales pipeline', desc: 'Every lead, call, and conversation tracked in one place — nothing falls through the cracks.' },
+  { icon: '✉️', title: 'Email & SMS marketing', desc: 'Campaigns, follow-ups, and nurture sequences that run themselves.' },
+  { icon: '📞', title: 'AI receptionist & chat', desc: 'Every call and website visitor answered, qualified, and scheduled — 24/7.' },
+  { icon: '📅', title: 'Booking & reminders', desc: 'Appointments scheduled, confirmed, and followed up without staff time.' },
+  { icon: '⭐', title: 'Reviews & reputation', desc: 'Review requests and responses handled, so your rating reflects your actual work.' },
+  { icon: '💬', title: 'Missed-call text-back', desc: 'A missed call becomes an instant text conversation instead of a lost lead.' },
+  { icon: '🌐', title: 'Websites, funnels & landing pages', desc: 'Built, hosted, and maintained by us — not another login you have to babysit.' },
+  { icon: '📊', title: 'Reporting dashboard', desc: 'One view of your leads, revenue, and what is actually working.' },
+];
+
+const promises = [
+  {
+    h: 'We build it and run it',
+    p: 'Your fee includes engineering time every single month. We are not a vendor who hands you software and disappears — we are the team operating it alongside you.',
+  },
+  {
+    h: 'We test it regularly',
+    p: 'Every automation we deploy is checked on a schedule, and uptime is monitored continuously. You find out something needed attention after we have already handled it.',
+  },
+  {
+    h: 'We jump on issues',
+    p: 'When something breaks, you are not opening a ticket into the void. You have a partner who picks up, diagnoses, and fixes — because reliability is what you are paying for.',
+  },
+];
 
 const faqs = [
   {
     q: 'How much does it cost for a small business to deploy AI?',
-    a: 'It starts with a free 30-minute AI assessment and an ROI-ranked plan, so you see the value before spending. Engagements are month-to-month with no lock-in — you stay because the results justify it, not because of a contract.',
+    a: 'One flat monthly fee covers the entire platform — CRM, marketing automation, AI receptionist, booking, reviews, funnels, and reporting — plus the engineering time to run it. It starts with a free 30-minute assessment so you see the value before spending, and engagements are month-to-month with no lock-in.',
+  },
+  {
+    q: 'What is included in the one monthly fee?',
+    a: 'Everything: the full platform (CRM and pipeline, email and SMS marketing, AI receptionist and chat, appointment booking, review management, missed-call text-back, websites and funnels, reporting), plus a dedicated engineering team that builds your automations, tests them on a regular schedule, monitors uptime, and jumps on issues the moment something breaks. You are not buying tools — you are gaining a partner.',
+  },
+  {
+    q: 'Why is one fee with AITS less expensive than buying the tools myself?',
+    a: 'AITS partners directly with enterprise-grade technology providers at a scale no single small business could reach. Those partnerships come with considerable discounts, and we pass them through — which is why one competitive monthly fee covers the entire platform and the engineering time to keep it working, usually for less than the pile of separate subscriptions it replaces.',
+  },
+  {
+    q: 'Who manages the tools after they are set up?',
+    a: 'We do — that is the point. Most businesses buy software and become their own unpaid IT department. With AITS, your automations are tested regularly, uptime is monitored, and when anything needs attention our engineers handle it. You run your business; we run the technology.',
   },
   {
     q: 'How long until we see results from AI?',
@@ -25,7 +62,7 @@ const faqs = [
   },
   {
     q: 'What areas does AITS serve?',
-    a: `AITS serves ${BUSINESS.areasServed.join(', ')}. We are local to San Diego — in your market, part of your business community, and able to be on-site when something needs a human.`,
+    a: 'AITS is headquartered in San Diego and serves businesses across the entire United States. We are local to Southern California when something needs a human on-site, and remote-first everywhere else — most of what we deploy and manage runs the same no matter where your business operates.',
   },
 ];
 
@@ -106,14 +143,14 @@ const team = [
 <BaseLayout title="AITS" path="/" schemas={[faqSchema]}>
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-badge"><span class="badge-dot"></span>San Diego SMB specialists</div>
+    <div class="hero-badge"><span class="badge-dot"></span>SMB AI &amp; technology partners</div>
     <h1>AI that works for your business,<br /><em>not just tech teams</em></h1>
     <div class="hero-divider"></div>
     <p class="hero-sub">
       We help small and mid-sized businesses deploy AI and modernize their technology so they
       compete with companies five times their size.
     </p>
-    <p class="hero-name">San Diego • Southern California • Arizona • Nevada</p>
+    <p class="hero-name">Headquartered in San Diego • Serving businesses nationwide</p>
     <div class="hero-actions">
       <a href="/contact" class="btn-primary">Get your free AI assessment</a>
       <a href="#results" class="btn-ghost">See real results</a>
@@ -123,12 +160,65 @@ const team = [
   <!-- PROOF BAR -->
   <div class="proof-bar">
     <div class="container proof-inner">
-      <div class="proof-item"><span class="proof-dot"></span>AI receptionists deployed for local SD businesses</div>
-      <div class="proof-item"><span class="proof-dot"></span>Appointment automation live in under 30 days</div>
-      <div class="proof-item"><span class="proof-dot"></span>Social media and brand content on autopilot</div>
+      <div class="proof-item"><span class="proof-dot"></span>AI receptionists answering live calls for real businesses</div>
+      <div class="proof-item"><span class="proof-dot"></span>Automations live in under 30 days</div>
+      <div class="proof-item"><span class="proof-dot"></span>One flat monthly fee — platform, engineering, and support</div>
       <div class="proof-item"><span class="proof-dot"></span>No long-term contracts, ever</div>
     </div>
   </div>
+
+  <!-- ONE PLATFORM, ONE FEE -->
+  <section class="section" id="platform">
+    <div class="container">
+      <span class="section-label">The AITS model</span>
+      <h2 class="section-heading">Every tool your business needs.<br /><em class="hl-em">One fee. One partner.</em></h2>
+      <p class="section-sub">
+        Most small businesses pay for six different tools that do not talk to each other — and
+        nobody owns making them work. We replace the pile of subscriptions with one platform, one
+        flat monthly fee, and a team that runs it for you.
+      </p>
+      <div class="platform-grid">
+        {
+          platform.map((p) => (
+            <div class="platform-item">
+              <span class="p-icon">{p.icon}</span>
+              <div>
+                <div class="p-title">{p.title}</div>
+                <p class="p-desc">{p.desc}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="promise-grid">
+        {
+          promises.map((p, i) => (
+            <div class="promise-card">
+              <div class="promise-num">{String(i + 1).padStart(2, '0')}</div>
+              <h3>{p.h}</h3>
+              <p>{p.p}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="how-note">
+        <strong>How is all of this one fee?</strong> AITS partners directly with enterprise-grade
+        technology providers — partnerships at a scale no single small business could reach on its
+        own. Those relationships come with considerable discounts, and we pass them through. That
+        is why one competitive monthly fee covers the entire platform <em>and</em> the engineering
+        time to keep everything working: built, tested regularly, monitored, and fixed the moment
+        anything needs attention.
+      </div>
+
+      <div class="more">
+        <a href="/contact" class="btn-primary">Get your free AI assessment</a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
 
   <!-- RESULTS -->
   <section class="section" id="results">
@@ -439,6 +529,98 @@ const team = [
     background: rgba(12, 15, 26, 0.85);
     backdrop-filter: blur(10px);
     border-block: 0.5px solid var(--border2);
+  }
+
+  /* One platform, one fee */
+  .hl-em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 14px;
+    margin-bottom: 44px;
+  }
+  .platform-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: rgba(12, 15, 26, 0.7);
+    border: 0.5px solid var(--border2);
+    border-radius: 14px;
+    padding: 18px 20px;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+  .platform-item:hover {
+    border-color: rgba(59, 110, 240, 0.4);
+    transform: translateY(-2px);
+  }
+  .p-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .p-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .p-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .promise-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .promise-card {
+    background: rgba(59, 110, 240, 0.06);
+    border: 0.5px solid rgba(59, 110, 240, 0.28);
+    border-radius: 16px;
+    padding: 26px 28px;
+  }
+  .promise-num {
+    font-family: var(--fran);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--teal2);
+    margin-bottom: 12px;
+  }
+  .promise-card h3 {
+    font-family: var(--fran);
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .promise-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .how-note {
+    background: rgba(12, 15, 26, 0.85);
+    backdrop-filter: blur(8px);
+    border: 0.5px solid var(--border2);
+    border-left: 3px solid var(--teal);
+    border-radius: 0 14px 14px 0;
+    padding: 24px 28px;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.75;
+    max-width: 880px;
+  }
+  .how-note strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .how-note em {
+    color: var(--teal2);
+    font-style: italic;
   }
 
   .grid-auto {

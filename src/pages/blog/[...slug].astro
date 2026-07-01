@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
 import { SITE, BUSINESS } from '../../consts';
 
 export const getStaticPaths = (async () => {
@@ -113,6 +114,8 @@ const schemas = [articleSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : 
         <a href="/contact" class="btn-primary">Get your free AI assessment</a>
         <p class="muted">{BUSINESS.areasServed.join(' · ')}</p>
       </aside>
+
+      <NewsletterSignup />
     </div>
   </article>
 </BaseLayout>
