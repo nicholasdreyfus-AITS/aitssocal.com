@@ -5,8 +5,8 @@ export const SITE = {
   name: 'AITS',
   legalName: 'Advanced Intelligent Technology Solutions',
   url: 'https://aits.llc',
-  // Used as the default <title> suffix and OG site name.
-  title: 'AITS — AI for Small & Mid-Sized Business',
+  // Homepage <title> — keyword-rich for SEO/AEO. (OG site name is SITE.name.)
+  title: 'AITS — All-in-One AI & Business Tech, One Managed Fee',
   tagline: 'AI that works for your business, not just tech teams.',
   description:
     'AITS gives small and mid-sized businesses every tool they need to grow — CRM, marketing automation, AI receptionist, booking, reviews, and reporting — managed for one flat monthly fee. Headquartered in San Diego, serving businesses nationwide.',

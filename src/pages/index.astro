@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
 
 const platform = [
   { icon: '📇', title: 'CRM & sales pipeline', desc: 'Every lead, call, and conversation tracked in one place — nothing falls through the cracks.' },
@@ -76,6 +77,27 @@ const faqSchema = {
   })),
 };
 
+// Service schema — describes the all-in-one managed platform as a single
+// offering for one flat fee. High-value for AEO: it's what answer engines
+// lift for "all-in-one platform for small business" / "managed CRM and
+// marketing for one fee" style questions.
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'All-in-One Managed Business Platform',
+  serviceType: 'Managed business technology and AI platform',
+  provider: { '@id': `${SITE.url}/#organization` },
+  areaServed: { '@type': 'Country', name: 'United States' },
+  description:
+    'CRM and sales pipeline, email and SMS marketing, an AI receptionist, appointment booking, review management, missed-call text-back, websites and funnels, and reporting — delivered as one managed platform for one flat monthly fee that includes engineering, regular testing, and uptime monitoring.',
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'USD',
+    description: 'One flat monthly fee covering the full platform plus managed support.',
+    availability: 'https://schema.org/InStock',
+  },
+};
+
 const results = [
   {
     icon: '📞',
@@ -140,15 +162,22 @@ const team = [
 ];
 ---
 
-<BaseLayout title="AITS" path="/" schemas={[faqSchema]}>
+<BaseLayout
+  title="AITS"
+  description="Everything your small business runs on — CRM, marketing automation, AI receptionist, booking, reviews, and reporting — in one managed platform for one flat monthly fee. Built, tested, and supported by AITS. San Diego HQ, serving businesses nationwide."
+  path="/"
+  schemas={[serviceSchema, faqSchema]}
+>
+
   <!-- HERO -->
   <section class="hero">
     <div class="hero-badge"><span class="badge-dot"></span>SMB AI &amp; technology partners</div>
-    <h1>AI that works for your business,<br /><em>not just tech teams</em></h1>
+    <h1>Every tool your business runs on.<br /><em>One fee. One partner.</em></h1>
     <div class="hero-divider"></div>
     <p class="hero-sub">
-      We help small and mid-sized businesses deploy AI and modernize their technology so they
-      compete with companies five times their size.
+      One managed platform for everything a small business needs — CRM, marketing automation, an
+      AI receptionist, booking, reviews, and reporting — built, tested, and supported by our team
+      for one flat monthly fee. The tools <em>and</em> the people who keep them working.
     </p>
     <p class="hero-name">Headquartered in San Diego • Serving businesses nationwide</p>
     <div class="hero-actions">
@@ -223,7 +252,7 @@ const team = [
   <!-- RESULTS -->
   <section class="section" id="results">
     <div class="container">
-      <span class="section-label">Real outcomes, San Diego businesses</span>
+      <span class="section-label">Real outcomes, real businesses</span>
       <h2 class="section-heading">We do not run pilots. We deliver results.</h2>
       <p class="section-sub">Every engagement starts with an early win your entire team can see and feel.</p>
       <div class="grid-auto">
@@ -400,12 +429,12 @@ const team = [
   <section class="cta-section">
     <div class="cta-glow"></div>
     <span class="section-label" style="text-align:center">Free AI assessment</span>
-    <h2 class="cta-h2">AI that works for your business,<br /><em>not just tech teams</em></h2>
+    <h2 class="cta-h2">One platform. One fee.<br /><em>One partner who runs it.</em></h2>
     <div class="hero-divider" style="margin-inline:auto"></div>
     <p class="cta-sub">
-      We help small and mid-sized businesses deploy AI and modernize their technology so they
-      compete with companies five times their size. Answer a few questions and we will make the 30
-      minutes count.
+      Stop paying for six disconnected tools nobody owns. Get everything your business runs on in
+      one managed platform — and a team that builds it, tests it, and jumps on issues. Start with a
+      free 30-minute assessment.
     </p>
     <div class="hero-actions" style="justify-content:center">
       <a href="/contact" class="btn-primary">Get your free AI assessment</a>
