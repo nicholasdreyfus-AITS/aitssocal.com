@@ -2,15 +2,50 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE } from '../consts';
 
-const platform = [
-  { icon: '📇', title: 'CRM & sales pipeline', desc: 'Every lead, call, and conversation tracked in one place — nothing falls through the cracks.' },
-  { icon: '✉️', title: 'Email & SMS marketing', desc: 'Campaigns, follow-ups, and nurture sequences that run themselves.' },
-  { icon: '📞', title: 'AI receptionist & chat', desc: 'Every call and website visitor answered, qualified, and scheduled — 24/7.' },
-  { icon: '📅', title: 'Booking & reminders', desc: 'Appointments scheduled, confirmed, and followed up without staff time.' },
-  { icon: '⭐', title: 'Reviews & reputation', desc: 'Review requests and responses handled, so your rating reflects your actual work.' },
-  { icon: '💬', title: 'Missed-call text-back', desc: 'A missed call becomes an instant text conversation instead of a lost lead.' },
-  { icon: '🌐', title: 'Websites, funnels & landing pages', desc: 'Built, hosted, and maintained by us — not another login you have to babysit.' },
-  { icon: '📊', title: 'Reporting dashboard', desc: 'One view of your leads, revenue, and what is actually working.' },
+// Capability groups — the full breadth of what one AITS partnership covers,
+// organized by the customer journey. Deliberately describes capabilities,
+// never the underlying platform by name.
+const capabilityGroups = [
+  {
+    label: 'Capture every lead',
+    icon: '🎯',
+    items: [
+      { name: 'AI receptionist & website chat', desc: 'Every call and visitor answered 24/7' },
+      { name: 'Missed-call text-back', desc: 'A missed call becomes a text, not a lost job' },
+      { name: 'Forms, surveys & quizzes', desc: 'Capture inquiries from anywhere' },
+      { name: 'Websites, funnels & landing pages', desc: 'Built, hosted, and maintained for you' },
+    ],
+  },
+  {
+    label: 'Convert them to customers',
+    icon: '📈',
+    items: [
+      { name: 'CRM & sales pipeline', desc: 'Every lead tracked from first touch to close' },
+      { name: 'Email & SMS marketing', desc: 'Campaigns and blasts that run themselves' },
+      { name: 'Automated follow-up', desc: 'Nurture sequences so no lead goes cold' },
+      { name: 'Online scheduling & reminders', desc: 'Booking without the back-and-forth' },
+    ],
+  },
+  {
+    label: 'Get paid & keep them',
+    icon: '💳',
+    items: [
+      { name: 'Estimates, invoices & payments', desc: 'Quote to cash in one place' },
+      { name: 'Review & reputation management', desc: 'More 5-star reviews, automatically' },
+      { name: 'Social media scheduling', desc: 'A consistent presence with no daily effort' },
+      { name: 'Memberships & courses', desc: 'New revenue from what you already know' },
+    ],
+  },
+  {
+    label: 'See what is working',
+    icon: '🧭',
+    items: [
+      { name: 'Unified inbox', desc: 'Calls, texts, emails & DMs in one thread' },
+      { name: 'Reporting & ROI dashboards', desc: 'What is working, at a glance' },
+      { name: 'Call tracking & attribution', desc: 'Know which marketing actually pays off' },
+      { name: 'Mobile app', desc: 'Your whole business in your pocket' },
+    ],
+  },
 ];
 
 const promises = [
@@ -89,7 +124,7 @@ const serviceSchema = {
   provider: { '@id': `${SITE.url}/#organization` },
   areaServed: { '@type': 'Country', name: 'United States' },
   description:
-    'CRM and sales pipeline, email and SMS marketing, an AI receptionist, appointment booking, review management, missed-call text-back, websites and funnels, and reporting — delivered as one managed platform for one flat monthly fee that includes engineering, regular testing, and uptime monitoring.',
+    'CRM and sales pipeline, email and SMS marketing, automated follow-up, an AI receptionist and website chat, missed-call text-back, online scheduling, estimates and invoicing with payments, review and reputation management, social media scheduling, memberships and courses, websites and funnels, a unified inbox, call tracking, and reporting dashboards — delivered as one managed platform for one flat monthly fee that includes engineering, regular testing, and uptime monitoring.',
   offers: {
     '@type': 'Offer',
     priceCurrency: 'USD',
@@ -200,25 +235,36 @@ const team = [
   <section class="section" id="platform">
     <div class="container">
       <span class="section-label">The AITS model</span>
-      <h2 class="section-heading">Every tool your business needs.<br /><em class="hl-em">One fee. One partner.</em></h2>
+      <h2 class="section-heading">One partner replaces your entire stack.<br /><em class="hl-em">One fee. Everything below.</em></h2>
       <p class="section-sub">
-        Most small businesses pay for six different tools that do not talk to each other — and
-        nobody owns making them work. We replace the pile of subscriptions with one platform, one
-        flat monthly fee, and a team that runs it for you.
+        The tools most businesses buy separately — six, eight, ten subscriptions nobody has time to
+        connect, learn, or maintain — delivered as one system we build, run, and keep working for
+        you. Here is what a single partnership covers:
       </p>
-      <div class="platform-grid">
+      <div class="cap-groups">
         {
-          platform.map((p) => (
-            <div class="platform-item">
-              <span class="p-icon">{p.icon}</span>
-              <div>
-                <div class="p-title">{p.title}</div>
-                <p class="p-desc">{p.desc}</p>
+          capabilityGroups.map((g) => (
+            <div class="cap-group">
+              <div class="cap-group__head">
+                <span class="cap-group__icon" aria-hidden="true">{g.icon}</span>
+                <h3 class="cap-group__title">{g.label}</h3>
               </div>
+              <ul class="cap-list">
+                {g.items.map((it) => (
+                  <li>
+                    <span class="cap-name">{it.name}</span>
+                    <span class="cap-desc">{it.desc}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))
         }
       </div>
+
+      <p class="cap-tagline">
+        That is sixteen jobs, one login, one bill, and one team accountable for all of it.
+      </p>
 
       <div class="promise-grid">
         {
@@ -242,7 +288,8 @@ const team = [
       </div>
 
       <div class="more">
-        <a href="/contact" class="btn-primary">Get your free AI assessment</a>
+        <a href="/contact" class="btn-primary">Book a free exploratory call</a>
+        <p class="more-note">30 minutes, no pitch. We will map which of these would move the needle for your business first — and what it would take to turn it on.</p>
       </div>
     </div>
   </section>
@@ -565,41 +612,88 @@ const team = [
     font-style: italic;
     color: var(--accent2);
   }
-  .platform-grid {
+  /* Capability groups */
+  .cap-groups {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 14px;
-    margin-bottom: 44px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
   }
-  .platform-item {
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
+  .cap-group {
     background: rgba(12, 15, 26, 0.7);
     border: 0.5px solid var(--border2);
-    border-radius: 14px;
-    padding: 18px 20px;
+    border-radius: 16px;
+    padding: 22px 22px 12px;
     transition: border-color 0.25s, transform 0.25s;
   }
-  .platform-item:hover {
+  .cap-group:hover {
     border-color: rgba(59, 110, 240, 0.4);
     transform: translateY(-2px);
   }
-  .p-icon {
-    font-size: 20px;
-    flex-shrink: 0;
-    margin-top: 2px;
+  .cap-group__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 0.5px solid var(--border2);
   }
-  .p-title {
+  .cap-group__icon {
+    font-size: 18px;
+  }
+  .cap-group__title {
+    font-family: var(--fran);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+  }
+  .cap-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cap-list li {
+    padding: 8px 0;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.04);
+  }
+  .cap-list li:last-child {
+    border-bottom: none;
+  }
+  .cap-name {
+    display: block;
     font-size: 14px;
     font-weight: 600;
     color: var(--text);
-    margin-bottom: 4px;
   }
-  .p-desc {
+  .cap-name::before {
+    content: '✓ ';
+    color: var(--teal2);
+    font-weight: 700;
+  }
+  .cap-desc {
+    display: block;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 1px;
+    padding-left: 15px;
+  }
+  .cap-tagline {
+    font-family: var(--fran);
+    font-style: italic;
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--text2);
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 44px;
+  }
+  .more-note {
     font-size: 13px;
     color: var(--muted);
     line-height: 1.6;
+    max-width: 520px;
+    margin: 14px 0 0;
   }
   .promise-grid {
     display: grid;
