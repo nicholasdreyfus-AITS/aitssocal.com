@@ -3,106 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <meta name="description" content="Free AI Risk Scan — Find out which AI tools are running in your organization, score your exposure, and get a free 30-minute review with AITS.">
+  <meta name="description" content="Free AI Risk Scan — ten questions any business owner can answer. Instant exposure score, compliance flags, a missed-revenue check, and the hours your team could get back.">
   <meta property="og:title" content="Free AI Risk Scan — AITS">
-  <meta property="og:description" content="90 seconds. Instant risk score. Find out what AI is running in your business right now.">
-  <meta property="og:url" content="https://aits.llc">
+  <meta property="og:description" content="Ten questions, 90 seconds. Your AI exposure score, compliance flags, missed-revenue check, and recoverable hours — instantly.">
+  <meta property="og:url" content="https://aits.llc/scan.html">
   <meta property="og:type" content="website">
   <title>AITS — Free AI Risk Scan</title>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{-webkit-text-size-adjust:100%}
-    body{background:#080C10;color:#E8F4F8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;padding:24px 16px 60px;display:flex;flex-direction:column;align-items:center}
-    .wrap{max-width:520px;width:100%}
+    body{background:#07090f;color:#e8eaf2;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;padding:24px 16px 60px;display:flex;flex-direction:column;align-items:center}
+    .wrap{max-width:560px;width:100%}
     .header{text-align:center;margin-bottom:22px}
-    .header-brand{font-family:monospace;font-size:10px;color:#00D4FF;letter-spacing:3px;margin-bottom:8px}
-    .header-logo{width:48px;height:48px;background:#0A2A35;border:1px solid #00D4FF;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+    .header-brand{font-family:monospace;font-size:10px;color:#6b9bff;letter-spacing:3px;margin-bottom:8px}
+    .header-logo{width:48px;height:48px;background:#101527;border:1px solid #3b6ef0;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
     .header-title{font-size:26px;font-weight:800;letter-spacing:-0.5px}
-    .header-status{font-family:monospace;font-size:11px;color:#3A5A6A;margin-top:5px;min-height:18px}
-    .panel{background:#0D1117;border:1px solid #1C2A3A;border-radius:12px;overflow:hidden;box-shadow:0 24px 48px rgba(0,0,0,0.6);margin-bottom:16px}
+    .header-status{font-family:monospace;font-size:11px;color:#5a637f;margin-top:5px;min-height:18px}
+    .panel{background:#0c0f1a;border:1px solid #1d2333;border-radius:12px;overflow:hidden;box-shadow:0 24px 48px rgba(0,0,0,0.6);margin-bottom:16px}
     .panel-body{padding:26px 22px}
     .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
     .tag{font-family:monospace;font-size:10px;border:1px solid;padding:3px 8px;border-radius:3px;letter-spacing:1px;white-space:nowrap}
-    .tag-blue{color:#00D4FF;border-color:#00D4FF}
+    .tag-blue{color:#6b9bff;border-color:#3b6ef0}
     .tag-warn{color:#FF6B35;border-color:#FF6B35}
-    .tag-ok{color:#00FF88;border-color:#00FF88}
+    .tag-ok{color:#00c9a7;border-color:#00c9a7}
     .tag-danger{color:#FF2D55;border-color:#FF2D55}
-    .intro-title{font-size:20px;font-weight:800;line-height:1.3;margin-bottom:12px}
-    .intro-sub{color:#7A9BAD;line-height:1.75;font-size:15px;margin-bottom:20px}
-    .checklist{background:#0A2A35;border:1px solid rgba(0,212,255,0.15);border-radius:8px;padding:14px 16px;margin-bottom:20px}
-    .checklist-label{font-family:monospace;font-size:9px;color:#00D4FF;letter-spacing:2px;margin-bottom:10px}
-    .checklist-item{font-size:14px;color:#7A9BAD;line-height:2}
-    .checklist-item::before{content:"✓ ";color:#00FF88;font-weight:bold}
+    .intro-title{font-size:20px;font-weight:800;line-height:1.35;margin-bottom:12px}
+    .intro-sub{color:#8b93ad;line-height:1.75;font-size:15px;margin-bottom:20px}
+    .checklist{background:#101527;border:1px solid rgba(59,110,240,0.22);border-radius:8px;padding:14px 16px;margin-bottom:20px}
+    .checklist-label{font-family:monospace;font-size:9px;color:#6b9bff;letter-spacing:2px;margin-bottom:10px}
+    .checklist-item{font-size:14px;color:#8b93ad;line-height:2}
+    .checklist-item::before{content:"✓ ";color:#00c9a7;font-weight:bold}
     .trust-bar{display:flex;gap:14px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
-    .trust-item{font-size:12px;color:#3A5A6A;display:flex;align-items:center;gap:5px}
-    .trust-dot{width:5px;height:5px;border-radius:50%;background:#00D4FF;flex-shrink:0}
-    .btn-main{display:block;width:100%;padding:16px;background:#00D4FF;color:#080C10;border:none;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;-webkit-appearance:none;text-align:center}
-    .btn-secondary{display:block;width:100%;padding:13px;background:transparent;color:#7A9BAD;border:1px solid #1C2A3A;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:10px;-webkit-appearance:none;font-family:inherit}
-    .progress-wrap{height:4px;background:#1C2A3A}
-    .progress-fill{height:100%;background:#00D4FF;transition:width 0.4s ease}
+    .trust-item{font-size:12px;color:#5a637f;display:flex;align-items:center;gap:5px}
+    .trust-dot{width:5px;height:5px;border-radius:50%;background:#00c9a7;flex-shrink:0}
+    .btn-main{display:block;width:100%;padding:16px;background:#3b6ef0;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:800;cursor:pointer;-webkit-appearance:none;text-align:center}
+    .btn-secondary{display:block;width:100%;padding:13px;background:transparent;color:#8b93ad;border:1px solid #1d2333;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:10px;-webkit-appearance:none;font-family:inherit}
+    .progress-wrap{height:4px;background:#1d2333}
+    .progress-fill{height:100%;background:#3b6ef0;transition:width 0.4s ease}
     .q-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-    .q-count{font-family:monospace;font-size:10px;color:#3A5A6A}
+    .q-count{font-family:monospace;font-size:10px;color:#5a637f}
     .q-dots{display:flex;gap:5px}
-    .q-dot{width:7px;height:7px;border-radius:50%;background:#1C2A3A}
-    .q-dot.active{background:#00D4FF}
-    .q-dot.done{background:#00D4FF;opacity:0.4}
+    .q-dot{width:6px;height:6px;border-radius:50%;background:#1d2333}
+    .q-dot.active{background:#6b9bff}
+    .q-dot.done{background:#6b9bff;opacity:0.4}
     .q-label{font-size:17px;font-weight:700;line-height:1.4;margin-bottom:16px}
-    .q-note{font-family:monospace;font-size:11px;color:#3A5A6A;margin-bottom:12px;margin-top:-8px}
+    .q-note{font-family:monospace;font-size:11px;color:#5a637f;margin-bottom:12px;margin-top:-8px}
     .options{display:flex;flex-direction:column;gap:8px}
-    .opt-btn{width:100%;padding:13px 15px;background:transparent;border:1px solid #1C2A3A;border-radius:8px;color:#7A9BAD;text-align:left;cursor:pointer;font-size:14px;font-family:inherit;-webkit-appearance:none;display:flex;align-items:center;gap:10px}
-    .opt-btn.selected{background:#0A2A35;border-color:#00D4FF;color:#00D4FF}
-    .scan-header{font-family:monospace;font-size:12px;color:#00D4FF;letter-spacing:2px;margin-bottom:16px;min-height:20px}
-    .scan-bar-wrap{background:#1C2A3A;border-radius:3px;height:5px;margin-bottom:20px;overflow:hidden}
-    .scan-bar-fill{height:100%;background:linear-gradient(90deg,#00D4FF,#00FF88);transition:width 0.25s linear;border-radius:3px}
-    .terminal{background:#050810;border:1px solid #1C2A3A;border-radius:8px;padding:16px;min-height:190px;font-family:monospace;font-size:12px;line-height:2.2}
-    .t-default{color:#7A9BAD}.t-ai{color:#00D4FF}.t-done{color:#00FF88}
-    .scan-pct{text-align:center;margin-top:12px;font-family:monospace;font-size:11px;color:#3A5A6A}
-    .results-top{background:linear-gradient(135deg,#0A2A35,transparent);border-bottom:1px solid #1C2A3A;padding:14px 22px;display:flex;justify-content:space-between;align-items:center}
-    .results-eyebrow{font-family:monospace;font-size:9px;color:#00D4FF;letter-spacing:3px;margin-bottom:2px}
+    .opt-btn{width:100%;padding:13px 15px;background:transparent;border:1px solid #1d2333;border-radius:8px;color:#8b93ad;text-align:left;cursor:pointer;font-size:14px;font-family:inherit;-webkit-appearance:none;display:flex;align-items:center;gap:10px}
+    .opt-btn.selected{background:#101527;border-color:#3b6ef0;color:#6b9bff}
+    .scan-header{font-family:monospace;font-size:12px;color:#6b9bff;letter-spacing:2px;margin-bottom:16px;min-height:20px}
+    .scan-bar-wrap{background:#1d2333;border-radius:3px;height:5px;margin-bottom:20px;overflow:hidden}
+    .scan-bar-fill{height:100%;background:linear-gradient(90deg,#3b6ef0,#00c9a7);transition:width 0.25s linear;border-radius:3px}
+    .terminal{background:#05070d;border:1px solid #1d2333;border-radius:8px;padding:16px;min-height:190px;font-family:monospace;font-size:12px;line-height:2.2}
+    .t-default{color:#8b93ad}.t-ai{color:#6b9bff}.t-done{color:#00c9a7}
+    .scan-pct{text-align:center;margin-top:12px;font-family:monospace;font-size:11px;color:#5a637f}
+    .results-top{background:linear-gradient(135deg,#101527,transparent);border-bottom:1px solid #1d2333;padding:14px 22px;display:flex;justify-content:space-between;align-items:center}
+    .results-eyebrow{font-family:monospace;font-size:9px;color:#6b9bff;letter-spacing:3px;margin-bottom:2px}
     .results-title{font-size:14px;font-weight:700}
-    .score-row{display:flex;gap:12px;margin-bottom:20px;align-items:flex-start}
+    .score-row{display:flex;gap:12px;margin-bottom:20px;align-items:flex-start;flex-wrap:wrap}
     .score-col{flex-shrink:0}
-    .stats-col{flex:1;display:flex;flex-direction:column;gap:10px;min-width:0}
+    .stats-col{flex:1;display:flex;flex-direction:column;gap:10px;min-width:180px}
     .stat-box{border-radius:8px;padding:10px 12px}
-    .stat-box-warn{background:#2A1A0D;border:1px solid rgba(255,107,53,0.25)}
-    .stat-box-danger{background:#2A0D15;border:1px solid rgba(255,45,85,0.25)}
+    .stat-box-warn{background:#221507;border:1px solid rgba(255,107,53,0.25)}
+    .stat-box-danger{background:#220a12;border:1px solid rgba(255,45,85,0.25)}
+    .stat-box-teal{background:#07201c;border:1px solid rgba(0,201,167,0.25)}
     .stat-label{font-family:monospace;font-size:9px;letter-spacing:2px;margin-bottom:3px}
     .stat-label-warn{color:#FF6B35}
     .stat-label-danger{color:#FF2D55}
+    .stat-label-teal{color:#00c9a7}
     .stat-val{font-size:13px;font-weight:700}
-    .stat-val-big{font-size:24px;font-weight:800;color:#FF2D55}
-    .findings-label{font-family:monospace;font-size:9px;color:#3A5A6A;letter-spacing:2px;margin-bottom:10px}
+    .stat-sub{font-size:11px;color:#8b93ad;margin-top:2px;line-height:1.5}
+    .findings-label{font-family:monospace;font-size:9px;color:#5a637f;letter-spacing:2px;margin-bottom:10px}
     .finding{border-radius:8px;padding:13px 14px;margin-bottom:8px}
-    .finding-warn{background:#2A1A0D;border:1px solid rgba(255,107,53,0.3)}
-    .finding-danger{background:#2A0D15;border:1px solid rgba(255,45,85,0.3)}
+    .finding-warn{background:#221507;border:1px solid rgba(255,107,53,0.3)}
+    .finding-danger{background:#220a12;border:1px solid rgba(255,45,85,0.3)}
+    .finding-info{background:#101527;border:1px solid rgba(59,110,240,0.3)}
     .finding-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
-    .finding-num{font-family:monospace;font-size:9px;color:#3A5A6A}
+    .finding-num{font-family:monospace;font-size:9px;color:#5a637f}
     .finding-headline{font-weight:700;font-size:14px;line-height:1.4;margin-bottom:5px}
-    .finding-detail{color:#7A9BAD;font-size:13px;line-height:1.6}
-    .locked{background:#0D1117;border:1px solid #1C2A3A;border-radius:8px;padding:13px 14px;margin-bottom:8px;position:relative;overflow:hidden}
-    .locked-ghost{opacity:0.08}
-    .ghost-bar{height:7px;background:#1C2A3A;border-radius:4px;margin-bottom:6px}
-    .locked-overlay{position:absolute;inset:0;background:rgba(13,17,23,0.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
-    .lock-label{font-family:monospace;font-size:10px;color:#3A5A6A;letter-spacing:1px}
-    .analyst-box{background:#0A0510;border:1px solid rgba(139,92,246,0.22);border-radius:8px;padding:12px 14px;margin:6px 0 18px}
+    .finding-detail{color:#8b93ad;font-size:13px;line-height:1.6;margin-bottom:7px}
+    .finding-fix{font-size:13px;line-height:1.6;color:#e8eaf2}
+    .finding-fix strong{color:#00c9a7;font-weight:700}
+    .locked{background:#0c0f1a;border:1px solid #1d2333;border-radius:8px;padding:13px 14px;margin-bottom:8px;position:relative;overflow:hidden}
+    .locked-ghost{opacity:0.14}
+    .ghost-bar{height:7px;background:#2a3149;border-radius:4px;margin-bottom:6px}
+    .locked-overlay{position:absolute;inset:0;background:rgba(12,15,26,0.85);display:flex;align-items:center;justify-content:center;gap:8px}
+    .lock-label{font-family:monospace;font-size:10px;color:#5a637f;letter-spacing:1px}
+    .gate{background:#101527;border:1px solid rgba(59,110,240,0.35);border-radius:10px;padding:20px 18px;margin:14px 0 18px}
+    .gate-title{font-size:17px;font-weight:800;margin-bottom:6px}
+    .gate-sub{font-size:13px;color:#8b93ad;line-height:1.6;margin-bottom:14px}
+    .gate-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+    .gate-input{width:100%;padding:12px 13px;background:#07090f;border:1px solid #1d2333;border-radius:8px;color:#e8eaf2;font-size:14px;font-family:inherit;-webkit-appearance:none}
+    .gate-input:focus{outline:none;border-color:#3b6ef0}
+    .gate-input.invalid{border-color:#FF2D55}
+    .gate-error{color:#FF2D55;font-size:12px;margin-bottom:10px;font-family:monospace}
+    .gate-fine{text-align:center;font-size:11px;color:#5a637f;margin-top:10px}
+    @media(max-width:420px){.gate-fields{grid-template-columns:1fr}}
+    .analyst-box{background:#0d0a18;border:1px solid rgba(139,92,246,0.22);border-radius:8px;padding:12px 14px;margin:14px 0 18px}
     .analyst-label{font-family:monospace;font-size:9px;color:#8B5CF6;letter-spacing:2px;margin-bottom:3px}
-    .analyst-text{font-size:13px;color:#7A9BAD;line-height:1.6}
+    .analyst-text{font-size:13px;color:#8b93ad;line-height:1.65;transition:opacity 0.4s ease}
     .cta-section{transition:opacity 0.6s ease,transform 0.6s ease}
     .cta-note{text-align:center;margin-bottom:14px}
-    .cta-note-top{font-family:monospace;font-size:9px;color:#3A5A6A;margin-bottom:4px}
-    .cta-note-sub{font-size:13px;color:#7A9BAD;line-height:1.5}
-    .btn-cta{display:block;width:100%;padding:16px;background:#00D4FF;color:#080C10;border-radius:8px;text-align:center;font-weight:800;font-size:15px;text-decoration:none;border:none;cursor:pointer;font-family:inherit;-webkit-appearance:none}
-    /* Calendly modal */
-    .cal-overlay{display:none;position:fixed;inset:0;background:rgba(8,12,16,0.95);z-index:999;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+    .cta-note-top{font-family:monospace;font-size:9px;color:#5a637f;letter-spacing:2px;margin-bottom:4px}
+    .cta-note-sub{font-size:13px;color:#8b93ad;line-height:1.6}
+    .btn-cta{display:block;width:100%;padding:16px;background:#3b6ef0;color:#fff;border-radius:8px;text-align:center;font-weight:800;font-size:15px;text-decoration:none;border:none;cursor:pointer;font-family:inherit;-webkit-appearance:none}
+    .cal-overlay{display:none;position:fixed;inset:0;background:rgba(7,9,15,0.95);z-index:999;flex-direction:column;align-items:center;justify-content:center;padding:16px}
     .cal-overlay.active{display:flex}
-    .cal-box{background:#0D1117;border:1px solid #1C2A3A;border-radius:12px;width:100%;max-width:520px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column}
-    .cal-header{padding:14px 18px;border-bottom:1px solid #1C2A3A;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-    .cal-title{font-family:monospace;font-size:10px;color:#00D4FF;letter-spacing:2px}
-    .cal-close{background:transparent;border:none;color:#7A9BAD;font-size:20px;cursor:pointer;padding:0 4px;line-height:1}
+    .cal-box{background:#0c0f1a;border:1px solid #1d2333;border-radius:12px;width:100%;max-width:520px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column}
+    .cal-header{padding:14px 18px;border-bottom:1px solid #1d2333;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+    .cal-title{font-family:monospace;font-size:10px;color:#6b9bff;letter-spacing:2px}
+    .cal-close{background:transparent;border:none;color:#8b93ad;font-size:20px;cursor:pointer;padding:0 4px;line-height:1}
     .cal-frame{flex:1;border:none;width:100%;min-height:500px}
-    .footer{text-align:center;font-family:monospace;font-size:10px;color:#3A5A6A;margin-top:6px;line-height:2}
-    .footer a{color:#3A5A6A;text-decoration:none}
-    .error-msg{color:#FF2D55;font-family:monospace;font-size:12px;margin-bottom:14px;padding:10px 14px;background:#2A0D15;border-radius:6px;border:1px solid rgba(255,45,85,0.3)}
+    .footer{text-align:center;font-family:monospace;font-size:10px;color:#5a637f;margin-top:6px;line-height:2}
+    .footer a{color:#5a637f;text-decoration:none}
     @media(max-width:360px){.intro-title{font-size:17px}.panel-body{padding:20px 16px}}
   </style>
 </head>
@@ -112,11 +125,11 @@
     <div class="header-brand">AITS — ADVANCED INTELLIGENT TECHNOLOGY SOLUTIONS</div>
     <div class="header-logo">
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <circle cx="14" cy="14" r="5" fill="#00D4FF" opacity="0.9"/>
-        <circle cx="14" cy="14" r="10" stroke="#00D4FF" stroke-width="1.5" stroke-dasharray="4 3"/>
-        <circle cx="14" cy="4" r="2" fill="#00D4FF" opacity="0.5"/>
-        <circle cx="24" cy="19" r="2" fill="#00D4FF" opacity="0.5"/>
-        <circle cx="4" cy="19" r="2" fill="#00D4FF" opacity="0.5"/>
+        <circle cx="14" cy="14" r="5" fill="#3b6ef0" opacity="0.9"/>
+        <circle cx="14" cy="14" r="10" stroke="#6b9bff" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <circle cx="14" cy="4" r="2" fill="#6b9bff" opacity="0.5"/>
+        <circle cx="24" cy="19" r="2" fill="#6b9bff" opacity="0.5"/>
+        <circle cx="4" cy="19" r="2" fill="#6b9bff" opacity="0.5"/>
       </svg>
     </div>
     <div class="header-title">AI Risk Scan</div>
@@ -127,26 +140,26 @@
     <!-- INTRO -->
     <div id="introScreen" class="panel-body">
       <div class="tags">
-        <span class="tag tag-blue">SHADOW AI DETECTION</span>
-        <span class="tag tag-blue">COMPLIANCE ANALYSIS</span>
-        <span class="tag tag-blue">RISK SCORING</span>
+        <span class="tag tag-blue">SHADOW AI</span>
+        <span class="tag tag-blue">MISSED REVENUE</span>
+        <span class="tag tag-blue">COMPLIANCE</span>
+        <span class="tag tag-blue">EXPOSURE SCORE</span>
       </div>
-      <div class="intro-title">Is AI running inside your organization without your knowledge?</div>
-      <div class="intro-sub">Most businesses have 3-7 unsanctioned AI tools active across their team right now. This 90-second scan identifies your exposure, scores your risk, and surfaces your top finding — instantly and free.</div>
+      <div class="intro-title">What is AI doing in your business right now — and what should it be doing for you?</div>
+      <div class="intro-sub">Eleven quick questions any owner can answer — no IT knowledge needed. Get an instant read on your AI exposure, the revenue slipping through missed calls and slow follow-up, and the hours your team could get back every week.</div>
       <div class="checklist">
         <div class="checklist-label">WHAT YOU GET INSTANTLY</div>
-        <div class="checklist-item">AI Risk Score (0–100)</div>
-        <div class="checklist-item">Your #1 security finding</div>
-        <div class="checklist-item">Shadow AI exposure estimate</div>
-        <div class="checklist-item">Compliance flags detected</div>
+        <div class="checklist-item">AI exposure score (0–100)</div>
+        <div class="checklist-item">Shadow AI &amp; compliance flags</div>
+        <div class="checklist-item">Hours per week your team could get back</div>
+        <div class="checklist-item">Your top findings — with what to do about each</div>
       </div>
       <div class="trust-bar">
         <div class="trust-item"><div class="trust-dot"></div>No software to install</div>
-        <div class="trust-item"><div class="trust-dot"></div>No data stored</div>
+        <div class="trust-item"><div class="trust-dot"></div>No spam, ever</div>
         <div class="trust-item"><div class="trust-dot"></div>90 seconds</div>
       </div>
-      <div id="introError"></div>
-      <button class="btn-main" id="startBtn">START MY FREE AI RISK SCAN →</button>
+      <button class="btn-main" id="startBtn">START MY FREE SCAN →</button>
     </div>
 
     <!-- QUESTIONS -->
@@ -154,7 +167,7 @@
       <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
       <div class="panel-body">
         <div class="q-header">
-          <div class="q-count" id="qCount">Q 1 / 6</div>
+          <div class="q-count" id="qCount">Q 1 / 11</div>
           <div class="q-dots" id="qDots"></div>
         </div>
         <div class="q-label" id="qLabel"></div>
@@ -168,7 +181,7 @@
     <div id="scanScreen" style="display:none" class="panel-body">
       <div class="scan-header" id="scanHeader">▮ SCANNING IN PROGRESS</div>
       <div class="scan-bar-wrap"><div class="scan-bar-fill" id="scanFill" style="width:0%"></div></div>
-      <div class="terminal" id="terminal"><span id="cursor" style="color:#00D4FF">_</span></div>
+      <div class="terminal" id="terminal"><span id="cursor" style="color:#6b9bff">_</span></div>
       <div class="scan-pct" id="scanPct">0% complete</div>
     </div>
 
@@ -177,55 +190,73 @@
       <div class="results-top">
         <div>
           <div class="results-eyebrow">SCAN COMPLETE</div>
-          <div class="results-title">AI Risk Assessment Report</div>
+          <div class="results-title">AI Readiness &amp; Risk Report</div>
         </div>
-        <span class="tag tag-warn" id="riskTag">HIGH</span>
+        <span class="tag tag-warn" id="riskTag">—</span>
       </div>
       <div class="panel-body">
         <div class="score-row">
           <div class="score-col">
             <svg width="165" height="100" viewBox="0 0 165 100">
-              <path d="M 15 88 A 70 70 0 0 1 150 88" fill="none" stroke="#1C2A3A" stroke-width="10" stroke-linecap="round"/>
-              <path id="meterArc" d="M 15 88 A 70 70 0 0 1 150 88" fill="none" stroke="#00D4FF" stroke-width="10" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/>
-              <circle id="meterDot" cx="82" cy="18" r="7" fill="#00D4FF"/>
-              <text id="meterScore" x="82" y="86" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="26" fill="#00D4FF">0</text>
-              <text id="meterLabel" x="82" y="99" text-anchor="middle" font-family="monospace" font-size="9" fill="#00D4FF" letter-spacing="3">--</text>
+              <path d="M 15 88 A 70 70 0 0 1 150 88" fill="none" stroke="#1d2333" stroke-width="10" stroke-linecap="round"/>
+              <path id="meterArc" d="M 15 88 A 70 70 0 0 1 150 88" fill="none" stroke="#3b6ef0" stroke-width="10" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/>
+              <circle id="meterDot" cx="82" cy="18" r="7" fill="#3b6ef0"/>
+              <text id="meterScore" x="82" y="86" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="26" fill="#6b9bff">0</text>
+              <text id="meterLabel" x="82" y="99" text-anchor="middle" font-family="monospace" font-size="9" fill="#6b9bff" letter-spacing="3">--</text>
             </svg>
           </div>
           <div class="stats-col">
             <div class="stat-box stat-box-warn">
-              <div class="stat-label stat-label-warn">SHADOW AI ESTIMATE</div>
+              <div class="stat-label stat-label-warn">SHADOW AI EXPOSURE</div>
               <div class="stat-val" id="shadowEst">—</div>
+              <div class="stat-sub" id="shadowSub"></div>
             </div>
             <div class="stat-box stat-box-danger">
               <div class="stat-label stat-label-danger">COMPLIANCE FLAGS</div>
-              <div class="stat-val stat-val-big" id="compFlags">—</div>
+              <div class="stat-val" id="compFlags">—</div>
+              <div class="stat-sub" id="compSub"></div>
+            </div>
+            <div class="stat-box stat-box-teal">
+              <div class="stat-label stat-label-teal">RECOVERABLE HOURS / WEEK</div>
+              <div class="stat-val" id="hoursVal">—</div>
+              <div class="stat-sub" id="hoursSub"></div>
             </div>
           </div>
         </div>
 
-        <div class="findings-label">FINDINGS IDENTIFIED</div>
-        <div class="finding finding-warn" id="finding1">
-          <div class="finding-top">
-            <span class="tag tag-warn" id="f1Tag">RISK</span>
-            <span class="finding-num">FINDING 01</span>
-          </div>
-          <div class="finding-headline" id="f1Head"></div>
-          <div class="finding-detail" id="f1Detail"></div>
-        </div>
-        <div id="lockedFindings"></div>
+        <div class="findings-label" id="shownLabel">YOUR TOP FINDINGS — AND WHAT TO DO ABOUT EACH</div>
+        <div id="findingsList"></div>
 
-        <div class="analyst-box">
+        <!-- LEAD GATE: remaining findings + analyst note unlock with contact info -->
+        <div id="gateSection">
+          <div class="findings-label" id="lockedLabel"></div>
+          <div id="lockedCards"></div>
+          <div class="gate">
+            <div class="gate-title">Unlock your full report</div>
+            <div class="gate-sub">Every remaining finding with what to do about it, plus your analyst note — on screen immediately. Our senior analyst also gets a copy to prepare recommendations before we reach out.</div>
+            <div class="gate-fields">
+              <input class="gate-input" id="leadName" type="text" autocomplete="name" placeholder="Your name">
+              <input class="gate-input" id="leadCompany" type="text" autocomplete="organization" placeholder="Company name">
+              <input class="gate-input" id="leadEmail" type="email" autocomplete="email" placeholder="Work email">
+              <input class="gate-input" id="leadCell" type="tel" autocomplete="tel" placeholder="Cell phone">
+            </div>
+            <div class="gate-error" id="gateError" style="display:none"></div>
+            <button class="btn-cta" id="unlockBtn">UNLOCK MY FULL REPORT →</button>
+            <div class="gate-fine">No spam. One follow-up from a real person — usually with something useful.</div>
+          </div>
+        </div>
+
+        <div class="analyst-box" id="analystBox" style="display:none">
           <div class="analyst-label">ANALYST NOTE</div>
-          <div class="analyst-text" id="urgencyText"></div>
+          <div class="analyst-text" id="analystText"></div>
         </div>
 
         <div class="cta-section" id="ctaSection" style="opacity:0;transform:translateY(12px)">
           <div class="cta-note">
-            <div class="cta-note-top" id="ctaTop">2 ADDITIONAL FINDINGS REQUIRE REVIEW</div>
-            <div class="cta-note-sub">Full report includes affected systems, user exposure detail, and a remediation roadmap. Book a free 30-minute session to unlock everything.</div>
+            <div class="cta-note-top">TURN THIS INTO A PLAN</div>
+            <div class="cta-note-sub">In a free 30-minute review we walk your findings, show you what one managed platform would replace, and map the first automation to be live within 30 days.</div>
           </div>
-          <button class="btn-cta" id="bookBtn">REVIEW MY FULL REPORT — BOOK 30 MIN →</button>
+          <button class="btn-cta" id="bookBtn">WALK THROUGH MY RESULTS — BOOK 30 MIN →</button>
           <div class="footer" style="margin-top:10px">Free · No obligation · aits.llc</div>
         </div>
       </div>
@@ -248,7 +279,6 @@
   </div>
 </div>
 
-<!-- Calendly event listener for redirect after booking -->
 <script>
 window.addEventListener("message", function(e) {
   if (e.data && e.data.event && e.data.event === "calendly.event_scheduled") {
@@ -258,33 +288,41 @@ window.addEventListener("message", function(e) {
 </script>
 
 <script>
-// GAVIN: Replace with your Cloudflare Worker URL after step 2 in DEPLOY.md
+// The report below is computed ENTIRELY in this page from the answers — it
+// renders complete even if the AI backend is unreachable. The Worker call
+// only enhances the Analyst Note with a personalized paragraph.
 var PROXY_URL = "https://aits-scan.nicholasdreyfus.workers.dev";
 
 var QUESTIONS = [
-  {id:"size",label:"How many people are in your organization?",type:"single",options:["1-10 employees","11-25 employees","26-50 employees","51-100 employees","101-250 employees","250+ employees"]},
-  {id:"industry",label:"What industry are you in?",type:"single",options:["Healthcare / Medical","Legal / Law Firm","Financial Services","Manufacturing","Professional Services","Nonprofit","Retail / E-Commerce","Technology","Other"]},
-  {id:"tools",label:"Which AI tools does your team currently use?",type:"multi",note:"Select all that apply — skip if unsure",options:["ChatGPT","Microsoft Copilot","Claude (Anthropic)","Google Gemini","Grammarly AI","Jasper / Copy.ai","GitHub Copilot","Midjourney / DALL-E"]},
-  {id:"policy",label:"Does your organization have a formal AI usage policy?",type:"single",options:["Yes, fully documented","In progress / informal","No policy exists","I don't know"]},
-  {id:"personal",label:"Do employees use personal accounts to access AI tools for work?",type:"single",options:["Definitely yes","Probably yes","Probably not","No / we restrict this","Unsure"]},
-  {id:"sensitivity",label:"How sensitive is the data your team works with daily?",type:"single",options:["Low — general business info","Medium — client data, financials","High — medical, legal, or PII","Regulated — HIPAA, CJIS, CMMC"]},
+  {id:"industry",label:"What industry are you in?",type:"single",options:["Healthcare / Medical","Legal","Financial services","Construction / Trades","Professional services","Retail / E-commerce","Real estate","Nonprofit","Technology","Other"]},
+  {id:"size",label:"How many people work in the business?",type:"single",options:["Just me","2-10","11-25","26-100","100+"]},
+  {id:"leads",label:"How do most new customers first reach you?",type:"single",options:["They call us","Website or web form","Email","Social media or ads","Referrals and repeat customers"]},
+  {id:"missed",label:"What happens when a call comes in and no one can pick up?",type:"single",options:["Someone always answers","It goes to voicemail","Calls often get missed entirely","Honestly, I'm not sure"]},
+  {id:"followup",label:"How fast does someone follow up with a brand-new lead?",type:"single",options:["Within minutes","Same business day","Within a few days","It depends — we don't track it"]},
+  {id:"subs",label:"How many separate software subscriptions does the business pay for?",note:"CRM, email tool, scheduler, website, review tool, chat widget…",type:"single",options:["0-2","3-5","6-10","More than 10","Not sure"]},
+  {id:"fixes",label:"When technology breaks, who fixes it?",type:"single",options:["In-house IT","An outside IT partner","Whoever has time that day","Nobody — we work around it"]},
+  {id:"tools",label:"Which AI tools is your team using today?",note:"Select all that apply — skip if you're not sure",type:"multi",options:["ChatGPT","Microsoft Copilot","Claude","Google Gemini","Grammarly AI","Midjourney / DALL-E","Something custom / other","None that I know of"]},
+  {id:"ai",label:"How is AI being used for work?",type:"single",options:["With clear rules and company accounts","On personal accounts — no rules","Not that I know of","We've banned it"]},
+  {id:"data",label:"Does your business handle any of the following?",note:"Select all that apply",type:"multi",options:["Medical or health records","Card payments","Legal or financial documents","Government contracts","Children's data","None of these"]},
+  {id:"busywork",label:"How many hours a week does your team spend on repetitive admin?",note:"Scheduling, data entry, follow-up emails, copy-paste between systems",type:"single",options:["Less than 5","5-15","15-40","More than 40","No idea"]},
 ];
 
 var MSGS = [
   {t:"[ INIT ] Connecting to AITS scan engine...",c:"t-default"},
   {t:"[ SCAN ] Profiling organizational AI exposure...",c:"t-default"},
-  {t:"[ SCAN ] Detecting shadow AI traffic patterns...",c:"t-default"},
-  {t:"[ SCAN ] Cross-referencing known AI tool signatures...",c:"t-default"},
+  {t:"[ SCAN ] Estimating missed-lead revenue exposure...",c:"t-default"},
+  {t:"[ SCAN ] Mapping software stack overlap...",c:"t-default"},
   {t:"[ SCAN ] Analyzing data sensitivity risk vectors...",c:"t-default"},
   {t:"[ SCAN ] Checking compliance framework gaps...",c:"t-default"},
-  {t:"[ AI   ] Running risk classification model...",c:"t-ai"},
-  {t:"[ AI   ] Generating executive risk profile...",c:"t-ai"},
+  {t:"[ AI   ] Running readiness classification model...",c:"t-ai"},
+  {t:"[ AI   ] Drafting executive analyst note...",c:"t-ai"},
   {t:"[ DONE ] Scan complete. Compiling findings...",c:"t-done"},
 ];
 
 var currentQ=0, answers={}, scanProg=0, scanTick=null, blinkOn=true;
+var aiNote=null, resultsShown=false, unlocked=false, currentReport=null;
+var SHOWN_FINDINGS=2;
 
-// Blink cursor
 setInterval(function(){
   blinkOn=!blinkOn;
   var ph=document.getElementById("status").dataset.phase||"intro";
@@ -294,14 +332,12 @@ setInterval(function(){
   if(cu) cu.textContent=blinkOn?"_":" ";
 },600);
 
-// Screen switcher
 function show(id){
   ["introScreen","questionScreen","scanScreen","resultsScreen"].forEach(function(s){
     document.getElementById(s).style.display=s===id?"block":"none";
   });
 }
 
-// Calendly modal
 document.getElementById("status").dataset.phase="intro";
 document.getElementById("startBtn").addEventListener("click",function(){
   document.getElementById("status").dataset.phase="questions";
@@ -319,7 +355,6 @@ document.getElementById("calOverlay").addEventListener("click",function(e){
   if(e.target===this) this.classList.remove("active");
 });
 
-// Questions
 function loadQ(){
   var q=QUESTIONS[currentQ];
   document.getElementById("progressFill").style.width=((currentQ/QUESTIONS.length)*100)+"%";
@@ -347,12 +382,21 @@ function loadQ(){
   }else{nb.style.display="none";}
 }
 
+var EXCLUSIVE={data:"None of these",tools:"None that I know of"};
+
 function handleAnswer(val){
   var q=QUESTIONS[currentQ];
   if(q.type==="multi"){
     var cur=answers[q.id]||[];
-    var idx=cur.indexOf(val);
-    answers[q.id]=idx>=0?cur.filter(function(v){return v!==val;}):[].concat(cur,[val]);
+    var none=EXCLUSIVE[q.id];
+    if(none&&val===none){
+      // "None" is exclusive of everything else.
+      answers[q.id]=cur.indexOf(val)>=0?[]:[none];
+    }else{
+      cur=cur.filter(function(v){return v!==none;});
+      var idx=cur.indexOf(val);
+      answers[q.id]=idx>=0?cur.filter(function(v){return v!==val;}):[].concat(cur,[val]);
+    }
     loadQ();
   }else{
     answers[q.id]=val;
@@ -365,13 +409,136 @@ function advanceQ(){
   else{startScan();}
 }
 
-// Scan
+/* ==========================================================================
+   Deterministic report engine — the source of truth for the whole report.
+   ========================================================================== */
+
+var FLAG_MAP={
+  "Medical or health records":"HIPAA — health data",
+  "Card payments":"PCI-DSS — card payments",
+  "Legal or financial documents":"Confidentiality — legal & financial records",
+  "Government contracts":"CMMC / CJIS — government work",
+  "Children's data":"COPPA — children's data"
+};
+
+function computeReport(a){
+  var sensitive=(a.data||[]).filter(function(d){return d!=="None of these";});
+  var flags=sensitive.map(function(d){return FLAG_MAP[d];}).filter(Boolean);
+  var aiManaged=a.ai==="With clear rules and company accounts";
+  var toolList=(a.tools||[]).filter(function(t){return t!=="None that I know of";});
+
+  // --- Shadow AI (0-30)
+  var shadow=a.ai==="On personal accounts — no rules"?26:a.ai==="Not that I know of"?18:a.ai==="We've banned it"?12:aiManaged?5:14;
+  if(sensitive.length&&!aiManaged) shadow=Math.min(30,shadow+4);
+  if(toolList.length>=3&&!aiManaged) shadow=Math.min(30,shadow+2);
+
+  // --- Compliance (0-15)
+  var compliance=flags.length?(aiManaged?Math.min(8,flags.length*3):Math.min(15,flags.length*5)):0;
+
+  // --- Missed revenue (0-26)
+  var leak=(a.leads==="They call us"?6:a.leads==="Website or web form"?4:2)
+    +(a.missed==="Calls often get missed entirely"?12:a.missed==="It goes to voicemail"?8:a.missed==="Honestly, I'm not sure"?8:0)
+    +(a.followup==="Within a few days"?8:a.followup==="It depends — we don't track it"?8:a.followup==="Same business day"?4:0);
+
+  // --- Ops fragility (0-15)
+  var ops=(a.fixes==="Nobody — we work around it"?12:a.fixes==="Whoever has time that day"?9:a.fixes==="An outside IT partner"?4:2)
+    +(a.subs==="Not sure"?3:0);
+  ops=Math.min(15,ops);
+
+  // --- Tool sprawl (0-8)
+  var sprawl=a.subs==="More than 10"?8:a.subs==="6-10"?6:a.subs==="3-5"?3:a.subs==="Not sure"?5:1;
+
+  var score=Math.max(4,Math.min(100,shadow+compliance+leak+ops+sprawl));
+  var band=score>=70?"HIGH":score>=45?"ELEVATED":score>=25?"MODERATE":"LOW";
+
+  var shadowLevel=shadow>=22?"HIGH":shadow>=12?"MODERATE":"LOW";
+  var shadowSub=a.ai==="On personal accounts — no rules"?(toolList.length?toolList.length+" AI tools confirmed, on personal accounts with no rules":"AI in use on personal accounts with no usage rules")
+    :a.ai==="Not that I know of"?"Unmonitored — most teams are already using AI quietly"
+    :a.ai==="We've banned it"?"Bans push AI use underground rather than stopping it"
+    :aiManaged?"Usage governed by clear rules — keep them current":"Unknown usage profile";
+
+  var hoursVal=a.busywork==="Less than 5"?"2–4 hrs":a.busywork==="5-15"?"5–12 hrs":a.busywork==="15-40"?"12–30 hrs":a.busywork==="More than 40"?"30+ hrs":"Untracked";
+  var hoursSub=a.busywork==="No idea"?"Not knowing this number is itself a cost"
+    :"Repetitive admin your team could hand to automation";
+
+  // --- Findings library, weighted, top 4 rendered in full.
+  var cands=[];
+  if(leak>=10){
+    cands.push({w:leak+6,sev:leak>=18?"danger":"warn",tag:"MISSED REVENUE",
+      head:a.missed==="Calls often get missed entirely"?"Missed calls are sending your leads to whoever answers next."
+        :"Slow follow-up is quietly costing you the leads you already paid to get.",
+      detail:(a.leads==="They call us"?"Your customers reach you by phone first, and ":"")
+        +(a.missed==="Calls often get missed entirely"||a.missed==="Honestly, I'm not sure"?"calls are going unanswered — most callers who hit voicemail simply dial the next business. ":"")
+        +(a.followup==="Within a few days"||a.followup==="It depends — we don't track it"?"Leads that wait days for a response close at a fraction of the rate of leads answered in minutes.":"Speed-to-lead is the single highest-leverage number in your sales process."),
+      fix:"Missed-call text-back plus an AI receptionist answers every call instantly, 24/7 — typically the first automation we take live, inside 30 days."});
+  }
+  if(!aiManaged){
+    cands.push({w:shadow,sev:sensitive.length?"danger":"warn",tag:"SHADOW AI",
+      head:a.ai==="We've banned it"?"Your AI ban isn't stopping AI use — it's hiding it from you."
+        :a.ai==="On personal accounts — no rules"?(toolList.length?"Your team is already on "+toolList.length+" AI tools — through personal accounts, with no rules.":"Your team uses AI through personal accounts with no rules about what goes into it.")
+        :"AI is almost certainly in use at your business — just not where you can see it.",
+      detail:"Employees paste real work into free AI tools — customer details, pricing, contracts"
+        +(sensitive.length?", and in your case potentially "+sensitive.join(", ").toLowerCase():"")
+        +". Public tools can retain and train on that data, outside any agreement that protects you.",
+      fix:"A one-page AI usage policy plus governed, business-grade AI accounts gives your team the productivity without the exposure."});
+  }
+  if(flags.length&&!aiManaged){
+    cands.push({w:flags.length*7+4,sev:"danger",tag:"COMPLIANCE",
+      head:"Your data obligations and your AI usage haven't met each other yet.",
+      detail:"You handle "+sensitive.join(", ").toLowerCase()+" — which puts you under "+flags.map(function(f){return f.split(" — ")[0];}).join(", ")
+        +". Ungoverned AI use with this data is the gap regulators, insurers, and opposing counsel look for first.",
+      fix:"Access controls, an approved-tools list, and monitoring close the gap — usually without slowing anyone down."});
+  }
+  if(a.subs==="6-10"||a.subs==="More than 10"||a.subs==="Not sure"){
+    cands.push({w:sprawl+ops,sev:"warn",tag:"TOOL SPRAWL",
+      head:a.subs==="Not sure"?"Nobody knows what software the business is paying for — that is the finding."
+        :"You're paying for "+(a.subs==="More than 10"?"10+":"6–10")+" tools that don't talk to each other, and nobody owns making them work.",
+      detail:"Every disconnected subscription means duplicate data entry, leads falling between systems, and another login nobody checks. The cost isn't just the invoices — it's the gaps between them.",
+      fix:"One platform replaces the pile — CRM, marketing, booking, reviews, and reporting in one place, managed for one flat monthly fee."});
+  }
+  if(a.fixes==="Whoever has time that day"||a.fixes==="Nobody — we work around it"){
+    cands.push({w:ops+3,sev:"warn",tag:"NO SAFETY NET",
+      head:"When your technology breaks, it stays broken until someone trips over it.",
+      detail:"Automations and integrations fail silently — a form stops sending, a calendar unlinks, and you find out weeks later from an angry customer. Without an owner, every tool is a liability on a timer.",
+      fix:"A partner who tests your automations on a schedule, monitors uptime, and jumps on issues the moment they appear — that reliability is what a managed platform is for."});
+  }
+  var busyW=a.busywork==="More than 40"?14:a.busywork==="15-40"?10:a.busywork==="5-15"?6:a.busywork==="No idea"?7:2;
+  if(busyW>=6){
+    cands.push({w:busyW,sev:"info",tag:"BUSYWORK",
+      head:a.busywork==="No idea"?"You can't recover hours you aren't counting."
+        :"Your payroll is spending "+hoursVal+" a week doing work a robot should do.",
+      detail:"Scheduling, data entry, follow-up emails, and copy-paste between systems are exactly the tasks automation removes first — and the tasks your best people resent most.",
+      fix:"We start by asking your team what they hate doing, automate that first, and put the hours back where they earn money."});
+  }
+  cands.sort(function(x,y){return y.w-x.w;});
+  var findings=cands.slice(0,5);
+  if(!findings.length){
+    findings.push({w:1,sev:"info",tag:"IN GOOD SHAPE",
+      head:"Your profile is tighter than most businesses we scan.",
+      detail:"Calls answered, fast follow-up, governed AI use, and a managed stack — the fundamentals are covered. The next gains are offensive, not defensive: automation that grows revenue rather than plugs leaks.",
+      fix:"A 30-minute review maps where AI creates leverage for a business already running well — content, intake, reporting, and the busywork nobody has noticed yet."});
+  }
+
+  var fallbackNote="For a "+(a.size||"small")+" "+(a.industry||"business").toLowerCase()+" operation, this profile is "
+    +(band==="LOW"?"in good shape — the findings above are refinements, not alarms":band==="MODERATE"?"typical, and typical means fixable"
+    :"carrying real, addressable exposure")+". "
+    +(findings.length?"The place to start is the top finding: "+findings[0].head.toLowerCase().replace(/\.$/,"")+". ":"")
+    +"None of this requires a big IT project — the first fix is usually live within 30 days, and a free 30-minute review turns this report into that plan.";
+
+  return {score:score,band:band,shadowLevel:shadowLevel,shadowSub:shadowSub,flags:flags,
+    hoursVal:hoursVal,hoursSub:hoursSub,findings:findings,fallbackNote:fallbackNote};
+}
+
+/* ==========================================================================
+   Scan theater + AI analyst-note enhancement (report never depends on it).
+   ========================================================================== */
+
 function startScan(){
   document.getElementById("status").dataset.phase="scanning";
   show("scanScreen");
   scanProg=0;
   scanTick=setInterval(function(){
-    scanProg=Math.min(scanProg+1.4,93);
+    scanProg=Math.min(scanProg+1.6,96);
     document.getElementById("scanFill").style.width=scanProg+"%";
     document.getElementById("scanPct").textContent=Math.round(scanProg)+"% complete";
   },80);
@@ -384,88 +551,237 @@ function startScan(){
       term.insertBefore(div,cur);
     },i*550+400);
   });
-  callAPI();
+
+  var report=computeReport(answers);
+  fetchAnalystNote(report);
+
+  setTimeout(function(){
+    clearInterval(scanTick);
+    document.getElementById("scanFill").style.width="100%";
+    document.getElementById("scanPct").textContent="100% complete";
+    setTimeout(function(){showResults(report);},500);
+  },MSGS.length*550+900);
 }
 
-function callAPI(){
-  var fa=answers;
-  var prompt="You are an enterprise AI risk analyst for AITS (Advanced Intelligent Technology Solutions), a San Diego-based managed IT and AI services firm.\n\n"
-    +"A business just completed a free AI readiness scan on aits.llc. Analyze their responses and return ONLY a valid JSON object, no markdown, no backticks, no explanation.\n\n"
-    +"Scan responses:\n"
-    +"- Company size: "+(fa.size||"Unknown")+"\n"
-    +"- Industry: "+(fa.industry||"Unknown")+"\n"
-    +"- Known AI tools in use: "+((fa.tools||[]).join(", ")||"None identified")+"\n"
-    +"- AI usage policy status: "+(fa.policy||"Unknown")+"\n"
-    +"- Personal account usage for work AI: "+(fa.personal||"Unknown")+"\n"
-    +"- Data sensitivity level: "+(fa.sensitivity||"Unknown")+"\n\n"
-    +'Return exactly this JSON:\n{"riskScore":<integer 0-100>,"riskLevel":"<LOW|MODERATE|HIGH|CRITICAL>","topFinding":{"category":"<short name>","headline":"<10-15 words specific to their industry and tools>","detail":"<2 sentences specific to their situation>"},"hiddenFindings":["<category 2>","<category 3>"],"shadowAIEstimate":"<specific estimate>","complianceFlags":<integer>,"urgencyStatement":"<12-18 words punchy>"}';
-
+function fetchAnalystNote(report){
+  var controller=typeof AbortController!=="undefined"?new AbortController():null;
+  if(controller) setTimeout(function(){controller.abort();},12000);
   fetch(PROXY_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({messages:[{role:"user",content:prompt}]})
+    signal:controller?controller.signal:undefined,
+    body:JSON.stringify({
+      answers:answers,
+      computed:{
+        score:report.score,band:report.band,shadowLevel:report.shadowLevel,
+        flags:report.flags,hours:report.hoursVal,
+        findings:report.findings.map(function(f){return {tag:f.tag,headline:f.head};})
+      }
+    })
   }).then(function(res){
     if(!res.ok) throw new Error("API "+res.status);
     return res.json();
   }).then(function(data){
-    var raw=(data.content&&data.content[0]&&data.content[0].text)||"{}";
-    var parsed=JSON.parse(raw.replace(/```json|```/g,"").trim());
-    clearInterval(scanTick);
-    scanProg=100;
-    document.getElementById("scanFill").style.width="100%";
-    document.getElementById("scanPct").textContent="100% complete";
-    setTimeout(function(){showResults(parsed);},700);
-  }).catch(function(err){
-    clearInterval(scanTick);
-    document.getElementById("introError").innerHTML='<div class="error-msg">Scan error: '+err.message+'. Please try again.</div>';
-    show("introScreen");
-    document.getElementById("status").dataset.phase="intro";
-  });
+    if(data&&typeof data.analystNote==="string"&&data.analystNote.length>40){
+      aiNote=data.analystNote;
+      if(unlocked){
+        var el=document.getElementById("analystText");
+        el.style.opacity="0";
+        setTimeout(function(){el.textContent=aiNote;el.style.opacity="1";},400);
+      }
+    }
+  }).catch(function(){/* fallback note covers this — report is complete without it */});
 }
 
-// Results
 function showResults(r){
-  var color=r.riskScore>=75?"#FF2D55":r.riskScore>=50?"#FF6B35":r.riskScore>=25?"#FFD700":"#00FF88";
-  var label=r.riskScore>=75?"CRITICAL":r.riskScore>=50?"HIGH":r.riskScore>=25?"MODERATE":"LOW";
-  var arcLen=220,filled=(r.riskScore/100)*arcLen;
-  var angle=-180+(r.riskScore/100)*180,rad=angle*Math.PI/180;
+  var color=r.band==="HIGH"?"#FF2D55":r.band==="ELEVATED"?"#FF6B35":r.band==="MODERATE"?"#FFD700":"#00c9a7";
+  var arcLen=220,filled=(r.score/100)*arcLen;
+  var angle=-180+(r.score/100)*180,rad=angle*Math.PI/180;
   var cx=82+70*Math.cos(rad),cy=88+70*Math.sin(rad);
   document.getElementById("meterArc").style.stroke=color;
   document.getElementById("meterArc").setAttribute("stroke-dashoffset",arcLen-filled);
   document.getElementById("meterDot").setAttribute("cx",cx);
   document.getElementById("meterDot").setAttribute("cy",cy);
   document.getElementById("meterDot").style.fill=color;
-  document.getElementById("meterScore").textContent=r.riskScore;
+  document.getElementById("meterScore").textContent=r.score;
   document.getElementById("meterScore").style.fill=color;
-  document.getElementById("meterLabel").textContent=label;
+  document.getElementById("meterLabel").textContent=r.band;
   document.getElementById("meterLabel").style.fill=color;
-  var tc=r.riskScore>=75?"tag-danger":r.riskScore>=50?"tag-warn":"tag-ok";
+  var tc=r.band==="HIGH"?"tag-danger":r.band==="ELEVATED"?"tag-warn":r.band==="MODERATE"?"tag-warn":"tag-ok";
   document.getElementById("riskTag").className="tag "+tc;
-  document.getElementById("riskTag").textContent=r.riskLevel;
-  document.getElementById("shadowEst").textContent=r.shadowAIEstimate||"—";
-  document.getElementById("compFlags").textContent=r.complianceFlags||"0";
-  var fc=r.riskScore>=75?"finding-danger":"finding-warn";
-  var ft=r.riskScore>=75?"tag-danger":"tag-warn";
-  document.getElementById("finding1").className="finding "+fc;
-  document.getElementById("f1Tag").className="tag "+ft;
-  document.getElementById("f1Tag").textContent=(r.topFinding&&r.topFinding.category)||"Risk";
-  document.getElementById("f1Head").textContent=(r.topFinding&&r.topFinding.headline)||"";
-  document.getElementById("f1Detail").textContent=(r.topFinding&&r.topFinding.detail)||"";
-  document.getElementById("lockedFindings").innerHTML=(r.hiddenFindings||[]).map(function(f,i){
+  document.getElementById("riskTag").textContent=r.band;
+
+  document.getElementById("shadowEst").textContent=r.shadowLevel;
+  document.getElementById("shadowSub").textContent=r.shadowSub;
+  document.getElementById("compFlags").textContent=r.flags.length;
+  document.getElementById("compSub").textContent=r.flags.length?r.flags.join(" · "):"No regulated data categories reported";
+  document.getElementById("hoursVal").textContent=r.hoursVal;
+  document.getElementById("hoursSub").textContent=r.hoursSub;
+
+  currentReport=r;
+  var shown=r.findings.slice(0,SHOWN_FINDINGS);
+  var hidden=r.findings.slice(SHOWN_FINDINGS);
+  document.getElementById("findingsList").innerHTML=shown.map(function(f,i){return renderFinding(f,i);}).join("");
+
+  // Locked teaser: real tags visible, content ghosted until the lead form.
+  document.getElementById("lockedLabel").textContent=hidden.length
+    ?("+"+hidden.length+" MORE FINDING"+(hidden.length>1?"S":"")+" IN YOUR FULL REPORT")
+    :"YOUR ANALYST NOTE + PDF REPORT";
+  document.getElementById("lockedCards").innerHTML=hidden.map(function(f,i){
+    var ft=f.sev==="danger"?"tag-danger":f.sev==="info"?"tag-blue":"tag-warn";
     return '<div class="locked"><div class="locked-ghost">'
-      +'<div style="display:flex;justify-content:space-between;margin-bottom:7px"><span class="tag tag-blue">'+f+'</span><span class="finding-num">FINDING 0'+(i+2)+'</span></div>'
-      +'<div class="ghost-bar" style="width:70%"></div><div class="ghost-bar" style="width:52%"></div></div>'
-      +'<div class="locked-overlay"><div style="font-size:20px">🔒</div><div class="lock-label">UNLOCKED IN REVIEW SESSION</div></div></div>';
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:7px"><span class="tag '+ft+'">'+f.tag+'</span><span class="finding-num">FINDING 0'+(i+1+SHOWN_FINDINGS)+'</span></div>'
+      +'<div class="ghost-bar" style="width:72%"></div><div class="ghost-bar" style="width:88%"></div><div class="ghost-bar" style="width:55%"></div></div>'
+      +'<div class="locked-overlay"><span style="font-size:15px">🔒</span><span class="lock-label">UNLOCKS WITH YOUR FULL REPORT</span></div></div>';
   }).join("");
-  document.getElementById("urgencyText").textContent=r.urgencyStatement||"";
-  document.getElementById("ctaTop").textContent=(r.hiddenFindings||[]).length+" ADDITIONAL FINDINGS REQUIRE REVIEW";
+
   show("resultsScreen");
+  resultsShown=true;
   document.getElementById("status").textContent="▮ SCAN COMPLETE";
   document.getElementById("status").dataset.phase="results";
   setTimeout(function(){
     var cta=document.getElementById("ctaSection");
     cta.style.opacity="1";cta.style.transform="translateY(0)";
   },900);
+}
+
+function renderFinding(f,i){
+  var fc=f.sev==="danger"?"finding-danger":f.sev==="info"?"finding-info":"finding-warn";
+  var ft=f.sev==="danger"?"tag-danger":f.sev==="info"?"tag-blue":"tag-warn";
+  return '<div class="finding '+fc+'">'
+    +'<div class="finding-top"><span class="tag '+ft+'">'+f.tag+'</span><span class="finding-num">FINDING 0'+(i+1)+'</span></div>'
+    +'<div class="finding-headline">'+f.head+'</div>'
+    +'<div class="finding-detail">'+f.detail+'</div>'
+    +'<div class="finding-fix"><strong>What to do:</strong> '+f.fix+'</div>'
+    +'</div>';
+}
+
+/* ==========================================================================
+   Lead gate: unlock renders the full report on screen immediately, then the
+   PDF + lead details email to AITS in the background. The unlock NEVER waits
+   on the network — the visitor gets their report no matter what.
+   ========================================================================== */
+
+document.getElementById("unlockBtn").addEventListener("click",function(){
+  var name=document.getElementById("leadName");
+  var company=document.getElementById("leadCompany");
+  var email=document.getElementById("leadEmail");
+  var cell=document.getElementById("leadCell");
+  var err=document.getElementById("gateError");
+  [name,company,email,cell].forEach(function(el){el.classList.remove("invalid");});
+  var problems=[];
+  if(!name.value.trim()){problems.push("name");name.classList.add("invalid");}
+  if(!company.value.trim()){problems.push("company");company.classList.add("invalid");}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())){problems.push("a valid email");email.classList.add("invalid");}
+  if((cell.value.replace(/\D/g,"")).length<7){problems.push("cell phone");cell.classList.add("invalid");}
+  if(problems.length){
+    err.textContent="Please add your "+problems.join(", ").replace(/, ([^,]*)$/, " and $1")+".";
+    err.style.display="block";
+    return;
+  }
+  err.style.display="none";
+  var lead={
+    name:name.value.trim(),
+    company:company.value.trim(),
+    email:email.value.trim(),
+    cell:cell.value.trim()
+  };
+  unlockReport();
+  submitLead(lead);
+});
+
+function unlockReport(){
+  unlocked=true;
+  var r=currentReport;
+  var hidden=r.findings.slice(SHOWN_FINDINGS);
+  document.getElementById("findingsList").innerHTML=r.findings.map(function(f,i){return renderFinding(f,i);}).join("");
+  document.getElementById("shownLabel").textContent="YOUR FULL FINDINGS — AND WHAT TO DO ABOUT EACH";
+  document.getElementById("gateSection").style.display="none";
+  var box=document.getElementById("analystBox");
+  document.getElementById("analystText").textContent=aiNote||r.fallbackNote;
+  box.style.display="block";
+  box.scrollIntoView&&hidden.length&&document.getElementById("findingsList").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function submitLead(lead){
+  buildPdf(lead,currentReport,aiNote||currentReport.fallbackNote).then(function(pdfBase64){
+    return fetch(PROXY_URL+"/lead",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        lead:lead,
+        answers:answers,
+        computed:{
+          score:currentReport.score,band:currentReport.band,
+          shadowLevel:currentReport.shadowLevel,flags:currentReport.flags,
+          hours:currentReport.hoursVal,
+          findings:currentReport.findings.map(function(f){return {tag:f.tag,headline:f.head,detail:f.detail,fix:f.fix};})
+        },
+        analystNote:aiNote||currentReport.fallbackNote,
+        pdfBase64:pdfBase64||null
+      })
+    });
+  }).catch(function(){/* lead email is best-effort; the visitor already has their report */});
+}
+
+// Client-side PDF via jsPDF (lazy-loaded only at unlock). Resolves to a
+// base64 string, or null if the library can't load — the Worker then builds
+// the report into the email body instead.
+function buildPdf(lead,r,note){
+  return new Promise(function(resolve){
+    var done=false;
+    var finish=function(v){if(!done){done=true;resolve(v);}};
+    setTimeout(function(){finish(null);},8000);
+    var make=function(){
+      try{
+        var JS=window.jspdf&&window.jspdf.jsPDF;
+        if(!JS) return finish(null);
+        var doc=new JS({unit:"mm",format:"a4"});
+        var W=210,M=18,y=20;
+        var line=function(txt,size,style,color,gap){
+          doc.setFontSize(size);doc.setFont("helvetica",style||"normal");
+          doc.setTextColor(color?color[0]:31,color?color[1]:27,color?color[2]:22);
+          var rows=doc.splitTextToSize(txt,W-M*2);
+          rows.forEach(function(row){
+            if(y>272){doc.addPage();y=20;}
+            doc.text(row,M,y);y+=size*0.46;
+          });
+          y+=(gap||2);
+        };
+        line("AITS — AI Readiness & Risk Report",17,"bold",[31,42,80],3);
+        line(new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}),10,"normal",[110,110,110],5);
+        line("PREPARED FOR",9,"bold",[110,110,110],1);
+        line(lead.name+" — "+lead.company,12,"bold",null,1);
+        line(lead.email+"  ·  cell "+lead.cell,10,"normal",[80,80,80],6);
+        line("EXPOSURE SCORE",9,"bold",[110,110,110],1);
+        line(r.score+" / 100 — "+r.band,15,"bold",r.band==="HIGH"?[210,40,70]:r.band==="ELEVATED"?[220,110,50]:r.band==="MODERATE"?[190,150,20]:[20,150,120],4);
+        line("Shadow AI: "+r.shadowLevel+"    ·    Compliance flags: "+(r.flags.length?r.flags.join("; "):"none")+"    ·    Recoverable hours: "+r.hoursVal,10,"normal",[80,80,80],6);
+        line("FINDINGS",9,"bold",[110,110,110],2);
+        r.findings.forEach(function(f,i){
+          line((i+1)+". ["+f.tag+"] "+f.head,11.5,"bold",null,1);
+          line(f.detail,10,"normal",[80,80,80],1);
+          line("What to do: "+f.fix,10,"italic",[20,110,90],4);
+        });
+        line("ANALYST NOTE",9,"bold",[110,110,110],2);
+        line(note,10,"italic",[80,80,80],6);
+        line("SCAN ANSWERS",9,"bold",[110,110,110],2);
+        QUESTIONS.forEach(function(q){
+          var a=answers[q.id];
+          line(q.label+"  —  "+(Array.isArray(a)?(a.join(", ")||"(skipped)"):(a||"(skipped)")),9,"normal",[100,100,100],1);
+        });
+        y+=4;
+        line("AITS · aits.llc · (858) 337-2866 · gavin@aits.llc — free 30-minute review: aits.llc/contact",9,"normal",[110,110,110],0);
+        var b64=doc.output("datauristring").split(",")[1];
+        finish(b64||null);
+      }catch(e){finish(null);}
+    };
+    if(window.jspdf&&window.jspdf.jsPDF) return make();
+    var s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js";
+    s.onload=make;
+    s.onerror=function(){finish(null);};
+    document.head.appendChild(s);
+  });
 }
 </script>
 </body>
