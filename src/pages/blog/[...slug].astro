@@ -56,7 +56,28 @@ const breadcrumbSchema = {
   ],
 };
 
-const schemas = [articleSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
+// VideoObject — when the post is based on a Digital Dilemma episode, this
+// makes the video eligible for video-rich results and gives answer engines
+// the episode to cite alongside the article.
+const videoSchema = data.youtube
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'VideoObject',
+      name: data.title,
+      description: data.description,
+      thumbnailUrl: `https://i.ytimg.com/vi/${data.youtube}/hqdefault.jpg`,
+      uploadDate: data.pubDate.toISOString(),
+      contentUrl: `https://www.youtube.com/watch?v=${data.youtube}`,
+      embedUrl: `https://www.youtube.com/embed/${data.youtube}`,
+    }
+  : null;
+
+const schemas = [
+  articleSchema,
+  breadcrumbSchema,
+  ...(faqSchema ? [faqSchema] : []),
+  ...(videoSchema ? [videoSchema] : []),
+];
 ---
 
 <BaseLayout
@@ -85,6 +106,32 @@ const schemas = [articleSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : 
           {data.updatedDate && <span class="updated"> · Updated {fmt(data.updatedDate)}</span>}
         </p>
       </header>
+
+      {data.youtube && (
+        <a
+          class="watch"
+          href={`https://www.youtube.com/watch?v=${data.youtube}`}
+          target="_blank"
+          rel="noopener"
+          aria-label="Watch this episode of The Digital Dilemma on YouTube"
+        >
+          <img
+            class="watch-thumb"
+            src={`https://i.ytimg.com/vi/${data.youtube}/hqdefault.jpg`}
+            alt=""
+            width="480"
+            height="360"
+            loading="lazy"
+          />
+          <span class="watch-body">
+            <span class="watch-play" aria-hidden="true">▶</span>
+            <span class="watch-text">
+              <span class="watch-eyebrow">The Digital Dilemma · Podcast</span>
+              <span class="watch-label">Watch this episode on YouTube</span>
+            </span>
+          </span>
+        </a>
+      )}
 
       <div class="content">
         <Content />
@@ -149,6 +196,73 @@ const schemas = [articleSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : 
   }
   .updated {
     color: var(--accent);
+  }
+  .watch {
+    display: block;
+    position: relative;
+    margin: 8px 0 32px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    aspect-ratio: 16 / 8;
+    text-decoration: none;
+  }
+  .watch:hover {
+    border-color: var(--accent);
+  }
+  .watch-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+  }
+  .watch:hover .watch-thumb {
+    opacity: 0.65;
+  }
+  .watch-body {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 clamp(18px, 4vw, 32px);
+    background: linear-gradient(90deg, rgba(7, 9, 15, 0.82), rgba(7, 9, 15, 0.5));
+  }
+  .watch-play {
+    flex-shrink: 0;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #ff0000;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    padding-left: 4px;
+  }
+  .watch-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .watch-eyebrow {
+    font-family: var(--jak);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent2, #6b9bff);
+    font-weight: 600;
+  }
+  .watch-label {
+    font-family: var(--fran);
+    font-size: clamp(16px, 2.4vw, 21px);
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.25;
   }
   .faq {
     margin-top: 56px;

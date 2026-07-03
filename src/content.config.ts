@@ -17,6 +17,9 @@ const blog = defineCollection({
     tags: z.array(z.string()).default([]),
     image: z.string().optional(),
     draft: z.boolean().default(false),
+    // YouTube video ID for the Digital Dilemma episode this post is based on.
+    // When set, the post shows a "Watch the episode" block + VideoObject JSON-LD.
+    youtube: z.string().optional(),
     // Optional Q&A pairs -> rendered on-page AND emitted as FAQPage JSON-LD.
     faq: z
       .array(z.object({ question: z.string(), answer: z.string() }))
