@@ -49,6 +49,72 @@ function esc(s) {
   return String(s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 }
 
+// Full report as email-safe HTML (inline styles, table layout, no external
+// assets). Renders in Gmail/Outlook/Apple Mail, prints cleanly as a client
+// handout, and is ALWAYS present in the email body — never dependent on a PDF.
+function reportHtml(lead, c, note, answers) {
+  const M = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const d = new Date();
+  const dateStr = M[d.getUTCMonth()] + " " + d.getUTCDate() + ", " + d.getUTCFullYear();
+  const bandColor = c.band === "HIGH" ? "#d9243c" : c.band === "ELEVATED" ? "#e0642e" : c.band === "MODERATE" ? "#b0891a" : "#12977a";
+  const sevColor = (s) => s === "danger" ? "#d9243c" : s === "info" ? "#3b6ef0" : "#e0642e";
+  const scorePct = Math.max(4, Math.min(100, Number(c.score) || 0));
+
+  const findingCards = (c.findings || []).map((f, i) =>
+    `<div style="border:1px solid #e5e7eb;border-left:4px solid ${sevColor(f.sev)};border-radius:8px;padding:13px 15px;margin:0 0 10px;background:#ffffff">`
+    + `<div style="font:700 11px Arial,sans-serif;letter-spacing:.5px;color:${sevColor(f.sev)}">${esc(f.tag)} &nbsp;<span style="color:#9ca3af;font-weight:400">· FINDING 0${i + 1}</span></div>`
+    + `<div style="font:700 16px/1.35 Arial,sans-serif;color:#111827;margin:7px 0 6px">${esc(f.headline)}</div>`
+    + (f.detail ? `<div style="font:400 14px/1.6 Arial,sans-serif;color:#4b5563;margin:0 0 8px">${esc(f.detail)}</div>` : "")
+    + `<div style="font:400 14px/1.6 Arial,sans-serif;color:#0f766e"><strong>What to do:</strong> ${esc(f.fix || "")}</div>`
+    + `</div>`
+  ).join("");
+
+  const tiles = [["SHADOW AI", c.shadowLevel, "#e0642e"], ["COMPLIANCE FLAGS", String((c.flags || []).length), "#d9243c"], ["RECOVERABLE HRS/WK", c.hours, "#0f766e"]]
+    .map((t) => `<td style="width:33.3%;vertical-align:top;padding:0 4px"><div style="border:1px solid #e5e7eb;border-radius:8px;padding:11px 12px;background:#fff"><div style="font:700 9px Arial,sans-serif;letter-spacing:.5px;color:${t[2]}">${t[0]}</div><div style="font:700 17px Arial,sans-serif;color:#111827;margin-top:3px">${esc(t[1])}</div></div></td>`).join("");
+
+  const leadRows = [
+    ["Name", `<strong>${esc(lead.name)}</strong>`],
+    ["Company", esc(lead.company)],
+    lead.website ? ["Website", esc(lead.website)] : null,
+    ["Email", `<a href="mailto:${esc(lead.email)}" style="color:#3b6ef0">${esc(lead.email)}</a>`],
+    ["Cell", esc(lead.cell)],
+    (lead.contact && lead.contact.length) ? ["Best contact", `<strong>${esc(lead.contact.join(" / "))}</strong>`] : null,
+  ].filter(Boolean).map((r) => `<tr><td style="padding:2px 12px 2px 0;color:#6b7280;font-size:13px;white-space:nowrap">${r[0]}</td><td style="padding:2px 0;font-size:13px;color:#111827">${r[1]}</td></tr>`).join("");
+
+  const answersHtml = Object.entries(answers || {})
+    .map(([k, v]) => `<tr><td style="padding:2px 10px 2px 0;color:#9ca3af;font-size:12px">${esc(k)}</td><td style="padding:2px 0;font-size:12px;color:#4b5563">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`).join("");
+
+  return `<div style="background:#f3f4f6;padding:16px 8px;font-family:Arial,Helvetica,sans-serif">`
+    + `<div style="max-width:640px;margin:0 auto">`
+      + `<div style="background:#0c0f1a;color:#ffffff;padding:20px 24px;border-radius:10px 10px 0 0">`
+        + `<div style="font:700 10px 'Courier New',monospace;letter-spacing:2px;color:#6b9bff">AITS — ADVANCED INTELLIGENT TECHNOLOGY SOLUTIONS</div>`
+        + `<div style="font:700 22px Arial,sans-serif;margin-top:6px;color:#ffffff">AI Readiness &amp; Risk Report</div>`
+        + `<div style="font:400 13px Arial,sans-serif;color:#9ca3af;margin-top:4px">Prepared for <strong style="color:#ffffff">${esc(lead.company)}</strong> &nbsp;·&nbsp; ${dateStr}</div>`
+      + `</div>`
+      + `<div style="background:#ffffff;padding:22px 24px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px">`
+        + `<div style="background:#f9fafb;border:1px solid #eef0f3;border-radius:8px;padding:12px 14px;margin:0 0 20px">`
+          + `<div style="font:700 10px Arial,sans-serif;letter-spacing:.5px;color:#6b7280;margin-bottom:6px">LEAD · CONTACT</div>`
+          + `<table style="border-collapse:collapse">${leadRows}</table>`
+        + `</div>`
+        + `<div style="font:700 10px Arial,sans-serif;letter-spacing:.5px;color:#6b7280">EXPOSURE SCORE</div>`
+        + `<table style="width:100%;border-collapse:collapse;margin:4px 0 8px"><tr>`
+          + `<td style="vertical-align:bottom"><span style="font:700 34px Arial,sans-serif;color:${bandColor}">${esc(c.score)}</span><span style="font:400 14px Arial,sans-serif;color:#6b7280"> / 100</span></td>`
+          + `<td style="text-align:right;vertical-align:bottom;font:700 15px Arial,sans-serif;color:${bandColor}">${esc(c.band)}</td>`
+        + `</tr></table>`
+        + `<div style="background:#e5e7eb;border-radius:4px;height:8px;margin:0 0 20px"><div style="background:${bandColor};height:8px;width:${scorePct}%;border-radius:4px"></div></div>`
+        + `<table style="width:100%;border-collapse:collapse;margin:0 0 20px"><tr>${tiles}</tr></table>`
+        + `<div style="font:700 11px Arial,sans-serif;letter-spacing:.5px;color:#6b7280;margin:0 0 10px">FINDINGS — AND WHAT TO DO ABOUT EACH</div>`
+        + findingCards
+        + `<div style="font:700 10px Arial,sans-serif;letter-spacing:.5px;color:#7c3aed;margin:16px 0 6px">ANALYST NOTE</div>`
+        + `<div style="border:1px solid #ece9fb;border-left:4px solid #7c3aed;border-radius:8px;padding:12px 14px;background:#faf9ff;font:italic 400 14px/1.6 Arial,sans-serif;color:#4b5563">${esc(note || "")}</div>`
+        + `<div style="text-align:center;margin:22px 0 4px"><a href="https://aits.llc/contact" style="display:inline-block;background:#3b6ef0;color:#ffffff;text-decoration:none;font:700 14px Arial,sans-serif;padding:12px 22px;border-radius:8px">Book the free 30-minute review &rarr;</a></div>`
+        + `<div style="font:400 11px Arial,sans-serif;color:#9ca3af;text-align:center;margin-top:10px">AITS · aits.llc · (858) 337-2866 · gavin@aits.llc</div>`
+        + `<div style="border-top:1px solid #eef0f3;margin-top:18px;padding-top:12px"><div style="font:700 10px Arial,sans-serif;color:#b6bbc6;letter-spacing:.5px;margin-bottom:6px">RAW SCAN ANSWERS</div><table style="border-collapse:collapse">${answersHtml}</table></div>`
+      + `</div>`
+    + `</div>`
+  + `</div>`;
+}
+
 async function handleLead(body, env, json) {
   const lead = body && body.lead;
   const c = body && body.computed;
@@ -59,32 +125,7 @@ async function handleLead(body, env, json) {
     return json({ error: "Lead email not configured (missing RESEND_API_KEY)" }, 503);
   }
 
-  const findingsHtml = (c.findings || [])
-    .map(
-      (f, i) =>
-        `<p style="margin:0 0 12px"><strong>${i + 1}. [${esc(f.tag)}] ${esc(f.headline)}</strong><br>${esc(f.detail)}<br><em>What to do: ${esc(f.fix)}</em></p>`,
-    )
-    .join("");
-
-  const answersHtml = Object.entries(body.answers || {})
-    .map(([k, v]) => `<tr><td style="padding:2px 10px 2px 0;color:#666">${esc(k)}</td><td style="padding:2px 0">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`)
-    .join("");
-
-  const html = [
-    `<h2 style="margin:0 0 4px">New AI Risk Scan lead</h2>`,
-    `<p style="margin:0 0 16px;color:#666">Unlocked the full report on aits.llc/scan.html</p>`,
-    `<table style="margin:0 0 16px;font-size:15px">`,
-    `<tr><td style="padding:2px 10px 2px 0;color:#666">Name</td><td><strong>${esc(lead.name)}</strong></td></tr>`,
-    `<tr><td style="padding:2px 10px 2px 0;color:#666">Company</td><td>${esc(lead.company)}</td></tr>`,
-    lead.website ? `<tr><td style="padding:2px 10px 2px 0;color:#666">Website</td><td>${esc(lead.website)}</td></tr>` : '',
-    `<tr><td style="padding:2px 10px 2px 0;color:#666">Email</td><td>${esc(lead.email)}</td></tr>`,
-    `<tr><td style="padding:2px 10px 2px 0;color:#666">Cell phone</td><td>${esc(lead.cell)}</td></tr>`,
-    lead.contact && lead.contact.length ? `<tr><td style="padding:2px 10px 2px 0;color:#666">Prefers</td><td><strong>${esc(lead.contact.join(' / '))}</strong></td></tr>` : '',
-    `</table>`,
-    `<p style="margin:0 0 16px"><strong>Exposure: ${esc(c.score)}/100 — ${esc(c.band)}</strong> · Shadow AI ${esc(c.shadowLevel)} · Flags: ${esc((c.flags || []).join("; ") || "none")} · Recoverable hours: ${esc(c.hours)}</p>`,
-    body.pdfBase64 ? `<p style="color:#666">Full report attached as PDF.</p>` : `<h3>Findings</h3>${findingsHtml}<h3>Analyst note</h3><p><em>${esc(body.analystNote)}</em></p>`,
-    `<h3 style="margin:16px 0 6px">Raw answers</h3><table style="font-size:13px">${answersHtml}</table>`,
-  ].join("\n");
+  const html = reportHtml(lead, c, body.analystNote, body.answers);
 
   const payload = {
     from: NOTIFY_FROM,

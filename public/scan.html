@@ -799,25 +799,25 @@ function unlockReport(){
   box.scrollIntoView&&hidden.length&&document.getElementById("findingsList").scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 
+// Send the lead + full report data to the Worker, which builds the report
+// email. Fires immediately — no client-side PDF to wait on or fail. The
+// visitor already has their report on screen; this is best-effort.
 function submitLead(lead){
-  buildPdf(lead,currentReport,aiNote||currentReport.fallbackNote).then(function(pdfBase64){
-    return fetch(PROXY_URL+"/lead",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        lead:lead,
-        answers:answers,
-        computed:{
-          score:currentReport.score,band:currentReport.band,
-          shadowLevel:currentReport.shadowLevel,flags:currentReport.flags,
-          hours:currentReport.hoursVal,
-          findings:currentReport.findings.map(function(f){return {tag:f.tag,headline:f.head,detail:f.detail,fix:f.fix};})
-        },
-        analystNote:aiNote||currentReport.fallbackNote,
-        pdfBase64:pdfBase64||null
-      })
-    });
-  }).catch(function(){/* lead email is best-effort; the visitor already has their report */});
+  fetch(PROXY_URL+"/lead",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      lead:lead,
+      answers:answers,
+      computed:{
+        score:currentReport.score,band:currentReport.band,
+        shadowLevel:currentReport.shadowLevel,flags:currentReport.flags,
+        hours:currentReport.hoursVal,
+        findings:currentReport.findings.map(function(f){return {tag:f.tag,headline:f.head,detail:f.detail,fix:f.fix,sev:f.sev};})
+      },
+      analystNote:aiNote||currentReport.fallbackNote
+    })
+  }).catch(function(){/* best-effort; the visitor already has their report */});
 }
 
 function esc2(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
