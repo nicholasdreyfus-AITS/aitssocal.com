@@ -58,6 +58,9 @@
   .f-detail{color:var(--text-2);font-size:15px;margin-bottom:14px}
   .f-fix{border-top:1px solid var(--line);padding-top:12px;font-size:15px;color:var(--text)}
   .f-fix .lbl{font-family:monospace;font-size:10px;letter-spacing:1px;color:var(--teal-2);text-transform:uppercase;display:block;margin-bottom:4px}
+  .f-prev{margin-top:12px;padding-top:11px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.6}
+  .f-prev b{color:var(--text-2);font-weight:600}
+  .f-prev .lbl{display:block;font-family:monospace;font-size:10px;letter-spacing:1px;color:var(--blue-2);text-transform:uppercase;margin-bottom:4px}
   .analyst{background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:0 14px 14px 0;padding:20px 24px;margin:12px 0 40px}
   .analyst .lbl{font-family:monospace;font-size:10px;letter-spacing:1.5px;color:var(--blue-2);text-transform:uppercase;margin-bottom:8px}
   .analyst p{font-family:var(--fran);font-style:italic;font-size:17px;line-height:1.6;color:var(--text-2)}
@@ -107,7 +110,7 @@
   <div class="analyst"><p id="analyst"></p></div>
 
   <div class="cta"><a href="https://aits.llc/contact">Book your free 30-minute review →</a></div>
-  <div class="foot">AITS · aits.llc · (858) 337-2866 · <a href="mailto:gavin@aits.llc">gavin@aits.llc</a><br>One managed platform. One flat monthly fee. One partner who runs it.</div>
+  <div class="foot">AITS · aits.llc · (858) 337-2866 · <a href="mailto:gavin@aits.llc">gavin@aits.llc</a><br>One managed platform. One flat monthly fee. One partner who runs it.<br><span style="opacity:0.7">Prevalence figures are industry-informed estimates.</span></div>
 </div>
 
 <script>
@@ -143,7 +146,9 @@ function render(d){
     return '<div class="finding '+sev+'"><div class="f-top"><span class="f-tag">'+esc(f.tag)+'</span><span class="f-num">FINDING 0'+(i+1)+'</span></div>'
       +'<div class="f-head">'+esc(f.headline||f.head)+'</div>'
       +(f.detail?'<div class="f-detail">'+esc(f.detail)+'</div>':'')
-      +'<div class="f-fix"><span class="lbl">What to do</span>'+esc(f.fix)+'</div></div>';
+      +'<div class="f-fix"><span class="lbl">What to do</span>'+esc(f.fix)+'</div>'
+      +(f.prev?'<div class="f-prev"><span class="lbl">How common</span><b>'+f.prev.s+'%</b> of small businesses, <b>'+f.prev.m+'%</b> of mid-sized, and <b>'+f.prev.e+'%</b> of enterprises also miss this. '+esc(f.prev.edge)+'</div>':'')
+      +'</div>';
   }).join("");
   document.getElementById("analyst").textContent=note;
 }

@@ -66,6 +66,7 @@ function reportHtml(lead, c, note, answers, clientUrl) {
     + `<div style="font:700 16px/1.35 Arial,sans-serif;color:#111827;margin:7px 0 6px">${esc(f.headline)}</div>`
     + (f.detail ? `<div style="font:400 14px/1.6 Arial,sans-serif;color:#4b5563;margin:0 0 8px">${esc(f.detail)}</div>` : "")
     + `<div style="font:400 14px/1.6 Arial,sans-serif;color:#0f766e"><strong>What to do:</strong> ${esc(f.fix || "")}</div>`
+    + (f.prev ? `<div style="margin-top:9px;padding-top:8px;border-top:1px solid #eef0f3;font:400 12px/1.55 Arial,sans-serif;color:#6b7280"><span style="font:700 9px Arial,sans-serif;letter-spacing:.5px;color:#3b6ef0">HOW COMMON</span> — <b style="color:#111827">${f.prev.s}%</b> of small businesses, <b style="color:#111827">${f.prev.m}%</b> of mid-sized, and <b style="color:#111827">${f.prev.e}%</b> of enterprises also miss this. ${esc(f.prev.edge)}</div>` : "")
     + `</div>`
   ).join("");
 
@@ -110,6 +111,7 @@ function reportHtml(lead, c, note, answers, clientUrl) {
         + `<div style="border:1px solid #ece9fb;border-left:4px solid #7c3aed;border-radius:8px;padding:12px 14px;background:#faf9ff;font:italic 400 14px/1.6 Arial,sans-serif;color:#4b5563">${esc(note || "")}</div>`
         + `<div style="text-align:center;margin:22px 0 4px"><a href="https://aits.llc/contact" style="display:inline-block;background:#3b6ef0;color:#ffffff;text-decoration:none;font:700 14px Arial,sans-serif;padding:12px 22px;border-radius:8px">Book the free 30-minute review &rarr;</a></div>`
         + `<div style="font:400 11px Arial,sans-serif;color:#9ca3af;text-align:center;margin-top:10px">AITS · aits.llc · (858) 337-2866 · gavin@aits.llc</div>`
+        + `<div style="font:400 10px Arial,sans-serif;color:#b6bbc6;text-align:center;margin-top:6px">Prevalence figures are industry-informed estimates.</div>`
         + `<div style="border-top:1px solid #eef0f3;margin-top:18px;padding-top:12px"><div style="font:700 10px Arial,sans-serif;color:#b6bbc6;letter-spacing:.5px;margin-bottom:6px">RAW SCAN ANSWERS</div><table style="border-collapse:collapse">${answersHtml}</table></div>`
       + `</div>`
     + `</div>`

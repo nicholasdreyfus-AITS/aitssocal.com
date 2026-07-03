@@ -84,6 +84,9 @@
     .finding-detail{color:#8b93ad;font-size:13px;line-height:1.6;margin-bottom:7px}
     .finding-fix{font-size:13px;line-height:1.6;color:#e8eaf2}
     .finding-fix strong{color:#00c9a7;font-weight:700}
+    .finding-prev{margin-top:10px;padding-top:9px;border-top:1px solid #1d2333;font-size:12px;line-height:1.6;color:#8b93ad}
+    .finding-prev b{color:#e8eaf2;font-weight:700}
+    .fp-lead{font-family:monospace;font-size:10px;letter-spacing:1px;color:#6b9bff;text-transform:uppercase}
     .locked{background:#0c0f1a;border:1px solid #1d2333;border-radius:8px;padding:13px 14px;margin-bottom:8px;position:relative;overflow:hidden}
     .locked-ghost{opacity:0.14}
     .ghost-bar{height:7px;background:#2a3149;border-radius:4px;margin-bottom:6px}
@@ -347,6 +350,23 @@ function orderedOptions(q){
   return pri.concat(rest).concat([none]);
 }
 
+// Prevalence estimates by segment (small biz / mid-sized / enterprise) —
+// how many businesses ALSO miss this. Framed so the gap reads as an edge:
+// most miss it, so closing it makes you stand out. Industry-informed
+// estimates (labelled as such in the report), not a specific study.
+var PREV={
+  "MISSED REVENUE":{s:62,m:44,e:24,edge:"Answer every call instantly and you beat most of your market to the lead."},
+  "SHADOW AI":{s:68,m:55,e:39,edge:"Govern it and you're ahead of two-thirds of businesses your size."},
+  "EMPLOYEE POLICY":{s:81,m:63,e:37,edge:"A signed policy is standard at enterprises and rare at your size — an easy edge."},
+  "COMPLIANCE":{s:71,m:57,e:33,edge:"Closing the gap before regulators or insurers look puts you ahead of most peers."},
+  "VENDOR AI TERMS":{s:92,m:84,e:63,edge:"Almost nobody has this. Having it is a genuine differentiator."},
+  "CYBER INSURANCE":{s:74,m:60,e:34,edge:"Knowing where you stand before a claim beats most of the market."},
+  "THIRD-PARTY ACCESS":{s:70,m:57,e:41,edge:"Most businesses never check this — you'd be ahead of them."},
+  "TOOL SPRAWL":{s:55,m:47,e:29,edge:"Consolidating is uncommon at your size and shows up immediately in your margins."},
+  "NO SAFETY NET":{s:64,m:39,e:14,edge:"Enterprises never run without this — matching them is a real step up."},
+  "BUSYWORK":{s:78,m:66,e:49,edge:"Reclaiming these hours is something most of your peers still haven't done."}
+};
+
 var MSGS = [
   {t:"[ INIT ] Connecting to AITS scan engine...",c:"t-default"},
   {t:"[ SCAN ] Profiling organizational AI exposure...",c:"t-default"},
@@ -606,6 +626,8 @@ function computeReport(a){
       :"This is the one almost nobody has covered. When a contractor or vendor runs your customer data, financials, or IP through an AI tool, whose liability is that? Without a signed agreement that specifically governs AI use of your data, the answer is usually you. It is the most overlooked exposure we find — and the easiest to close on paper.",
     fix:"We give you a plain-language AI data clause to add to your vendor agreements, so any third party handling your data is explicitly on the hook for how they use it. This is the first thing we would put in front of you on a call."});
 
+  findings.forEach(function(f){if(PREV[f.tag])f.prev=PREV[f.tag];});
+
   var fallbackNote="For a "+(a.size||"small")+" "+(a.industry||"business").toLowerCase()+" operation, this profile is "
     +(band==="LOW"?"in good shape — the findings above are refinements, not alarms":band==="MODERATE"?"typical, and typical means fixable"
     :"carrying real, addressable exposure")+". "
@@ -740,6 +762,7 @@ function renderFinding(f,i){
     +'<div class="finding-headline">'+f.head+'</div>'
     +'<div class="finding-detail">'+f.detail+'</div>'
     +'<div class="finding-fix"><strong>What to do:</strong> '+f.fix+'</div>'
+    +(f.prev?'<div class="finding-prev"><span class="fp-lead">How common</span> — <b>'+f.prev.s+'%</b> of small businesses, <b>'+f.prev.m+'%</b> of mid-sized, and <b>'+f.prev.e+'%</b> of enterprises also miss this. '+f.prev.edge+'</div>':'')
     +'</div>';
 }
 
@@ -813,7 +836,7 @@ function submitLead(lead){
         score:currentReport.score,band:currentReport.band,
         shadowLevel:currentReport.shadowLevel,flags:currentReport.flags,
         hours:currentReport.hoursVal,
-        findings:currentReport.findings.map(function(f){return {tag:f.tag,headline:f.head,detail:f.detail,fix:f.fix,sev:f.sev};})
+        findings:currentReport.findings.map(function(f){return {tag:f.tag,headline:f.head,detail:f.detail,fix:f.fix,sev:f.sev,prev:f.prev};})
       },
       analystNote:aiNote||currentReport.fallbackNote
     })
