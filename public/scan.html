@@ -152,7 +152,7 @@
         <span class="tag tag-blue">EXPOSURE SCORE</span>
       </div>
       <div class="intro-title">What is AI doing in your business right now — and what should it be doing for you?</div>
-      <div class="intro-sub">Eleven quick questions any owner can answer — no IT knowledge needed. Get an instant read on your AI exposure, the revenue slipping through missed calls and slow follow-up, and the hours your team could get back every week.</div>
+      <div class="intro-sub">A short set of quick questions any owner can answer — no IT knowledge needed. Get an instant read on your AI exposure, the revenue slipping through missed calls and slow follow-up, and the hours your team could get back every week.</div>
       <div class="checklist">
         <div class="checklist-label">WHAT YOU GET INSTANTLY</div>
         <div class="checklist-item">AI exposure score (0–100)</div>
@@ -318,7 +318,9 @@ var QUESTIONS = [
   {id:"fixes",label:"When technology breaks, who fixes it?",type:"single",options:["In-house IT","An outside IT partner","Whoever has time that day","Nobody — we work around it"]},
   {id:"tools",label:"Which AI tools is your team using today?",note:"Select all that apply — skip if you're not sure",type:"multi",options:["ChatGPT","Microsoft Copilot","Claude","Google Gemini","Grammarly AI","Midjourney / DALL-E","Something custom / other","None that I know of"]},
   {id:"ai",label:"How is AI being used for work?",type:"single",options:["With clear rules and company accounts","We have a policy mostly in place — still finishing it","We just started putting rules together","On personal accounts — no rules","Not that I know of","We've banned it"]},
+  {id:"emppolicy",label:"Do you have an AI & data policy that every employee has signed?",type:"single",options:["Yes — every employee has signed one","We have one, but not everyone has signed","No signed policy yet","Not sure"]},
   {id:"data",label:"Does your business handle any of the following?",note:"Select all that apply",type:"multi",options:["Medical or health records","Card payments","Legal or financial documents","Government contracts","Children's data","None of these"]},
+  {id:"vendorterms",label:"Do your outside vendors have a written AI agreement with you?",note:"Bookkeeper, marketing, IT — anyone who touches your data",type:"single",options:["Yes — it's in our vendor contracts","No — we've never asked","Not sure"]},
   {id:"busywork",label:"How many hours a week does your team spend on repetitive admin?",note:"Scheduling, data entry, follow-up emails, copy-paste between systems",type:"single",options:["Less than 5","5-15","15-40","More than 40","No idea"]},
 ];
 
@@ -478,6 +480,9 @@ function computeReport(a){
     :aiManaged?5:14;
   if(sensitive.length&&!aiGoverned) shadow=Math.min(30,shadow+4);
   if(toolList.length>=3&&!aiGoverned) shadow=Math.min(30,shadow+2);
+  var empSigned=a.emppolicy==="Yes — every employee has signed one";
+  var empNone=a.emppolicy==="No signed policy yet"||a.emppolicy==="Not sure";
+  if(empNone&&!aiManaged) shadow=Math.min(30,shadow+2);
 
   // --- Compliance (0-15)
   var compliance=flags.length?(aiGoverned?Math.min(8,flags.length*3):Math.min(15,flags.length*5)):0;
@@ -565,6 +570,14 @@ function computeReport(a){
       detail:"Scheduling, data entry, follow-up emails, and copy-paste between systems are exactly the tasks automation removes first — and the tasks your best people resent most.",
       fix:"We start by asking your team what they hate doing, automate that first, and put the hours back where they earn money."});
   }
+  if(!empSigned && a.emppolicy){
+    cands.push({w:empNone?13:9,sev:empNone?"warn":"info",tag:"EMPLOYEE POLICY",
+      head:empNone?"There's no signed AI & data policy your team is actually held to."
+        :"You have a policy — but not everyone has signed it, so it's hard to enforce.",
+      detail:"A policy nobody signed is a suggestion, not a control. If an employee leaks data through an AI tool, \"we told them not to\" doesn't hold up with a regulator, an insurer, or in court — a signed acknowledgment does.",
+      fix:"We produce a plain-language AI & data use policy written for your business, ready for every employee to sign — so the rule is documented, acknowledged, and enforceable."});
+  }
+
   // --- Universal findings: apply to EVERY business, even a low-score one.
   // These guarantee there is always something worth a conversation, and they
   // carry modest weight so acute findings still lead when they exist.
@@ -583,10 +596,15 @@ function computeReport(a){
   // --- The hero finding: always present, always LOCKED (revealed only after
   // the visitor enters their info). Appended last so it never lands in the two
   // free findings. This is the single most compelling reason to submit.
-  findings.push({w:0,locked:true,sev:"danger",tag:"VENDOR AI TERMS",
-    head:"Have the vendors who touch your data signed anything about using AI with it?",
-    detail:"This is the one almost nobody has covered. When a contractor or vendor runs your customer data, financials, or IP through an AI tool, whose liability is that? Without a signed agreement that specifically governs AI use of your data, the answer is usually you. It is the most overlooked exposure we find — and the easiest to close on paper.",
-    fix:"We give you a plain-language AI data clause to add to your vendor agreements, so any third party handling your data is on the hook for how they use it. This is the first thing we would put in front of you on a call."});
+  var vendorYes=a.vendorterms==="Yes — it's in our vendor contracts";
+  findings.push({w:0,locked:true,sev:vendorYes?"warn":"danger",tag:"VENDOR AI TERMS",
+    head:vendorYes
+      ?"You have vendor agreements — but do they actually mention AI, or just data?"
+      :"Have the vendors who touch your data signed anything about using AI with it?",
+    detail:vendorYes
+      ?"Most vendor contracts signed before the last year or two govern data handling but say nothing about AI specifically. If your bookkeeper or agency runs your data through their own AI tools, an older data clause may not cover it — and the liability quietly drifts back to you."
+      :"This is the one almost nobody has covered. When a contractor or vendor runs your customer data, financials, or IP through an AI tool, whose liability is that? Without a signed agreement that specifically governs AI use of your data, the answer is usually you. It is the most overlooked exposure we find — and the easiest to close on paper.",
+    fix:"We give you a plain-language AI data clause to add to your vendor agreements, so any third party handling your data is explicitly on the hook for how they use it. This is the first thing we would put in front of you on a call."});
 
   var fallbackNote="For a "+(a.size||"small")+" "+(a.industry||"business").toLowerCase()+" operation, this profile is "
     +(band==="LOW"?"in good shape — the findings above are refinements, not alarms":band==="MODERATE"?"typical, and typical means fixable"
