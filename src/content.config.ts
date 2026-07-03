@@ -16,6 +16,9 @@ const blog = defineCollection({
     // Short, search-intent tags used for related-content + topical clustering.
     tags: z.array(z.string()).default([]),
     image: z.string().optional(),
+    // Full-width editorial hero image shown at the top of the post.
+    heroImage: z.string().optional(),
+    heroAlt: z.string().optional(),
     draft: z.boolean().default(false),
     // YouTube video ID for the Digital Dilemma episode this post is based on.
     // When set, the post shows a "Watch the episode" block + VideoObject JSON-LD.

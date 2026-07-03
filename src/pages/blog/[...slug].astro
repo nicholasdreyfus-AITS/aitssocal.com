@@ -107,7 +107,17 @@ const schemas = [
         </p>
       </header>
 
-      {data.youtube && (
+      {data.heroImage ? (
+        <figure class="post-hero">
+          <img
+            src={data.heroImage}
+            alt={data.heroAlt ?? ''}
+            width="1280"
+            height="720"
+            loading="eager"
+          />
+        </figure>
+      ) : data.youtube ? (
         <a
           class="watch"
           href={`https://www.youtube.com/watch?v=${data.youtube}`}
@@ -131,7 +141,7 @@ const schemas = [
             </span>
           </span>
         </a>
-      )}
+      ) : null}
 
       <div class="content">
         <Content />
@@ -166,6 +176,25 @@ const schemas = [
         </p>
         <p class="muted">{BUSINESS.areasServed.join(' · ')}</p>
       </aside>
+
+      {data.youtube && (
+        <section class="episode-embed" aria-labelledby="ep-h">
+          <p class="section-label">Listen to the episode</p>
+          <h2 id="ep-h">The Digital Dilemma</h2>
+          <p class="episode-sub">Prefer to listen? Play the full episode this article is based on.</p>
+          <div class="embed-frame">
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${data.youtube}`}
+              title={`The Digital Dilemma — ${data.title}`}
+              loading="lazy"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </section>
+      )}
 
       <NewsletterSignup />
     </div>
@@ -268,6 +297,89 @@ const schemas = [
     font-weight: 600;
     color: #fff;
     line-height: 1.25;
+  }
+  .post-hero {
+    margin: 8px 0 32px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .post-hero img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  /* Editorial images the article text flows around. Placed as
+     <figure class="post-fig left|right"> directly in the post markdown. */
+  .content :global(.post-fig) {
+    margin: 6px 0 22px;
+    max-width: 46%;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+  }
+  .content :global(.post-fig img) {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .content :global(.post-fig figcaption) {
+    font-family: var(--jak);
+    font-size: 12px;
+    color: var(--muted);
+    padding: 9px 13px;
+    line-height: 1.4;
+  }
+  .content :global(.post-fig.right) {
+    float: right;
+    margin-left: 30px;
+  }
+  .content :global(.post-fig.left) {
+    float: left;
+    margin-right: 30px;
+  }
+  /* Contain the floats so they don't spill into the FAQ / CTA. */
+  .content::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+  @media (max-width: 640px) {
+    .content :global(.post-fig),
+    .content :global(.post-fig.left),
+    .content :global(.post-fig.right) {
+      float: none;
+      max-width: 100%;
+      margin: 22px 0;
+    }
+  }
+  .episode-embed {
+    margin-top: 56px;
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+  }
+  .episode-embed h2 {
+    font-size: 1.35rem;
+    margin: 6px 0 6px;
+  }
+  .episode-sub {
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+  .embed-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #000;
+  }
+  .embed-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
   }
   .faq {
     margin-top: 56px;

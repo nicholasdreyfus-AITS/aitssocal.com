@@ -4,6 +4,8 @@ description: 'Seven reasons cyber insurers deny claims — vague definitions, mi
 pubDate: 2024-10-07
 author: 'Nick Dreyfus'
 youtube: '_NcR2qXUSyU'
+heroImage: '/images/blog/cyber-insurance-hero.jpg'
+heroAlt: 'Hands holding a magnifying glass over the fine print of an insurance policy'
 tags: ['Cyber Insurance', 'Cybersecurity', 'Risk Management']
 faq:
   - question: 'Why would a cyber insurance claim be denied?'
@@ -21,6 +23,11 @@ faq:
 Cyber insurance has quietly become a line item almost every business now carries. The pitch is simple: pay a premium, and if you get breached, you're covered. But here's the part nobody reads until it's too late — many policies are written in a way that makes it genuinely hard to collect on the coverage you thought you were paying for.
 
 I've watched companies discover this at the worst possible moment: mid-incident, systems down, revenue bleeding, only to find their claim tied up or denied over a technicality in the fine print. So let's pull that fine print into the light. Here are the seven reasons a cyber insurer can deny your claim — and what to do about each one *before* you ever need to file.
+
+<figure class="post-fig right">
+  <img src="/images/blog/cyber-insurance-city.jpg" alt="The City of London financial district at dusk" width="1280" height="720" loading="lazy" />
+  <figcaption>The world's insurance capital runs on fine print — and the fine print is where claims are won or lost.</figcaption>
+</figure>
 
 ## 1. Ambiguous language
 
@@ -63,6 +70,11 @@ Many policies require a forensic investigation before a claim is processed — o
 Traditional insurance works because risk is shared across a large pool. Cyber insurance largely isn't structured that way yet. Without established risk-sharing, insurers stay conservative — higher premiums, more exclusions, thinner protection. You can end up paying a lot for a policy that protects surprisingly little.
 
 **What to do:** Judge the policy on what it actually covers, not on the premium or the brand name.
+
+<figure class="post-fig left">
+  <img src="/images/blog/cyber-insurance-padlock.jpg" alt="A cracked padlock resting on an insurance contract" width="1280" height="720" loading="lazy" />
+  <figcaption>A policy can look airtight and still crack along the exclusions you never read.</figcaption>
+</figure>
 
 ## Why this matters
 
