@@ -565,14 +565,28 @@ function computeReport(a){
       detail:"Scheduling, data entry, follow-up emails, and copy-paste between systems are exactly the tasks automation removes first — and the tasks your best people resent most.",
       fix:"We start by asking your team what they hate doing, automate that first, and put the hours back where they earn money."});
   }
+  // --- Universal findings: apply to EVERY business, even a low-score one.
+  // These guarantee there is always something worth a conversation, and they
+  // carry modest weight so acute findings still lead when they exist.
+  cands.push({w:8,sev:"warn",tag:"THIRD-PARTY ACCESS",
+    head:"Your vendors touch your data — do you know if they run it through their own AI?",
+    detail:"Your bookkeeper, marketing help, IT contractor, and software vendors all handle your data. Any one of them pasting it into their own AI tools is exposure you inherit but can't see — and their mistake becomes your problem.",
+    fix:"We map who can reach what, and help you set the expectation that your data never goes into anyone's ungoverned AI — yours or theirs."});
+  cands.push({w:7,sev:"info",tag:"CYBER INSURANCE",
+    head:"Even a clean setup: does your cyber policy actually cover an AI-related incident?",
+    detail:"Most cyber policies written before the last renewal cycle have silent gaps or outright exclusions for AI-driven data exposure. A breach traced back to an AI tool can fall outside coverage — and you find that out at claim time, not before.",
+    fix:"We check your posture against how insurers are now writing AI exclusions, so you know exactly where you stand before you ever need to file."});
+
   cands.sort(function(x,y){return y.w-x.w;});
   var findings=cands.slice(0,5);
-  if(!findings.length){
-    findings.push({w:1,sev:"info",tag:"IN GOOD SHAPE",
-      head:"Your profile is tighter than most businesses we scan.",
-      detail:"Calls answered, fast follow-up, governed AI use, and a managed stack — the fundamentals are covered. The next gains are offensive, not defensive: automation that grows revenue rather than plugs leaks.",
-      fix:"A 30-minute review maps where AI creates leverage for a business already running well — content, intake, reporting, and the busywork nobody has noticed yet."});
-  }
+
+  // --- The hero finding: always present, always LOCKED (revealed only after
+  // the visitor enters their info). Appended last so it never lands in the two
+  // free findings. This is the single most compelling reason to submit.
+  findings.push({w:0,locked:true,sev:"danger",tag:"VENDOR AI TERMS",
+    head:"Have the vendors who touch your data signed anything about using AI with it?",
+    detail:"This is the one almost nobody has covered. When a contractor or vendor runs your customer data, financials, or IP through an AI tool, whose liability is that? Without a signed agreement that specifically governs AI use of your data, the answer is usually you. It is the most overlooked exposure we find — and the easiest to close on paper.",
+    fix:"We give you a plain-language AI data clause to add to your vendor agreements, so any third party handling your data is on the hook for how they use it. This is the first thing we would put in front of you on a call."});
 
   var fallbackNote="For a "+(a.size||"small")+" "+(a.industry||"business").toLowerCase()+" operation, this profile is "
     +(band==="LOW"?"in good shape — the findings above are refinements, not alarms":band==="MODERATE"?"typical, and typical means fixable"
@@ -797,74 +811,103 @@ function loadScript(src,test,cb){
   document.head.appendChild(s);
 }
 
-// PDF: capture the on-screen report so the emailed/handout PDF looks EXACTLY
-// like what the visitor sees on the page. Falls back to a text PDF, then null.
-// Resolves to a base64 string (or null). Never rejects — lead email is
+// PDF: a hand-designed dark report that recreates the on-screen look —
+// branded, reliable, and always a compact vector file that attaches cleanly.
+// Resolves to a base64 string (or null). Never rejects — the lead email is
 // best-effort and the visitor already has their report either way.
 function buildPdf(lead,r,note){
   return new Promise(function(resolve){
     var done=false;var finish=function(v){if(!done){done=true;resolve(v);}};
-    setTimeout(function(){finish(buildTextPdf(lead,r,note));},16000);
+    setTimeout(function(){finish(null);},12000);
     loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js",
       function(){return !!(window.jspdf&&window.jspdf.jsPDF);},
-      function(ok1){
-        if(!ok1) return finish(null);
-        loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
-          function(){return !!window.html2canvas;},
-          function(ok2){
-            if(!ok2) return finish(buildTextPdf(lead,r,note));
-            captureImagePdf(lead,r,note)
-              .then(function(b64){finish(b64||buildTextPdf(lead,r,note));})
-              .catch(function(){finish(buildTextPdf(lead,r,note));});
-          });
+      function(ok){
+        if(!ok) return finish(null);
+        var b64=null;
+        try{b64=renderPdf(lead,r,note);}catch(e){b64=null;}
+        if(!b64){try{b64=buildTextPdf(lead,r,note);}catch(e){}}
+        finish(b64);
       });
   });
 }
 
-// Render a clean clone of the results panel (gate + CTA removed, a
-// "Prepared for" header + AITS footer added) to a canvas, then into a
-// multi-page A4 PDF that mirrors the on-screen design.
-function captureImagePdf(lead,r,note){
-  return new Promise(function(resolve,reject){
-    try{
-      var JS=window.jspdf.jsPDF, h2c=window.html2canvas;
-      var dateStr=new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
-      var wrap=document.createElement("div");
-      wrap.style.cssText="position:fixed;left:-9999px;top:0;width:600px;background:#07090f;padding:18px;z-index:-1;";
-      var panel=document.createElement("div");
-      panel.className="panel";panel.style.margin="0";
-      var clone=document.getElementById("resultsScreen").cloneNode(true);
-      clone.style.display="block";
-      var rm=function(sel){var e=clone.querySelector(sel);if(e&&e.parentNode)e.parentNode.removeChild(e);};
-      rm("#gateSection");rm("#ctaSection");
-      var ab=clone.querySelector("#analystBox");if(ab)ab.style.display="block";
-      var at=clone.querySelector("#analystText");if(at)at.style.opacity="1";
-      var hdr=document.createElement("div");
-      hdr.style.cssText="padding:12px 22px;border-bottom:1px solid #1d2333;font-family:monospace;font-size:10px;letter-spacing:1px;color:#8b93ad;";
-      hdr.innerHTML="PREPARED FOR &nbsp;<strong style=\"color:#e8eaf2;font-family:-apple-system,sans-serif;letter-spacing:0;font-size:13px;\">"+esc2(lead.company)+"</strong>&nbsp; · &nbsp;"+dateStr;
-      clone.insertBefore(hdr,clone.firstChild);
-      var ftr=document.createElement("div");
-      ftr.style.cssText="padding:14px 22px;border-top:1px solid #1d2333;font-family:monospace;font-size:9px;line-height:1.7;color:#5a637f;";
-      ftr.textContent="AITS · aits.llc · (858) 337-2866 · gavin@aits.llc  —  book a free 30-minute review at aits.llc/contact";
-      clone.appendChild(ftr);
-      panel.appendChild(clone);wrap.appendChild(panel);document.body.appendChild(wrap);
-      h2c(panel,{backgroundColor:"#07090f",scale:2,logging:false,useCORS:true,windowWidth:600}).then(function(canvas){
-        try{
-          if(wrap.parentNode)wrap.parentNode.removeChild(wrap);
-          var img=canvas.toDataURL("image/jpeg",0.9);
-          var doc=new JS({unit:"mm",format:"a4"});
-          var pw=210,ph=297;
-          var ih=canvas.height*pw/canvas.width;
-          var left=ih,pos=0;
-          doc.setFillColor(7,9,15);doc.rect(0,0,pw,ph,"F");
-          doc.addImage(img,"JPEG",0,pos,pw,ih);
-          left-=ph;
-          while(left>0.5){pos=left-ih;doc.addPage();doc.setFillColor(7,9,15);doc.rect(0,0,pw,ph,"F");doc.addImage(img,"JPEG",0,pos,pw,ih);left-=ph;}
-          resolve(doc.output("datauristring").split(",")[1]||null);
-        }catch(e){reject(e);}
-      }).catch(function(e){if(wrap.parentNode)wrap.parentNode.removeChild(wrap);reject(e);});
-    }catch(e){reject(e);}
+// Hand-drawn dark report PDF that mirrors the on-screen look: brand header,
+// prepared-for line, score + bar, three stat tiles, finding cards with
+// colored severity borders and "what to do" lines, analyst note, footer.
+// Fully deterministic vector output — no screenshot library, always small.
+function renderPdf(lead,r,note){
+  var JS=window.jspdf&&window.jspdf.jsPDF;if(!JS)return null;
+  var doc=new JS({unit:"mm",format:"a4"});
+  var PW=210,PH=297,M=14,y=0;
+  var BG=[7,9,15],PANEL=[14,18,30],BORD=[35,42,60],TX=[232,234,242],MUT=[139,147,173],TEAL=[0,201,167],PURP=[150,120,235],BLUE=[107,155,255];
+  var band=r.band==="HIGH"?[255,45,85]:r.band==="ELEVATED"?[255,107,53]:r.band==="MODERATE"?[240,200,60]:[0,201,167];
+  var CW=PW-2*M;
+  function fill(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function setT(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function page(){fill(BG);doc.rect(0,0,PW,PH,"F");}
+  function ensure(h){if(y+h>PH-12){doc.addPage();page();y=16;}}
+  function wrap(txt,w,size,style){doc.setFont("helvetica",style||"normal");doc.setFontSize(size);return doc.splitTextToSize(String(txt||""),w);}
+  page();y=18;
+
+  doc.setFont("helvetica","bold");doc.setFontSize(8.5);setT(BLUE);
+  doc.text("AITS — ADVANCED INTELLIGENT TECHNOLOGY SOLUTIONS",M,y);y+=8;
+  doc.setFontSize(21);setT(TX);doc.text("AI Readiness & Risk Report",M,y);y+=7;
+  doc.setFont("helvetica","normal");doc.setFontSize(10);setT(MUT);
+  var dateStr=new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+  doc.text("Prepared for "+(lead.company||"—")+"   ·   "+dateStr,M,y);y+=4.5;
+  doc.setFontSize(8.5);
+  var pl=[lead.name,lead.email,lead.cell?"cell "+lead.cell:"",lead.website].filter(Boolean).join("   ·   ");
+  if(pl){doc.text(pl,M,y);y+=3;}
+  y+=4;doc.setDrawColor(BORD[0],BORD[1],BORD[2]);doc.setLineWidth(0.3);doc.line(M,y,PW-M,y);y+=10;
+
+  doc.setFont("helvetica","bold");doc.setFontSize(8.5);setT(MUT);doc.text("EXPOSURE SCORE",M,y);y+=9;
+  doc.setFontSize(30);setT(band);doc.text(String(r.score),M,y);
+  var sw=doc.getTextWidth(String(r.score));
+  doc.setFontSize(12);setT(TX);doc.text("/ 100",M+sw+3,y);
+  doc.setFontSize(13);setT(band);doc.text(r.band,PW-M,y,{align:"right"});y+=5;
+  fill(BORD);doc.roundedRect(M,y,CW,3.4,1.7,1.7,"F");
+  fill(band);doc.roundedRect(M,y,Math.max(4,CW*r.score/100),3.4,1.7,1.7,"F");y+=12;
+
+  var tiles=[["SHADOW AI",r.shadowLevel,r.shadowSub,[255,107,53]],["COMPLIANCE FLAGS",String(r.flags.length),(r.flags.length?r.flags.join(" · "):"None reported"),[255,45,85]],["RECOVERABLE HRS / WK",r.hoursVal,r.hoursSub,TEAL]];
+  var tw=(CW-2*4)/3;
+  tiles.forEach(function(t,i){
+    var tx=M+i*(tw+4);fill(PANEL);doc.roundedRect(tx,y,tw,22,2,2,"F");
+    doc.setFont("helvetica","bold");doc.setFontSize(6);setT(t[3]);doc.text(t[0],tx+3.5,y+5);
+    doc.setFontSize(12);setT(TX);doc.text(String(t[1]),tx+3.5,y+11.5);
+    doc.setFont("helvetica","normal");doc.setFontSize(6);setT(MUT);
+    doc.text(doc.splitTextToSize(t[2]||"",tw-7).slice(0,2),tx+3.5,y+16);
   });
+  y+=28;
+
+  doc.setFont("helvetica","bold");doc.setFontSize(8.5);setT(MUT);ensure(8);doc.text("FINDINGS — AND WHAT TO DO ABOUT EACH",M,y);y+=6;
+  (r.findings||[]).forEach(function(f,i){
+    var sc=f.sev==="danger"?[255,45,85]:f.sev==="info"?BLUE:[255,107,53];
+    var headL=wrap(f.head,CW-11,10.5,"bold");
+    var detL=wrap(f.detail,CW-11,8.5,"normal");
+    var fixL=wrap("What to do: "+f.fix,CW-11,8.5,"normal");
+    var h=8+headL.length*4.7+detL.length*3.9+2.5+fixL.length*3.9+5;
+    ensure(h+3);
+    fill(PANEL);doc.roundedRect(M,y,CW,h,2,2,"F");
+    fill(sc);doc.rect(M,y,1.4,h,"F");
+    var cy=y+6;
+    doc.setFont("helvetica","bold");doc.setFontSize(6.5);setT(sc);doc.text(f.tag,M+5.5,cy);
+    doc.setFontSize(6.5);setT(MUT);doc.text("FINDING 0"+(i+1),PW-M-3,cy,{align:"right"});cy+=5.5;
+    doc.setFont("helvetica","bold");doc.setFontSize(10.5);setT(TX);doc.text(headL,M+5.5,cy);cy+=headL.length*4.7;
+    doc.setFont("helvetica","normal");doc.setFontSize(8.5);setT(MUT);doc.text(detL,M+5.5,cy);cy+=detL.length*3.9+2.5;
+    setT(TEAL);doc.text(fixL,M+5.5,cy);
+    y+=h+3;
+  });
+
+  y+=3;ensure(10);
+  doc.setFont("helvetica","bold");doc.setFontSize(8.5);setT(PURP);doc.text("ANALYST NOTE",M,y);y+=5;
+  var noteL=wrap(note,CW-11,9,"italic");var nh=noteL.length*4.2+9;
+  ensure(nh);fill(PANEL);doc.roundedRect(M,y,CW,nh,2,2,"F");fill(PURP);doc.rect(M,y,1.4,nh,"F");
+  doc.setFont("helvetica","italic");doc.setFontSize(9);setT([206,206,222]);doc.text(noteL,M+5.5,y+6);y+=nh+9;
+
+  ensure(12);doc.setFont("helvetica","normal");doc.setFontSize(8);setT(MUT);
+  doc.text("AITS · aits.llc · (858) 337-2866 · gavin@aits.llc",M,y);y+=4;
+  doc.text("Book a free 30-minute review at aits.llc/contact",M,y);
+  return doc.output("datauristring").split(",")[1]||null;
 }
 
 // Text-only PDF fallback if html2canvas can't run. Synchronous; returns
