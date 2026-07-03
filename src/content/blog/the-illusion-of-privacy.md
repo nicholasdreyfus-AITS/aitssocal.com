@@ -1,7 +1,7 @@
 ---
 title: 'The Illusion of Privacy: Are You Really in Control of Your Data?'
 description: 'Anonymized isn''t anonymous. Incognito isn''t private. The real stories — Netflix, Acxiom, Apple vs. Facebook — and practical steps to take back control of your data.'
-pubDate: 2026-05-20
+pubDate: 2025-03-21
 author: 'Nick Dreyfus'
 youtube: 'BncQcKirFuA'
 tags: ['Data Privacy', 'Cybersecurity', 'Consumer Tech']

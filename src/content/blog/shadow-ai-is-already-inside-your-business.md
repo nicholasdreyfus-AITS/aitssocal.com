@@ -1,7 +1,7 @@
 ---
 title: 'Shadow AI Is Already Inside Your Business — IBM''s 2025 Numbers'
 description: 'IBM''s 2025 data: 1 in 5 organizations breached through shadow AI, $670K in added cost, 247 days to detect. The risk, the Amazon story, and 4 steps to take this week.'
-pubDate: 2026-06-11
+pubDate: 2026-04-17
 author: 'Nick Dreyfus'
 tags: ['Shadow AI', 'AI Risk', 'Cyber Insurance']
 faq:

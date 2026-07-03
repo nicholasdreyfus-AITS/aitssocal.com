@@ -1,7 +1,7 @@
 ---
 title: 'Secure AI, or Explain the Breach to Your Board?'
 description: 'Nearly 35% of what employees paste into ChatGPT is sensitive data. Here is the real risk profile of every major AI tool — and how to deploy AI securely.'
-pubDate: 2026-06-16
+pubDate: 2026-05-04
 author: 'Nick Dreyfus'
 tags: ['AI Security', 'Shadow AI', 'Compliance']
 faq:

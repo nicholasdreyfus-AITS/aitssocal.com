@@ -1,7 +1,7 @@
 ---
 title: '15 Minutes or 4 Hours: Why AI Should Do 80% of Your Team''s Busywork'
 description: 'Your highest-paid people spend half their day on grunt work a machine should handle. Here is the data, the real ROI, and how to deploy AI the right way.'
-pubDate: 2026-06-09
+pubDate: 2026-05-11
 author: 'Nick Dreyfus'
 tags: ['AI Automation', 'Productivity', 'ROI']
 faq:

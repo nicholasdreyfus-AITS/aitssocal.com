@@ -1,7 +1,7 @@
 ---
 title: 'The Replacement Myth: AI Isn''t Coming for Your Best People'
 description: 'The headlines say AI is replacing the workforce. The data from Goldman Sachs, Harvard, and the Dallas Fed says something very different. Why judgment is the moat.'
-pubDate: 2026-05-28
+pubDate: 2025-02-27
 author: 'Nick Dreyfus'
 youtube: 'XLowAsJ20RU'
 tags: ['AI & Jobs', 'Workforce', 'AI Strategy']
