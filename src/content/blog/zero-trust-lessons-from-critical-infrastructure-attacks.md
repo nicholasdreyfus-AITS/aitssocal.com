@@ -3,6 +3,7 @@ title: 'Zero Trust: Lessons from the Halliburton Cyberattack'
 description: 'Cyberattacks on Halliburton and the Port of Seattle show why critical infrastructure needs zero trust. A practical security audit, segmentation, and response plan.'
 pubDate: 2026-05-13
 author: 'Nick Dreyfus'
+youtube: '3qB-7PrFZrQ'
 tags: ['Cybersecurity', 'Zero Trust', 'Critical Infrastructure']
 faq:
   - question: 'What is a zero trust security model?'
