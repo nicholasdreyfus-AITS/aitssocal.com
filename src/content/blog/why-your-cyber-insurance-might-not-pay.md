@@ -1,7 +1,7 @@
 ---
 title: 'Why Your Cyber Insurance Might Not Pay When You Need It'
 description: 'Seven reasons cyber insurers deny claims — vague definitions, missed deadlines, "failure to maintain" exclusions — and how to make sure your policy pays out.'
-pubDate: 2026-06-17
+pubDate: 2024-10-07
 author: 'Nick Dreyfus'
 youtube: '_NcR2qXUSyU'
 tags: ['Cyber Insurance', 'Cybersecurity', 'Risk Management']
