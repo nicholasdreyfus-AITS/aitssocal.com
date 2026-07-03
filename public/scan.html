@@ -317,7 +317,7 @@ var QUESTIONS = [
   {id:"subs",label:"How many separate software subscriptions does the business pay for?",note:"CRM, email tool, scheduler, website, review tool, chat widget…",type:"single",options:["0-2","3-5","6-10","More than 10","Not sure"]},
   {id:"fixes",label:"When technology breaks, who fixes it?",type:"single",options:["In-house IT","An outside IT partner","Whoever has time that day","Nobody — we work around it"]},
   {id:"tools",label:"Which AI tools is your team using today?",note:"Select all that apply — skip if you're not sure",type:"multi",options:["ChatGPT","Microsoft Copilot","Claude","Google Gemini","Grammarly AI","Midjourney / DALL-E","Something custom / other","None that I know of"]},
-  {id:"ai",label:"How is AI being used for work?",type:"single",options:["With clear rules and company accounts","On personal accounts — no rules","Not that I know of","We've banned it"]},
+  {id:"ai",label:"How is AI being used for work?",type:"single",options:["With clear rules and company accounts","We have a policy mostly in place — still finishing it","We just started putting rules together","On personal accounts — no rules","Not that I know of","We've banned it"]},
   {id:"data",label:"Does your business handle any of the following?",note:"Select all that apply",type:"multi",options:["Medical or health records","Card payments","Legal or financial documents","Government contracts","Children's data","None of these"]},
   {id:"busywork",label:"How many hours a week does your team spend on repetitive admin?",note:"Scheduling, data entry, follow-up emails, copy-paste between systems",type:"single",options:["Less than 5","5-15","15-40","More than 40","No idea"]},
 ];
@@ -463,15 +463,24 @@ function computeReport(a){
   var sensitive=(a.data||[]).filter(function(d){return d!=="None of these";});
   var flags=sensitive.map(function(d){return FLAG_MAP[d];}).filter(Boolean);
   var aiManaged=a.ai==="With clear rules and company accounts";
+  var aiMostly=a.ai==="We have a policy mostly in place — still finishing it";
+  // "Governed enough" for compliance/shadow purposes: fully governed, or a
+  // policy mostly in place. "Just started" is still treated as a real gap.
+  var aiGoverned=aiManaged||aiMostly;
   var toolList=(a.tools||[]).filter(function(t){return t!=="None that I know of";});
 
   // --- Shadow AI (0-30)
-  var shadow=a.ai==="On personal accounts — no rules"?26:a.ai==="Not that I know of"?18:a.ai==="We've banned it"?12:aiManaged?5:14;
-  if(sensitive.length&&!aiManaged) shadow=Math.min(30,shadow+4);
-  if(toolList.length>=3&&!aiManaged) shadow=Math.min(30,shadow+2);
+  var shadow=a.ai==="On personal accounts — no rules"?26
+    :a.ai==="Not that I know of"?18
+    :a.ai==="We just started putting rules together"?16
+    :aiMostly?9
+    :a.ai==="We've banned it"?12
+    :aiManaged?5:14;
+  if(sensitive.length&&!aiGoverned) shadow=Math.min(30,shadow+4);
+  if(toolList.length>=3&&!aiGoverned) shadow=Math.min(30,shadow+2);
 
   // --- Compliance (0-15)
-  var compliance=flags.length?(aiManaged?Math.min(8,flags.length*3):Math.min(15,flags.length*5)):0;
+  var compliance=flags.length?(aiGoverned?Math.min(8,flags.length*3):Math.min(15,flags.length*5)):0;
 
   // --- Missed revenue (0-26)
   var leak=(a.leads==="They call us"?6:a.leads==="Website or web form"?4:2)
@@ -491,6 +500,8 @@ function computeReport(a){
 
   var shadowLevel=shadow>=22?"HIGH":shadow>=12?"MODERATE":"LOW";
   var shadowSub=a.ai==="On personal accounts — no rules"?(toolList.length?toolList.length+" AI tools confirmed, on personal accounts with no rules":"AI in use on personal accounts with no usage rules")
+    :a.ai==="We just started putting rules together"?"You've started on rules — finishing them is what closes the gap"
+    :aiMostly?"Policy mostly in place — finishing and enforcing it locks it in"
     :a.ai==="Not that I know of"?"Unmonitored — most teams are already using AI quietly"
     :a.ai==="We've banned it"?"Bans push AI use underground rather than stopping it"
     :aiManaged?"Usage governed by clear rules — keep them current":"Unknown usage profile";
@@ -511,16 +522,22 @@ function computeReport(a){
       fix:"Missed-call text-back plus an AI receptionist answers every call instantly, 24/7 — typically the first automation we take live, inside 30 days."});
   }
   if(!aiManaged){
-    cands.push({w:shadow,sev:sensitive.length?"danger":"warn",tag:"SHADOW AI",
+    cands.push({w:shadow,sev:(sensitive.length&&!aiGoverned)?"danger":"warn",tag:"SHADOW AI",
       head:a.ai==="We've banned it"?"Your AI ban isn't stopping AI use — it's hiding it from you."
         :a.ai==="On personal accounts — no rules"?(toolList.length?"Your team is already on "+toolList.length+" AI tools — through personal accounts, with no rules.":"Your team uses AI through personal accounts with no rules about what goes into it.")
+        :aiMostly?"Your AI rules are almost there — the win is finishing and enforcing them."
+        :a.ai==="We just started putting rules together"?"You've started on AI rules — until they're finished, the exposure stays open."
         :"AI is almost certainly in use at your business — just not where you can see it.",
-      detail:"Employees paste real work into free AI tools — customer details, pricing, contracts"
+      detail:(aiGoverned
+        ?"Even a mostly-complete policy leaves gaps while it's unfinished — employees still paste real work into free AI tools"
+        :"Employees paste real work into free AI tools — customer details, pricing, contracts")
         +(sensitive.length?", and in your case potentially "+sensitive.join(", ").toLowerCase():"")
         +". Public tools can retain and train on that data, outside any agreement that protects you.",
-      fix:"A one-page AI usage policy plus governed, business-grade AI accounts gives your team the productivity without the exposure."});
+      fix:(aiMostly||a.ai==="We just started putting rules together")
+        ?"We help you finish the AI usage policy and move the team onto governed, business-grade accounts — so the rules you started actually hold."
+        :"A one-page AI usage policy plus governed, business-grade AI accounts gives your team the productivity without the exposure."});
   }
-  if(flags.length&&!aiManaged){
+  if(flags.length&&!aiGoverned){
     cands.push({w:flags.length*7+4,sev:"danger",tag:"COMPLIANCE",
       head:"Your data obligations and your AI usage haven't met each other yet.",
       detail:"You handle "+sensitive.join(", ").toLowerCase()+" — which puts you under "+flags.map(function(f){return f.split(" — ")[0];}).join(", ")
