@@ -4,6 +4,8 @@ description: 'Ten reasons security and compliance overwhelm growing companies �
 pubDate: 2024-10-30
 author: 'Nick Dreyfus'
 youtube: '-_uVKsCWviM'
+heroImage: '/images/blog/cybersec-hero.jpg'
+heroAlt: 'A cybersecurity analyst monitoring a wall of security dashboards'
 tags: ['Cybersecurity', 'Compliance', 'Risk Management']
 faq:
   - question: 'Why is cybersecurity so difficult for small and mid-sized businesses?'
@@ -21,6 +23,11 @@ faq:
 Ask any executive why they don't feel on top of cybersecurity, and you'll hear some version of the same thing: *there's always more, it keeps changing, and I can't tell if what we have is enough.* They're not wrong. Security and compliance are genuinely hard — not because of one impossible problem, but because there are about ten of them moving at once.
 
 Here's the honest breakdown of why it feels impossible for growing businesses — and, for each, how the right expertise turns the problem into an advantage.
+
+<figure class="post-fig left">
+  <img src="/images/blog/cybersec-a.jpg" alt="A glowing digital shield above a laptop keyboard" width="1280" height="720" loading="lazy" />
+  <figcaption>Real protection isn't one product — it's layers that scale as you grow.</figcaption>
+</figure>
 
 ## 1. Security has to scale — and usually doesn't
 
@@ -61,6 +68,11 @@ Threat intelligence — continuously monitoring global threat data and adapting 
 ## 10. Nobody can see the ROI
 
 Decision-makers fund what they can measure. The right metrics and reporting show how security investments reduce risk, save money over time, and support sustainable growth — which turns security from a grudging expense into a defensible business decision.
+
+<figure class="post-fig right">
+  <img src="/images/blog/cybersec-b.jpg" alt="Tangled cables beside a compliance checklist and padlock" width="1280" height="720" loading="lazy" />
+  <figcaption>Ten moving problems at once — which is exactly why it feels impossible to handle alone.</figcaption>
+</figure>
 
 ## The through-line
 

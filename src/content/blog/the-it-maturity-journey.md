@@ -4,6 +4,8 @@ description: 'The 5 levels of IT maturity, from chaotic to strategic — and the
 pubDate: 2024-09-27
 author: 'Nick Dreyfus'
 youtube: 'acjmHP3DUHA'
+heroImage: '/images/blog/itmaturity-hero.jpg'
+heroAlt: 'A modern IT operations center with technicians monitoring dashboards'
 tags: ['Managed IT', 'IT Strategy', 'Business Growth']
 faq:
   - question: 'What is the IT maturity model?'
@@ -21,6 +23,11 @@ faq:
 Most businesses treat IT as a cost — a necessary expense that keeps the email running and the Wi-Fi up. But there's a scale that separates companies where technology is a drag from companies where it's an advantage. It's called the IT maturity journey, and it runs from chaotic to strategic in five levels. Knowing where you sit on it is one of the fastest ways to judge whether your current IT provider is actually earning their keep.
 
 Here's the scale — and a simple one-year test at the end that tells you whether it's time for a change.
+
+<figure class="post-fig right">
+  <img src="/images/blog/itmaturity-a.jpg" alt="Ascending steps of light in a server room" width="1280" height="720" loading="lazy" />
+  <figcaption>The maturity journey climbs from chaotic to strategic — one level at a time.</figcaption>
+</figure>
 
 ## Level 1 — Chaotic
 
@@ -43,6 +50,11 @@ IT starts operating like a real business function. Capacity planning means you'r
 ## Level 5 — Value
 
 The top of the curve. IT and business metrics are linked, and data drives decisions. Technology investments are measured for the returns they produce. At this stage IT isn't a support function anymore — it's a strategic partner in how the company grows and adapts. This is the goal.
+
+<figure class="post-fig left">
+  <img src="/images/blog/itmaturity-b.jpg" alt="An IT professional reviewing performance dashboards" width="1280" height="720" loading="lazy" />
+  <figcaption>A good partner shows measurable progress every quarter — not just closed tickets.</figcaption>
+</figure>
 
 ## The one-year test
 

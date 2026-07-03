@@ -4,6 +4,8 @@ description: 'Over-complex networks quietly kill productivity and reliability. T
 pubDate: 2024-12-06
 author: 'Nick Dreyfus'
 youtube: 'T5rU7UpjRmY'
+heroImage: '/images/blog/untangle-hero.jpg'
+heroAlt: 'A tangled mass of network cables in a server rack'
 tags: ['Managed IT', 'Networking', 'IT Strategy']
 faq:
   - question: 'How do I know if my IT network is too complex?'
@@ -19,6 +21,11 @@ faq:
 Most tangled networks weren't designed that way. They *accumulated*. Every change in leadership, every new vendor, every shift in process and procedure left a layer behind — a device here, a protocol there, a workaround that became permanent. Add enough layers over enough years and you end up with a network that's overly complex, unreliable, and quietly draining productivity from everyone who touches it, on-site and remote alike.
 
 The real question every business owner should be asking is simple: *is my technology holding me back from hitting my goals?* Here are three diagnostic questions that will tell you whether network complexity has become a liability — and what to do about it.
+
+<figure class="post-fig right">
+  <img src="/images/blog/untangle-a.jpg" alt="Hands untangling a bundle of network cables" width="1280" height="720" loading="lazy" />
+  <figcaption>Complexity accumulates quietly — until untangling it becomes its own project.</figcaption>
+</figure>
 
 ## 1. Are recurring problems hard to identify and resolve?
 
@@ -37,6 +44,11 @@ Are there layers of devices, protocols, and configurations that add little or no
 Does maintaining the network require specialized skills or extensive documentation that limit how fast you can move? Is downtime or routine maintenance taking longer than it should because the configuration is so intricate? Do you lean heavily on outside vendors simply because the network is too complicated for your own team to handle?
 
 **Why it matters:** A network that's too complex to manage is a liability in itself. It slows every response, deepens your dependency on outside help, and makes the business brittle — one departure or one undocumented change away from a problem no one can quickly fix.
+
+<figure class="post-fig left">
+  <img src="/images/blog/untangle-b.jpg" alt="A clean, well-organized server rack" width="1280" height="720" loading="lazy" />
+  <figcaption>The fix is rarely another tool. It's simplifying what you already have.</figcaption>
+</figure>
 
 ## What to do with the answers
 

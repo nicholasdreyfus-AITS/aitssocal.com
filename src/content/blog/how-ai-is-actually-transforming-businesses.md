@@ -4,6 +4,8 @@ description: 'Six ways AI is already changing how businesses run — from automa
 pubDate: 2024-10-11
 author: 'Nick Dreyfus'
 youtube: 'lVRUm--HSaQ'
+heroImage: '/images/blog/howai-hero.jpg'
+heroAlt: 'A small-business team collaborating with AI-assisted tools'
 tags: ['AI Strategy', 'Small Business', 'Automation']
 faq:
   - question: 'How is AI actually being used in business today?'
@@ -22,6 +24,11 @@ AI stopped being a futuristic concept a while ago. It's here, it's in almost eve
 
 So let's cut through it. Here are the six places AI is genuinely transforming organizations today — and, just as importantly, where a smaller company should start.
 
+<figure class="post-fig left">
+  <img src="/images/blog/howai-a.jpg" alt="A customer-support professional at a modern desk" width="1280" height="720" loading="lazy" />
+  <figcaption>AI now handles the first wave of routine questions — freeing your people for the ones that need judgment.</figcaption>
+</figure>
+
 ## 1. Automating the repetitive work
 
 This is the most immediate win. AI is very good at the mundane, time-consuming tasks that eat your team's day: data entry, routine email responses, first-line customer questions. AI-powered chat can handle basic inquiries around the clock — no coffee breaks, no fatigue — and escalate the complex ones to a human. Your customers get faster answers; your team gets to focus on the work that actually needs them.
@@ -39,6 +46,11 @@ AI can chew through massive amounts of data and surface patterns a person would 
 You've used a store or streaming service that just *knew* what you wanted next. That's AI reading preferences and making recommendations — and it drives engagement, repeat purchases, and loyalty.
 
 Here's what matters for a smaller business: the recommendation engines Amazon and Netflix made famous aren't enterprise-only anymore. That same personalization is now within reach for a company with ten employees. This is exactly how AI closes the gap between you and much larger competitors.
+
+<figure class="post-fig right">
+  <img src="/images/blog/howai-b.jpg" alt="Data and charts rising from a laptop" width="1280" height="720" loading="lazy" />
+  <figcaption>The hard part was never collecting data — it's making sense of it fast enough to act.</figcaption>
+</figure>
 
 ## 4. Strengthening cybersecurity
 
