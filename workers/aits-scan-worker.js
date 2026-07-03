@@ -87,8 +87,8 @@ function reportHtml(lead, c, note, answers, clientUrl) {
   return `<div style="background:#f3f4f6;padding:16px 8px;font-family:Arial,Helvetica,sans-serif">`
     + `<div style="max-width:640px;margin:0 auto">`
       + `<div style="background:#0c0f1a;color:#ffffff;padding:20px 24px;border-radius:10px 10px 0 0">`
-        + `<div style="font:700 10px 'Courier New',monospace;letter-spacing:2px;color:#6b9bff">AITS — ADVANCED INTELLIGENT TECHNOLOGY SOLUTIONS</div>`
-        + `<div style="font:700 22px Arial,sans-serif;margin-top:6px;color:#ffffff">AI Readiness &amp; Risk Report</div>`
+        + `<img src="https://aits.llc/images/aits-logo.png" alt="AITS — Advanced Intelligent Technology Solutions" width="150" style="display:block;border:0;margin-bottom:8px">`
+        + `<div style="font:700 22px Arial,sans-serif;color:#ffffff">AI Readiness &amp; Risk Report</div>`
         + `<div style="font:400 13px Arial,sans-serif;color:#9ca3af;margin-top:4px">Prepared for <strong style="color:#ffffff">${esc(lead.company)}</strong> &nbsp;·&nbsp; ${dateStr}</div>`
       + `</div>`
       + `<div style="background:#ffffff;padding:22px 24px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px">`
