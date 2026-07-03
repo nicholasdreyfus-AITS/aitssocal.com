@@ -52,7 +52,7 @@ function esc(s) {
 // Full report as email-safe HTML (inline styles, table layout, no external
 // assets). Renders in Gmail/Outlook/Apple Mail, prints cleanly as a client
 // handout, and is ALWAYS present in the email body — never dependent on a PDF.
-function reportHtml(lead, c, note, answers) {
+function reportHtml(lead, c, note, answers, clientUrl) {
   const M = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const d = new Date();
   const dateStr = M[d.getUTCMonth()] + " " + d.getUTCDate() + ", " + d.getUTCFullYear();
@@ -96,6 +96,7 @@ function reportHtml(lead, c, note, answers) {
           + `<div style="font:700 10px Arial,sans-serif;letter-spacing:.5px;color:#6b7280;margin-bottom:6px">LEAD · CONTACT</div>`
           + `<table style="border-collapse:collapse">${leadRows}</table>`
         + `</div>`
+        + (clientUrl ? `<div style="text-align:center;margin:0 0 20px"><a href="${clientUrl}" style="display:inline-block;background:#0c0f1a;color:#ffffff;text-decoration:none;font:700 13px Arial,sans-serif;padding:11px 20px;border-radius:8px">Open client-ready branded report &rarr;</a><div style="font:400 11px Arial,sans-serif;color:#9ca3af;margin-top:6px">Opens the premium version — Print &rarr; Save as PDF to send the client.</div></div>` : "")
         + `<div style="font:700 10px Arial,sans-serif;letter-spacing:.5px;color:#6b7280">EXPOSURE SCORE</div>`
         + `<table style="width:100%;border-collapse:collapse;margin:4px 0 8px"><tr>`
           + `<td style="vertical-align:bottom"><span style="font:700 34px Arial,sans-serif;color:${bandColor}">${esc(c.score)}</span><span style="font:400 14px Arial,sans-serif;color:#6b7280"> / 100</span></td>`
@@ -125,7 +126,27 @@ async function handleLead(body, env, json) {
     return json({ error: "Lead email not configured (missing RESEND_API_KEY)" }, 503);
   }
 
-  const html = reportHtml(lead, c, body.analystNote, body.answers);
+  // Build a link to the premium, client-ready branded report page, carrying
+  // this prospect's data in the URL hash (never hits a server — the page
+  // decodes it client-side). Gavin/Nick click it, Print → Save as PDF, and
+  // send the client a polished branded PDF.
+  let clientUrl = "";
+  try {
+    const payload = JSON.stringify({
+      lead: { company: lead.company },
+      computed: {
+        score: c.score, band: c.band, shadowLevel: c.shadowLevel,
+        flags: c.flags || [], hours: c.hours, findings: c.findings || [],
+      },
+      note: body.analystNote || "",
+    });
+    const bytes = new TextEncoder().encode(payload);
+    let bin = "";
+    for (const b of bytes) bin += String.fromCharCode(b);
+    clientUrl = "https://aits.llc/report#" + btoa(bin);
+  } catch { clientUrl = ""; }
+
+  const html = reportHtml(lead, c, body.analystNote, body.answers, clientUrl);
 
   const payload = {
     from: NOTIFY_FROM,
