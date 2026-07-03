@@ -92,10 +92,16 @@
     .gate{background:#101527;border:1px solid rgba(59,110,240,0.35);border-radius:10px;padding:20px 18px;margin:14px 0 18px}
     .gate-title{font-size:17px;font-weight:800;margin-bottom:6px}
     .gate-sub{font-size:13px;color:#8b93ad;line-height:1.6;margin-bottom:14px}
-    .gate-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+    .gate-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
     .gate-input{width:100%;padding:12px 13px;background:#07090f;border:1px solid #1d2333;border-radius:8px;color:#e8eaf2;font-size:14px;font-family:inherit;-webkit-appearance:none}
+    .gate-input--wide{grid-column:1 / -1}
     .gate-input:focus{outline:none;border-color:#3b6ef0}
     .gate-input.invalid{border-color:#FF2D55}
+    .gate-contact{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+    .gate-contact__label{font-size:12px;color:#8b93ad}
+    .gate-chips{display:flex;gap:6px}
+    .gate-chip{font-family:inherit;font-size:13px;font-weight:600;color:#8b93ad;background:#07090f;border:1px solid #1d2333;border-radius:100px;padding:6px 14px;cursor:pointer;-webkit-appearance:none;transition:border-color .2s,color .2s,background .2s}
+    .gate-chip.is-on{color:#6b9bff;border-color:#3b6ef0;background:rgba(59,110,240,0.12)}
     .gate-error{color:#FF2D55;font-size:12px;margin-bottom:10px;font-family:monospace}
     .gate-fine{text-align:center;font-size:11px;color:#5a637f;margin-top:10px}
     @media(max-width:420px){.gate-fields{grid-template-columns:1fr}}
@@ -237,8 +243,17 @@
             <div class="gate-fields">
               <input class="gate-input" id="leadName" type="text" autocomplete="name" placeholder="Your name">
               <input class="gate-input" id="leadCompany" type="text" autocomplete="organization" placeholder="Company name">
+              <input class="gate-input gate-input--wide" id="leadWebsite" type="text" autocomplete="url" placeholder="Company website (or type 'none')">
               <input class="gate-input" id="leadEmail" type="email" autocomplete="email" placeholder="Work email">
               <input class="gate-input" id="leadCell" type="tel" autocomplete="tel" placeholder="Cell phone">
+            </div>
+            <div class="gate-contact">
+              <span class="gate-contact__label">Best way(s) to reach you</span>
+              <div class="gate-chips" id="leadChips">
+                <button type="button" class="gate-chip" data-c="Text">Text</button>
+                <button type="button" class="gate-chip" data-c="Call">Call</button>
+                <button type="button" class="gate-chip" data-c="Email">Email</button>
+              </div>
             </div>
             <div class="gate-error" id="gateError" style="display:none"></div>
             <button class="btn-cta" id="unlockBtn">UNLOCK MY FULL REPORT →</button>
@@ -307,6 +322,29 @@ var QUESTIONS = [
   {id:"busywork",label:"How many hours a week does your team spend on repetitive admin?",note:"Scheduling, data entry, follow-up emails, copy-paste between systems",type:"single",options:["Less than 5","5-15","15-40","More than 40","No idea"]},
 ];
 
+// Float the most-likely sensitive-data options to the top based on the
+// industry they picked. They can still select any of them — this just puts
+// the relevant ones first so the question is quicker and more obviously
+// relevant to their world.
+var DATA_PRIORITY = {
+  "Healthcare / Medical": ["Medical or health records", "Card payments"],
+  "Legal": ["Legal or financial documents", "Card payments"],
+  "Financial services": ["Legal or financial documents", "Card payments"],
+  "Construction / Trades": ["Card payments", "Government contracts"],
+  "Professional services": ["Legal or financial documents", "Card payments"],
+  "Retail / E-commerce": ["Card payments"],
+  "Real estate": ["Legal or financial documents", "Card payments"],
+  "Nonprofit": ["Children's data", "Card payments"],
+  "Technology": ["Card payments", "Legal or financial documents"]
+};
+function orderedOptions(q){
+  if(q.id!=="data") return q.options;
+  var none="None of these";
+  var pri=(DATA_PRIORITY[answers.industry]||[]).filter(function(o){return q.options.indexOf(o)>=0;});
+  var rest=q.options.filter(function(o){return pri.indexOf(o)<0 && o!==none;});
+  return pri.concat(rest).concat([none]);
+}
+
 var MSGS = [
   {t:"[ INIT ] Connecting to AITS scan engine...",c:"t-default"},
   {t:"[ SCAN ] Profiling organizational AI exposure...",c:"t-default"},
@@ -366,7 +404,7 @@ function loadQ(){
     return '<div class="q-dot'+(i<currentQ?" done":i===currentQ?" active":"")+'"></div>';
   }).join("");
   var sel=answers[q.id]||(q.type==="multi"?[]:"");
-  document.getElementById("optionsList").innerHTML=q.options.map(function(opt){
+  document.getElementById("optionsList").innerHTML=orderedOptions(q).map(function(opt){
     var isSel=q.type==="multi"?sel.indexOf(opt)>=0:sel===opt;
     return '<button class="opt-btn'+(isSel?" selected":"")+'" data-val="'+encodeURIComponent(opt)+'">'
       +'<span style="font-size:11px;flex-shrink:0">'+(isSel?"▪":"○")+"</span>"+opt+"</button>";
@@ -662,9 +700,15 @@ function renderFinding(f,i){
    on the network — the visitor gets their report no matter what.
    ========================================================================== */
 
+// Preferred-contact chips (multi-select).
+[].slice.call(document.querySelectorAll("#leadChips .gate-chip")).forEach(function(b){
+  b.addEventListener("click",function(){b.classList.toggle("is-on");});
+});
+
 document.getElementById("unlockBtn").addEventListener("click",function(){
   var name=document.getElementById("leadName");
   var company=document.getElementById("leadCompany");
+  var website=document.getElementById("leadWebsite");
   var email=document.getElementById("leadEmail");
   var cell=document.getElementById("leadCell");
   var err=document.getElementById("gateError");
@@ -680,11 +724,14 @@ document.getElementById("unlockBtn").addEventListener("click",function(){
     return;
   }
   err.style.display="none";
+  var contact=[].slice.call(document.querySelectorAll("#leadChips .gate-chip.is-on")).map(function(b){return b.dataset.c;});
   var lead={
     name:name.value.trim(),
     company:company.value.trim(),
+    website:website.value.trim(),
     email:email.value.trim(),
-    cell:cell.value.trim()
+    cell:cell.value.trim(),
+    contact:contact
   };
   unlockReport();
   submitLead(lead);
@@ -724,64 +771,121 @@ function submitLead(lead){
   }).catch(function(){/* lead email is best-effort; the visitor already has their report */});
 }
 
-// Client-side PDF via jsPDF (lazy-loaded only at unlock). Resolves to a
-// base64 string, or null if the library can't load — the Worker then builds
-// the report into the email body instead.
+function esc2(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+
+function loadScript(src,test,cb){
+  if(test()) return cb(true);
+  var s=document.createElement("script");s.src=src;
+  s.onload=function(){cb(true);};s.onerror=function(){cb(false);};
+  document.head.appendChild(s);
+}
+
+// PDF: capture the on-screen report so the emailed/handout PDF looks EXACTLY
+// like what the visitor sees on the page. Falls back to a text PDF, then null.
+// Resolves to a base64 string (or null). Never rejects — lead email is
+// best-effort and the visitor already has their report either way.
 function buildPdf(lead,r,note){
   return new Promise(function(resolve){
-    var done=false;
-    var finish=function(v){if(!done){done=true;resolve(v);}};
-    setTimeout(function(){finish(null);},8000);
-    var make=function(){
-      try{
-        var JS=window.jspdf&&window.jspdf.jsPDF;
-        if(!JS) return finish(null);
-        var doc=new JS({unit:"mm",format:"a4"});
-        var W=210,M=18,y=20;
-        var line=function(txt,size,style,color,gap){
-          doc.setFontSize(size);doc.setFont("helvetica",style||"normal");
-          doc.setTextColor(color?color[0]:31,color?color[1]:27,color?color[2]:22);
-          var rows=doc.splitTextToSize(txt,W-M*2);
-          rows.forEach(function(row){
-            if(y>272){doc.addPage();y=20;}
-            doc.text(row,M,y);y+=size*0.46;
+    var done=false;var finish=function(v){if(!done){done=true;resolve(v);}};
+    setTimeout(function(){finish(buildTextPdf(lead,r,note));},16000);
+    loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js",
+      function(){return !!(window.jspdf&&window.jspdf.jsPDF);},
+      function(ok1){
+        if(!ok1) return finish(null);
+        loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+          function(){return !!window.html2canvas;},
+          function(ok2){
+            if(!ok2) return finish(buildTextPdf(lead,r,note));
+            captureImagePdf(lead,r,note)
+              .then(function(b64){finish(b64||buildTextPdf(lead,r,note));})
+              .catch(function(){finish(buildTextPdf(lead,r,note));});
           });
-          y+=(gap||2);
-        };
-        line("AITS — AI Readiness & Risk Report",17,"bold",[31,42,80],3);
-        line(new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}),10,"normal",[110,110,110],5);
-        line("PREPARED FOR",9,"bold",[110,110,110],1);
-        line(lead.name+" — "+lead.company,12,"bold",null,1);
-        line(lead.email+"  ·  cell "+lead.cell,10,"normal",[80,80,80],6);
-        line("EXPOSURE SCORE",9,"bold",[110,110,110],1);
-        line(r.score+" / 100 — "+r.band,15,"bold",r.band==="HIGH"?[210,40,70]:r.band==="ELEVATED"?[220,110,50]:r.band==="MODERATE"?[190,150,20]:[20,150,120],4);
-        line("Shadow AI: "+r.shadowLevel+"    ·    Compliance flags: "+(r.flags.length?r.flags.join("; "):"none")+"    ·    Recoverable hours: "+r.hoursVal,10,"normal",[80,80,80],6);
-        line("FINDINGS",9,"bold",[110,110,110],2);
-        r.findings.forEach(function(f,i){
-          line((i+1)+". ["+f.tag+"] "+f.head,11.5,"bold",null,1);
-          line(f.detail,10,"normal",[80,80,80],1);
-          line("What to do: "+f.fix,10,"italic",[20,110,90],4);
-        });
-        line("ANALYST NOTE",9,"bold",[110,110,110],2);
-        line(note,10,"italic",[80,80,80],6);
-        line("SCAN ANSWERS",9,"bold",[110,110,110],2);
-        QUESTIONS.forEach(function(q){
-          var a=answers[q.id];
-          line(q.label+"  —  "+(Array.isArray(a)?(a.join(", ")||"(skipped)"):(a||"(skipped)")),9,"normal",[100,100,100],1);
-        });
-        y+=4;
-        line("AITS · aits.llc · (858) 337-2866 · gavin@aits.llc — free 30-minute review: aits.llc/contact",9,"normal",[110,110,110],0);
-        var b64=doc.output("datauristring").split(",")[1];
-        finish(b64||null);
-      }catch(e){finish(null);}
-    };
-    if(window.jspdf&&window.jspdf.jsPDF) return make();
-    var s=document.createElement("script");
-    s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js";
-    s.onload=make;
-    s.onerror=function(){finish(null);};
-    document.head.appendChild(s);
+      });
   });
+}
+
+// Render a clean clone of the results panel (gate + CTA removed, a
+// "Prepared for" header + AITS footer added) to a canvas, then into a
+// multi-page A4 PDF that mirrors the on-screen design.
+function captureImagePdf(lead,r,note){
+  return new Promise(function(resolve,reject){
+    try{
+      var JS=window.jspdf.jsPDF, h2c=window.html2canvas;
+      var dateStr=new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+      var wrap=document.createElement("div");
+      wrap.style.cssText="position:fixed;left:-9999px;top:0;width:600px;background:#07090f;padding:18px;z-index:-1;";
+      var panel=document.createElement("div");
+      panel.className="panel";panel.style.margin="0";
+      var clone=document.getElementById("resultsScreen").cloneNode(true);
+      clone.style.display="block";
+      var rm=function(sel){var e=clone.querySelector(sel);if(e&&e.parentNode)e.parentNode.removeChild(e);};
+      rm("#gateSection");rm("#ctaSection");
+      var ab=clone.querySelector("#analystBox");if(ab)ab.style.display="block";
+      var at=clone.querySelector("#analystText");if(at)at.style.opacity="1";
+      var hdr=document.createElement("div");
+      hdr.style.cssText="padding:12px 22px;border-bottom:1px solid #1d2333;font-family:monospace;font-size:10px;letter-spacing:1px;color:#8b93ad;";
+      hdr.innerHTML="PREPARED FOR &nbsp;<strong style=\"color:#e8eaf2;font-family:-apple-system,sans-serif;letter-spacing:0;font-size:13px;\">"+esc2(lead.company)+"</strong>&nbsp; · &nbsp;"+dateStr;
+      clone.insertBefore(hdr,clone.firstChild);
+      var ftr=document.createElement("div");
+      ftr.style.cssText="padding:14px 22px;border-top:1px solid #1d2333;font-family:monospace;font-size:9px;line-height:1.7;color:#5a637f;";
+      ftr.textContent="AITS · aits.llc · (858) 337-2866 · gavin@aits.llc  —  book a free 30-minute review at aits.llc/contact";
+      clone.appendChild(ftr);
+      panel.appendChild(clone);wrap.appendChild(panel);document.body.appendChild(wrap);
+      h2c(panel,{backgroundColor:"#07090f",scale:2,logging:false,useCORS:true,windowWidth:600}).then(function(canvas){
+        try{
+          if(wrap.parentNode)wrap.parentNode.removeChild(wrap);
+          var img=canvas.toDataURL("image/jpeg",0.9);
+          var doc=new JS({unit:"mm",format:"a4"});
+          var pw=210,ph=297;
+          var ih=canvas.height*pw/canvas.width;
+          var left=ih,pos=0;
+          doc.setFillColor(7,9,15);doc.rect(0,0,pw,ph,"F");
+          doc.addImage(img,"JPEG",0,pos,pw,ih);
+          left-=ph;
+          while(left>0.5){pos=left-ih;doc.addPage();doc.setFillColor(7,9,15);doc.rect(0,0,pw,ph,"F");doc.addImage(img,"JPEG",0,pos,pw,ih);left-=ph;}
+          resolve(doc.output("datauristring").split(",")[1]||null);
+        }catch(e){reject(e);}
+      }).catch(function(e){if(wrap.parentNode)wrap.parentNode.removeChild(wrap);reject(e);});
+    }catch(e){reject(e);}
+  });
+}
+
+// Text-only PDF fallback if html2canvas can't run. Synchronous; returns
+// base64 or null (jsPDF is already loaded by the time this is called).
+function buildTextPdf(lead,r,note){
+  try{
+    var JS=window.jspdf&&window.jspdf.jsPDF;if(!JS)return null;
+    var doc=new JS({unit:"mm",format:"a4"});
+    var W=210,M=18,y=20;
+    var line=function(txt,size,style,color,gap){
+      doc.setFontSize(size);doc.setFont("helvetica",style||"normal");
+      doc.setTextColor(color?color[0]:31,color?color[1]:27,color?color[2]:22);
+      var rows=doc.splitTextToSize(txt,W-M*2);
+      rows.forEach(function(row){if(y>272){doc.addPage();y=20;}doc.text(row,M,y);y+=size*0.46;});
+      y+=(gap||2);
+    };
+    line("AITS — AI Readiness & Risk Report",17,"bold",[31,42,80],3);
+    line(new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}),10,"normal",[110,110,110],5);
+    line("PREPARED FOR",9,"bold",[110,110,110],1);
+    line(lead.name+" — "+lead.company,12,"bold",null,1);
+    line((lead.website?lead.website+"  ·  ":"")+lead.email+"  ·  cell "+lead.cell+(lead.contact&&lead.contact.length?"  ·  prefers "+lead.contact.join("/"):""),10,"normal",[80,80,80],6);
+    line("EXPOSURE SCORE",9,"bold",[110,110,110],1);
+    line(r.score+" / 100 — "+r.band,15,"bold",r.band==="HIGH"?[210,40,70]:r.band==="ELEVATED"?[220,110,50]:r.band==="MODERATE"?[190,150,20]:[20,150,120],4);
+    line("Shadow AI: "+r.shadowLevel+"    ·    Compliance flags: "+(r.flags.length?r.flags.join("; "):"none")+"    ·    Recoverable hours: "+r.hoursVal,10,"normal",[80,80,80],6);
+    line("FINDINGS",9,"bold",[110,110,110],2);
+    r.findings.forEach(function(f,i){
+      line((i+1)+". ["+f.tag+"] "+f.head,11.5,"bold",null,1);
+      line(f.detail,10,"normal",[80,80,80],1);
+      line("What to do: "+f.fix,10,"italic",[20,110,90],4);
+    });
+    line("ANALYST NOTE",9,"bold",[110,110,110],2);
+    line(note,10,"italic",[80,80,80],6);
+    line("SCAN ANSWERS",9,"bold",[110,110,110],2);
+    QUESTIONS.forEach(function(q){var a=answers[q.id];line(q.label+"  —  "+(Array.isArray(a)?(a.join(", ")||"(skipped)"):(a||"(skipped)")),9,"normal",[100,100,100],1);});
+    y+=4;
+    line("AITS · aits.llc · (858) 337-2866 · gavin@aits.llc — free 30-minute review: aits.llc/contact",9,"normal",[110,110,110],0);
+    return doc.output("datauristring").split(",")[1]||null;
+  }catch(e){return null;}
 }
 </script>
 </body>
