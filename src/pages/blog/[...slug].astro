@@ -18,6 +18,17 @@ const url = new URL(`/blog/${post.id}`, SITE.url).href;
 const fmt = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
+// Everywhere The Digital Dilemma can be followed — shown on every post so
+// readers can subscribe on whatever platform they already use.
+const PODCAST_LINKS = [
+  { name: 'Apple Podcasts', icon: '🎙️', href: 'https://podcasts.apple.com/us/podcast/the-digital-dilemma/id1764658911' },
+  { name: 'Spotify', icon: '🎧', href: 'https://open.spotify.com/show/32P8yEm061V5PRhZBVgrPM' },
+  { name: 'YouTube', icon: '▶️', href: 'https://www.youtube.com/channel/UCWcdscFXqBjRG838BAFGsUw?sub_confirmation=1' },
+  { name: 'Amazon Music', icon: '🎵', href: 'https://music.amazon.com/podcasts/1cc117d6-5e20-41d6-986b-15a506c4169d/the-digital-dilemma' },
+  { name: 'iHeartRadio', icon: '❤️', href: 'https://www.iheart.com/podcast/269-the-digital-dilemma-321536976/' },
+  { name: 'Deezer', icon: '🎶', href: 'https://www.deezer.com/show/1001203851' },
+];
+
 // Article schema — tells search + answer engines this is authored, dated content.
 const articleSchema = {
   '@context': 'https://schema.org',
@@ -72,9 +83,28 @@ const videoSchema = data.youtube
     }
   : null;
 
+// PodcastSeries — ties every post to The Digital Dilemma so search and
+// answer engines associate the articles with the show (and can surface
+// subscribe links).
+const podcastSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'PodcastSeries',
+  name: 'The Digital Dilemma',
+  url: 'https://podcasts.apple.com/us/podcast/the-digital-dilemma/id1764658911',
+  webFeed: 'https://api.riverside.fm/hosting/QL16ouQn.rss',
+  author: { '@type': 'Person', name: 'Nick Dreyfus' },
+  sameAs: [
+    'https://open.spotify.com/show/32P8yEm061V5PRhZBVgrPM',
+    'https://www.youtube.com/channel/UCWcdscFXqBjRG838BAFGsUw',
+    'https://music.amazon.com/podcasts/1cc117d6-5e20-41d6-986b-15a506c4169d/the-digital-dilemma',
+    'https://www.iheart.com/podcast/269-the-digital-dilemma-321536976/',
+  ],
+};
+
 const schemas = [
   articleSchema,
   breadcrumbSchema,
+  podcastSchema,
   ...(faqSchema ? [faqSchema] : []),
   ...(videoSchema ? [videoSchema] : []),
 ];
@@ -179,9 +209,9 @@ const schemas = [
 
       {data.youtube && (
         <section class="episode-embed" aria-labelledby="ep-h">
-          <p class="section-label">Listen to the episode</p>
+          <p class="section-label">Watch the episode</p>
           <h2 id="ep-h">The Digital Dilemma</h2>
-          <p class="episode-sub">Prefer to listen? Play the full episode this article is based on.</p>
+          <p class="episode-sub">Prefer to watch or listen? Play the full episode this article is based on.</p>
           <div class="embed-frame">
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${data.youtube}`}
@@ -193,8 +223,32 @@ const schemas = [
               allowfullscreen
             ></iframe>
           </div>
+          <a
+            class="embed-yt-link"
+            href={`https://www.youtube.com/watch?v=${data.youtube}`}
+            target="_blank"
+            rel="noopener"
+          >Watch on YouTube ↗</a>
         </section>
       )}
+
+      <section class="subscribe" aria-labelledby="sub-h">
+        <p class="section-label">Never miss an episode</p>
+        <h2 id="sub-h">Subscribe to The Digital Dilemma</h2>
+        <p class="sub-copy">
+          Straight talk on AI, cybersecurity, and business technology — no hype, no vendor
+          propaganda. Follow on whatever platform you already use:
+        </p>
+        <div class="sub-btns">
+          {
+            PODCAST_LINKS.map((l) => (
+              <a class="sub-btn" href={l.href} target="_blank" rel="noopener">
+                <span aria-hidden="true">{l.icon}</span> {l.name}
+              </a>
+            ))
+          }
+        </div>
+      </section>
 
       <NewsletterSignup />
     </div>
@@ -380,6 +434,54 @@ const schemas = [
     inset: 0;
     width: 100%;
     height: 100%;
+  }
+  .embed-yt-link {
+    display: inline-block;
+    margin-top: 12px;
+    font-family: var(--jak);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent2);
+  }
+  .subscribe {
+    margin-top: 56px;
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+  }
+  .subscribe h2 {
+    font-size: 1.35rem;
+    margin: 6px 0 6px;
+  }
+  .sub-copy {
+    color: var(--muted);
+    margin-bottom: 18px;
+    max-width: 560px;
+  }
+  .sub-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .sub-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    font-family: var(--jak);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .sub-btn:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 18px rgba(59, 110, 240, 0.15);
+    text-decoration: none;
+    color: #fff;
   }
   .faq {
     margin-top: 56px;
