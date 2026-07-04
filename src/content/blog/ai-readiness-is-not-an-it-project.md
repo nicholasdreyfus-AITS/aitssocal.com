@@ -4,6 +4,8 @@ description: 'AI isn''t software you hand to IT — it''s a leadership decision.
 pubDate: 2026-01-21
 author: 'Nick Dreyfus'
 tags: ['AI Strategy', 'AI Governance', 'Leadership']
+heroImage: '/images/blog/readiness-hero.jpg'
+heroAlt: 'A leadership team in strategy discussion around a table'
 faq:
   - question: 'Is AI readiness an IT project?'
     answer: 'No. IT can install the software, but they don''t own your business strategy, your risk tolerance, or which client data is too sensitive to share. Handing an executive to say "IT, go figure out AI" creates risk, not leverage. AI readiness is a leadership decision about who owns the outcome — IT controls the container, not the contents.'
@@ -51,6 +53,11 @@ So if readiness isn't about buying the tool, what is it about? Three things:
 2. **Process ownership.** You can't automate a process you haven't defined. Map how the work actually gets done before you ask a machine to do it.
 3. **Decision rights.** The big one. If an AI promises a customer a discount that doesn't exist, who pays? Not the vendor. Not the IT team. The executive who signed off on the deployment.
 
+<figure class="post-fig left">
+  <img src="/images/blog/readiness-b.jpg" alt="A night highway with guardrails and fast light trails" width="1280" height="720" loading="lazy" />
+  <figcaption>You drive 70 because the guardrails are there. Take them away and everyone slows to 20.</figcaption>
+</figure>
+
 ## Guardrails make you go faster
 
 When I say "guardrails," most leaders hear "red tape." Flip that. Guardrails are why you can drive 70 on the highway — take away the lines and the barriers and you'd crawl at 20, terrified.
@@ -62,6 +69,11 @@ I worked with a financial-services firm where employees were paralyzed. They wan
 - **Red light** — client SSNs, bank details: *put this in an AI model and you're terminated.*
 
 Usage exploded. Once the team knew exactly where the electric fence was, they stopped being scared and started saving hours immediately. They moved faster because leadership gave them permission to be safe. That didn't take a software update. It took a decision.
+
+<figure class="post-fig right">
+  <img src="/images/blog/readiness-a.jpg" alt="A traffic light glowing green, yellow, and red in an office corridor" width="1280" height="720" loading="lazy" />
+  <figcaption>Green, yellow, red: once your team knows where the electric fence is, usage explodes.</figcaption>
+</figure>
 
 ## Three questions to ask tomorrow
 

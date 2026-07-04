@@ -4,6 +4,8 @@ description: 'Anonymized isn''t anonymous. Incognito isn''t private. The real st
 pubDate: 2025-03-21
 author: 'Nick Dreyfus'
 youtube: 'BncQcKirFuA'
+heroImage: '/images/blog/privacy-hero.jpg'
+heroAlt: 'A face softly reflected in a dark screen filled with glowing tracking points'
 tags: ['Data Privacy', 'Cybersecurity', 'Consumer Tech']
 faq:
   - question: 'Is "anonymized" data really anonymous?'
@@ -26,6 +28,11 @@ In 2006, Netflix released a dataset of user viewing histories to improve its rec
 
 **Takeaway:** Anonymized data isn't truly anonymous. If your digital footprint is unique enough — and it is — someone can piece it back together.
 
+<figure class="post-fig left">
+  <img src="/images/blog/privacy-a.jpg" alt="Glowing data points forming a human silhouette" width="1280" height="720" loading="lazy" />
+  <figcaption>3,000 data points, assembled without your knowledge — that's a broker's profile of you.</figcaption>
+</figure>
+
 ## 2. Who profits most from your data?
 
 The people who benefit most are data brokers — companies you've probably never heard of that may know more about you than your own family.
@@ -41,6 +48,11 @@ A lot of people think Chrome's Incognito Mode or Safari's Private Browsing makes
 In 2020, Google was hit with a **$5 billion lawsuit** for still tracking users in Incognito Mode. The only thing private mode really does is stop your browser from saving history locally. Your internet provider, the websites you visit, and third-party trackers still see everything.
 
 **Takeaway:** Incognito Mode isn't a privacy tool — it's a "no local history" mode.
+
+<figure class="post-fig right">
+  <img src="/images/blog/privacy-b.jpg" alt="A smartphone emitting streams of light representing tracked data" width="1280" height="720" loading="lazy" />
+  <figcaption>When Apple gave users a real choice, 96% said no to tracking.</figcaption>
+</figure>
 
 ## 4. How to reclaim some control
 

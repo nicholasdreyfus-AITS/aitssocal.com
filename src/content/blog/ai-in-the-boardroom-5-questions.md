@@ -4,6 +4,8 @@ description: 'Your board is about to ask about AI. The five questions they''re r
 pubDate: 2026-01-26
 author: 'Nick Dreyfus'
 tags: ['AI Strategy', 'AI Governance', 'Leadership']
+heroImage: '/images/blog/boardroom-hero.jpg'
+heroAlt: 'Executives around a boardroom table facing a presentation screen at dusk'
 faq:
   - question: 'How should I answer the board''s question about AI ROI?'
     answer: 'Don''t try to prove ROI on individual $20 subscriptions — it''s too small. Frame it as efficiency versus innovation: "We''re in the efficiency phase, using AI to reduce low-value admin time so our expensive people focus on high-value work. We''re not measuring ROI by headcount reduction — we''re measuring it by capacity increase."'
@@ -33,6 +35,11 @@ They'll ask where the return is on all these licenses. The mistake is trying to 
 
 A caution here: boards kill great projects all the time by measuring the wrong thing too early. A company that grades AI on "how many people we cut" instead of "how much faster we shipped" is optimizing for the wrong outcome — and usually strangles the initiative before it can compound.
 
+<figure class="post-fig right">
+  <img src="/images/blog/boardroom-a.jpg" alt="A glowing vault door protecting streams of data" width="1280" height="720" loading="lazy" />
+  <figcaption>The models are public. Your customer history isn't — that's the moat.</figcaption>
+</figure>
+
 ## Question 2 — "What is our defensive moat?"
 
 If our competitors use the same AI, don't we lose our edge? It's a sharp question — if everyone has a Ferrari, nobody's faster. The answer:
@@ -52,6 +59,11 @@ They're asking whether you need to fire everyone and hire data scientists away f
 > "We don't need to replace our workforce — we need to augment it. We're identifying the power users in each department, the curious ones, and giving them license to lead training. We're not hiring an AI army; we're building one from the inside."
 
 Look around before you look outside. The junior employee who quietly automated a report, the marketing manager who loves to tinker — you probably already have your AI leader on payroll. You just haven't given them the title yet.
+
+<figure class="post-fig left">
+  <img src="/images/blog/boardroom-b.jpg" alt="An executive signing a printed document" width="1280" height="720" loading="lazy" />
+  <figcaption>No AI output reaches a client without a human signature. Period.</figcaption>
+</figure>
 
 ## Question 5 — "Who is accountable?"
 

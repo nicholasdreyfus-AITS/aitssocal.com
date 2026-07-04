@@ -5,6 +5,8 @@ pubDate: 2025-02-15
 author: 'Nick Dreyfus'
 youtube: 'PWoJ84VA6Cc'
 tags: ['Cloud', 'IT Strategy', 'Cost Management']
+heroImage: '/images/blog/cloudsmart-hero.jpg'
+heroAlt: 'A business owner looking at a city skyline with a glowing cloud of connected data'
 faq:
   - question: 'Does moving to the cloud actually save money?'
     answer: 'Sometimes it shifts costs rather than cutting them. Businesses adopt the cloud expecting lower IT bills, then get surprised by data-transfer fees, storage expansion, and security add-ons. The cloud can absolutely save money — but only with active cost management. Without it, the bill quietly grows past what on-prem would have cost.'
@@ -19,6 +21,11 @@ faq:
 The cloud gets pitched as an easy win: more flexibility, more scalability, lower costs. And it *can* deliver all three. But for a lot of mid-sized businesses, the reality is more complicated — hidden costs, security trade-offs, and a monthly bill that somehow keeps climbing. The wrong move here doesn't just cost money; it can cost you more than staying put would have.
 
 So let's cut through the noise with the three questions that actually decide whether the cloud pays off for you.
+
+<figure class="post-fig right">
+  <img src="/images/blog/cloudsmart-a.jpg" alt="A digital cloud raining coins onto a desk beside a calculator" width="1280" height="720" loading="lazy" />
+  <figcaption>Data-transfer fees, storage creep, security add-ons — the bill grows quietly.</figcaption>
+</figure>
 
 ## 1. Is the cloud saving you money — or just shifting the costs?
 
@@ -43,6 +50,11 @@ Three things to nail down before and during any migration:
 - **The baseline best practices** — encryption at rest and in transit, least-privilege access, and continuous monitoring.
 
 Security in the cloud isn't automatic. The provider secures *their* infrastructure; securing *your* data and configuration is on you.
+
+<figure class="post-fig left">
+  <img src="/images/blog/cloudsmart-b.jpg" alt="An on-premises server rack connected by light to a glowing cloud" width="1280" height="720" loading="lazy" />
+  <figcaption>For many mid-sized companies, hybrid isn't a compromise — it's the smartest design.</figcaption>
+</figure>
 
 ## 3. Is migration worth it for your business — or are you better off staying put?
 
