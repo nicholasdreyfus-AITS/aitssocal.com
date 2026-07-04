@@ -701,7 +701,7 @@ const team = [
   /* Capability groups */
   .cap-groups {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-bottom: 24px;
   }
@@ -710,11 +710,24 @@ const team = [
     border: 0.5px solid var(--border2);
     border-radius: 16px;
     padding: 22px 22px 12px;
-    transition: border-color 0.25s, transform 0.25s;
+    transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
   }
   .cap-group:hover {
-    border-color: rgba(59, 110, 240, 0.4);
-    transform: translateY(-2px);
+    border-color: rgba(59, 110, 240, 0.55);
+    transform: translateY(-6px) scale(1.04);
+    box-shadow:
+      0 20px 52px rgba(0, 0, 0, 0.55),
+      0 0 32px rgba(59, 110, 240, 0.16);
+  }
+  .cap-group:hover .cap-name {
+    color: #fff;
+  }
+  .cap-group:hover .cap-name::before {
+    color: var(--teal);
+    text-shadow: 0 0 10px rgba(0, 201, 167, 0.9);
+  }
+  .cap-group:hover .cap-desc {
+    color: var(--text2);
   }
   .cap-group__head {
     display: flex;
@@ -751,6 +764,7 @@ const team = [
     font-size: 14px;
     font-weight: 600;
     color: var(--text);
+    transition: color 0.2s;
   }
   .cap-name::before {
     content: '✓ ';
@@ -791,6 +805,31 @@ const team = [
   .vs-card {
     border-radius: 16px;
     padding: 26px 28px;
+    transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  }
+  .vs-card:hover {
+    transform: translateY(-6px) scale(1.03);
+  }
+  .vs-them:hover {
+    border-color: rgba(226, 75, 74, 0.5);
+    box-shadow:
+      0 20px 52px rgba(0, 0, 0, 0.55),
+      0 0 28px rgba(226, 75, 74, 0.12);
+  }
+  .vs-us:hover {
+    border-color: rgba(0, 201, 167, 0.55);
+    box-shadow:
+      0 20px 52px rgba(0, 0, 0, 0.55),
+      0 0 28px rgba(0, 201, 167, 0.14);
+  }
+  .vs-card:hover li {
+    color: var(--text2);
+  }
+  .vs-them:hover li::before {
+    text-shadow: 0 0 9px rgba(240, 149, 149, 0.8);
+  }
+  .vs-us:hover li::before {
+    text-shadow: 0 0 9px rgba(0, 201, 167, 0.9);
   }
   .vs-them {
     background: rgba(226, 75, 74, 0.05);
@@ -862,7 +901,7 @@ const team = [
 
   .promise-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-bottom: 32px;
   }
@@ -871,6 +910,23 @@ const team = [
     border: 0.5px solid rgba(59, 110, 240, 0.28);
     border-radius: 16px;
     padding: 26px 28px;
+    transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  }
+  .promise-card:hover {
+    border-color: rgba(59, 110, 240, 0.55);
+    transform: translateY(-6px) scale(1.04);
+    box-shadow:
+      0 20px 52px rgba(0, 0, 0, 0.55),
+      0 0 32px rgba(59, 110, 240, 0.16);
+  }
+  .promise-card:hover h3 {
+    color: #fff;
+  }
+  .promise-card:hover .promise-num {
+    text-shadow: 0 0 12px rgba(0, 201, 167, 0.85);
+  }
+  .promise-card:hover p {
+    color: var(--text2);
   }
   .promise-num {
     font-family: var(--fran);
@@ -913,7 +969,7 @@ const team = [
 
   .grid-auto {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
   }
   .more {
@@ -1349,6 +1405,14 @@ const team = [
     max-width: 720px;
   }
 
+  /* 4-across on desktop → 2×2 on tablet → single column on mobile. */
+  @media (max-width: 1080px) {
+    .cap-groups,
+    .promise-grid,
+    .grid-auto {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
   @media (max-width: 768px) {
     .trust-layout {
       grid-template-columns: 1fr;
@@ -1356,6 +1420,13 @@ const team = [
     }
     .proof-inner {
       gap: 20px;
+    }
+  }
+  @media (max-width: 640px) {
+    .cap-groups,
+    .promise-grid,
+    .grid-auto {
+      grid-template-columns: 1fr;
     }
   }
 </style>
