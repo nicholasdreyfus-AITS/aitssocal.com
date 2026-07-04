@@ -6,46 +6,82 @@ const contactSchema = {
   '@context': 'https://schema.org',
   '@type': 'ContactPage',
   name: 'Contact AITS',
-  description: 'Book a free AI assessment with AITS.',
+  description: 'Book a free AI assessment with AITS. Most plans start at $250/month.',
 };
+
+const expect = [
+  { n: '01', h: 'We listen first', p: 'You talk, we map: where time is being lost, what your team hates doing, what growth is stuck behind.' },
+  { n: '02', h: 'You get a real plan', p: 'A prioritized list of AI opportunities ranked by ROI — yours to keep whether we work together or not.' },
+  { n: '03', h: 'A win in 30 days', p: 'If we do work together, your highest-value automation goes live fast enough for the whole team to feel it.' },
+];
 ---
 
 <BaseLayout
   title="Contact"
-  description="Book a free AI assessment with AITS. No pitch, no jargon — a real plan you can act on immediately. Headquartered in San Diego, serving businesses nationwide."
+  description="Book a free AI assessment with AITS. No pitch, no jargon — a real plan you can act on immediately. Most plans start at $250/month. San Diego HQ, serving businesses nationwide."
   path="/contact"
   schemas={[contactSchema]}
 >
   <section class="section">
-    <div class="container prose">
-      <p class="section-label">Free assessment</p>
-      <h1>Answer a few questions and we'll make the 30 minutes count.</h1>
-      <p class="lede">No pitch. No jargon. A real plan you can act on immediately.</p>
+    <div class="container">
+      <span class="section-label">Free assessment</span>
+      <h1 class="section-heading">Thirty minutes. <em>No pitch. A real plan.</em></h1>
+      <p class="section-sub">
+        Answer a few questions and we'll make the 30 minutes count — you leave with a prioritized
+        plan you can act on immediately, whether or not we ever work together.
+      </p>
 
       <div class="contact-grid">
         <a class="card contact-card" href={`tel:${BUSINESS.phone}`}>
+          <div class="sicon">📞</div>
           <span class="label">Call</span>
           <span class="value">{BUSINESS.phoneDisplay}</span>
+          <ul class="reveal-list">
+            <li>Fastest way to reach us</li>
+            <li>A person answers — that's kind of our thing</li>
+          </ul>
         </a>
         <a class="card contact-card" href={`mailto:${BUSINESS.email}`}>
+          <div class="sicon">✉️</div>
           <span class="label">Email</span>
           <span class="value">{BUSINESS.email}</span>
+          <ul class="reveal-list">
+            <li>Replies same business day</li>
+            <li>Straight to the founder — no ticket queue</li>
+          </ul>
         </a>
         <div class="card contact-card">
+          <div class="sicon teal">📍</div>
           <span class="label">Serving</span>
           <span class="value">{BUSINESS.areasServed.join(' · ')}</span>
+          <ul class="reveal-list">
+            <li>On-site across Southern California</li>
+            <li>Remote-first everywhere else — same team, same response</li>
+          </ul>
         </div>
       </div>
 
-      <!--
-        Booking: drop the Calendly inline embed or scan funnel here.
-        The original site used: https://calendly.com/nickdre/30min
-      -->
+      <div class="expect">
+        <span class="section-label">What the 30 minutes looks like</span>
+        <div class="expect-grid">
+          {
+            expect.map((s) => (
+              <div class="expect-step">
+                <div class="step-num">{s.n}</div>
+                <h2>{s.h}</h2>
+                <p>{s.p}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
       <div class="booking card">
-        <p class="section-label">Book your free 30-min review</p>
-        <p class="muted">
-          Calendly booking embed goes here (carried over from the current site). For now, call or
-          email above and we'll get you scheduled.
+        <span class="section-label">Book your free 30-minute assessment</span>
+        <p class="booking-copy">
+          Pick a time that works and we'll take it from there. No obligation, no pressure — and if
+          we do end up working together, most plans start at <strong>$250 a month</strong>,
+          month-to-month, fixes included.
         </p>
         <a
           href="https://calendly.com/nickdre/30min"
@@ -59,44 +95,97 @@ const contactSchema = {
 </BaseLayout>
 
 <style>
-  h1 {
-    font-size: clamp(1.9rem, 5vw, 2.8rem);
-    margin: 12px 0 12px;
-  }
-  .lede {
-    color: var(--muted);
-    font-size: 1.2rem;
-    margin-bottom: 36px;
-  }
   .contact-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 14px;
-    margin-bottom: 28px;
+    margin-bottom: 48px;
   }
   .contact-card {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    display: block;
     color: inherit;
   }
   .contact-card:hover {
-    border-color: var(--accent);
     text-decoration: none;
+    color: inherit;
+  }
+  .sicon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--aglow);
+    border: 0.5px solid rgba(59, 110, 240, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 20px;
+  }
+  .sicon.teal {
+    background: var(--tdim);
+    border-color: rgba(0, 201, 167, 0.25);
   }
   .label {
+    display: block;
     font-family: var(--jak);
     font-size: 10px;
     letter-spacing: 2px;
-    color: var(--accent);
+    color: var(--teal2);
     text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
   }
   .value {
     font-size: 1.1rem;
     font-weight: 700;
+    word-break: break-word;
   }
-  .booking .muted {
+  .expect {
+    margin-bottom: 48px;
+  }
+  .expect-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 28px;
+    margin-top: 8px;
+  }
+  .step-num {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--aglow);
+    border: 0.5px solid rgba(59, 110, 240, 0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 14px;
+  }
+  .expect-step h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .expect-step p {
+    font-size: 14px;
     color: var(--muted);
-    margin: 8px 0 18px;
+    line-height: 1.7;
+  }
+  .booking {
+    text-align: center;
+    padding: 40px;
+    border-color: rgba(0, 201, 167, 0.3);
+  }
+  .booking-copy {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 560px;
+    margin: 4px auto 22px;
+    line-height: 1.7;
+  }
+  .booking-copy strong {
+    color: var(--teal2);
   }
 </style>

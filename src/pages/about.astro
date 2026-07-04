@@ -1,6 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { BUSINESS } from '../consts';
+
+const stats = [
+  { big: '25+', lbl: 'years deploying & managing technology' },
+  { big: '80+', lbl: 'combined years behind the board' },
+  { big: '$250', lbl: 'is where most monthly plans start' },
+  { big: 'M2M', lbl: 'month-to-month — no lock-in, ever' },
+];
 ---
 
 <BaseLayout
@@ -9,101 +16,155 @@ import { BUSINESS } from '../consts';
   path="/about"
 >
   <section class="section">
-    <div class="container prose">
-      <p class="section-label">About AITS</p>
-      <h1>We do things differently. From the ground up.</h1>
-      <p>
-        AITS — Advanced Intelligent Technology Solutions — helps small and mid-sized businesses
-        put AI to work so they compete with companies five times their size. But we were not built
-        like most AI companies. We were built on 25+ years of onboarding, integrating, deploying,
-        and managing software, hardware, and full solutions — through every era of business
-        technology: the first office servers, the rise of the cloud, and everything in between.
-        AI is our newest tool. It is not our first rodeo.
+    <div class="container">
+      <span class="section-label">About AITS</span>
+      <h1 class="section-heading">We do things differently.<br /><em>From the ground up.</em></h1>
+      <p class="section-sub">
+        AITS — Advanced Intelligent Technology Solutions — helps small and mid-sized businesses put
+        AI to work so they compete with companies five times their size.
       </p>
 
-      <h2>The week-three problem — and why we exist.</h2>
-      <p>
-        Here is what we watched happen again and again: a business buys an AI solution, and it
-        works beautifully on day one. Then week two or three arrives. One of the tools underneath
-        pushes an update, a connection quietly breaks, and nobody on the team knows how to fix it.
-        So they call the company that built it — and get billed. Every single time. That vendor's
-        business model profits when things break.
-      </p>
-      <p>
-        AITS is the inverse. One flat monthly fee covers the tools <em>and</em> the team that keeps
-        them working — and we do not wait for your call. We run proactive maintenance: your
-        website, your forms, your booking, your CRM, and every automation tested on a regular
-        schedule. When something outside anyone's control changes — a platform like YouTube
-        rewrites a rule overnight — we would rather find it before you do, and fix it right the
-        first time so you are not calling twice about the same thing. Every "it's broken" call
-        costs us, not you. That is what 25 years of managing technology teaches you: day one is
-        easy. Month three is the difference.
-      </p>
+      <div class="stat-strip">
+        {
+          stats.map((s) => (
+            <div class="stat card">
+              <div class="stat-big">{s.big}</div>
+              <div class="stat-lbl">{s.lbl}</div>
+            </div>
+          ))
+        }
+      </div>
 
-      <h2>An ecosystem, not a toolbox.</h2>
-      <p>
-        The goal is bigger than a website or a handful of automations. We build your business an
-        entire ecosystem — every visitor who hits your website or your social gets found, answered,
-        followed up, booked, invoiced, and asked for a review, automatically. A site engineered
-        with real search engine optimization <em>and</em> AI-search optimization, so customers
-        discover you however they search. The result: for a very low cost, your company functions
-        like a mid-sized organization or larger — with everything they have, at what would
-        otherwise cost ten times as much.
-      </p>
+      <div class="story prose">
+        <p>
+          We were not built like most AI companies. We were built on 25+ years of onboarding,
+          integrating, deploying, and managing software, hardware, and full solutions — through
+          every era of business technology: the first office servers, the rise of the cloud, and
+          everything in between. AI is our newest tool. It is not our first rodeo.
+        </p>
 
-      <h2>A partnership that grows with you.</h2>
-      <p>
-        This is a true business partnership, not a transaction. As your company grows, you will
-        need more automation to keep your team focused on the work that drives revenue — not the
-        busywork pulling them away from it. We grow with you: adding services, expanding
-        automations, and finding the next hours to hand back to your people. Your growth is our
-        roadmap.
-      </p>
+        <h2>The week-three problem — <em>and why we exist.</em></h2>
+        <p>
+          Here is what we watched happen again and again: a business buys an AI solution, and it
+          works beautifully on day one. Then week two or three arrives. One of the tools underneath
+          pushes an update, a connection quietly breaks, and nobody on the team knows how to fix it.
+          So they call the company that built it — and get billed. Every single time. That vendor's
+          business model profits when things break.
+        </p>
+        <p>
+          AITS is the inverse. One flat monthly fee covers the tools <em>and</em> the team that
+          keeps them working — and we do not wait for your call. We run proactive maintenance: your
+          website, your forms, your booking, your CRM, and every automation tested on a regular
+          schedule. When something outside anyone's control changes — a platform like YouTube
+          rewrites a rule overnight — we would rather find it before you do, and fix it right the
+          first time so you are not calling twice about the same thing. Every "it's broken" call
+          costs us, not you. That is what 25 years of managing technology teaches you: day one is
+          easy. Month three is the difference.
+        </p>
 
-      <h2>We do not run pilots. We deliver results.</h2>
-      <p>
-        Every engagement starts with an early win your entire team can see and feel. We start with
-        the tasks your team hates most, automate those first, and make sure every person sees the
-        benefit before we touch anything else. That is how adoption sticks — and adoption is where
-        most AI deployments quietly fail.
-      </p>
+        <h2>An ecosystem, <em>not a toolbox.</em></h2>
+        <p>
+          The goal is bigger than a website or a handful of automations. We build your business an
+          entire ecosystem — every visitor who hits your website or your social gets found,
+          answered, followed up, booked, invoiced, and asked for a review, automatically. A site
+          engineered with real search engine optimization <em>and</em> AI-search optimization, so
+          customers discover you however they search. The result: for a very low cost, your company
+          functions like a mid-sized organization or larger — with everything they have, at what
+          would otherwise cost ten times as much.
+        </p>
 
-      <h2>Built by a next-generation founder. Backed by decades of real-world results.</h2>
-      <p>
-        {BUSINESS.founder} launched AITS with the vision and energy of a builder who grew up inside
-        the technology industry. Behind him stands a board with over 80 combined years of managed
-        services, AI deployment, and business leadership across North America — the same people
-        whose operational discipline is built into how AITS runs every client's technology.
-      </p>
+        <h2>A partnership that <em>grows with you.</em></h2>
+        <p>
+          This is a true business partnership, not a transaction. As your company grows, you will
+          need more automation to keep your team focused on the work that drives revenue — not the
+          busywork pulling them away from it. We grow with you: adding services, expanding
+          automations, and finding the next hours to hand back to your people. Your growth is our
+          roadmap — because we only grow when you grow.
+        </p>
 
-      <h2>In your corner, wherever you are.</h2>
-      <p>
-        AITS is headquartered in San Diego and serves businesses across the entire United States.
-        In Southern California we can be on-site when something needs a human — everywhere else,
-        you get the same team, the same platform, and the same response when something needs
-        attention. And we work month-to-month: you stay because the results justify it.
-      </p>
+        <h2>We do not run pilots. <em>We deliver results.</em></h2>
+        <p>
+          Every engagement starts with an early win your entire team can see and feel. We start
+          with the tasks your team hates most, automate those first, and make sure every person
+          sees the benefit before we touch anything else. That is how adoption sticks — and
+          adoption is where most AI deployments quietly fail.
+        </p>
 
-      <a href="/contact" class="btn-primary">Get your free AI assessment</a>
+        <h2>Built by a next-generation founder. <em>Backed by decades of results.</em></h2>
+        <p>
+          {BUSINESS.founder} launched AITS with the vision and energy of a builder who grew up
+          inside the technology industry. Behind him stands a board with over 80 combined years of
+          managed services, AI deployment, and business leadership across North America — the same
+          people whose operational discipline is built into how AITS runs every client's
+          technology.
+        </p>
+
+        <h2>In your corner, <em>wherever you are.</em></h2>
+        <p>
+          AITS is headquartered in San Diego and serves businesses across the entire United States.
+          In Southern California we can be on-site when something needs a human — everywhere else,
+          you get the same team, the same platform, and the same response when something needs
+          attention. And we work month-to-month: you stay because the results justify it.
+        </p>
+      </div>
+
+      <div class="about-cta">
+        <a href="/contact" class="btn-primary">Get your free AI assessment</a>
+        <a href="/#different" class="btn-ghost">See how we're different</a>
+      </div>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  h1 {
-    font-size: clamp(2rem, 5vw, 3rem);
-    margin: 12px 0 24px;
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 52px;
   }
-  h2 {
-    font-size: 1.5rem;
-    margin: 36px 0 12px;
+  .stat {
+    padding: 22px 24px;
+    text-align: center;
   }
-  .prose p {
+  .stat-big {
+    font-family: var(--fran);
+    font-size: 34px;
+    font-weight: 600;
+    color: var(--accent2);
+    line-height: 1.1;
+  }
+  .stat-lbl {
+    font-size: 12.5px;
     color: var(--muted);
-    font-size: 1.1rem;
-    margin-bottom: 16px;
+    line-height: 1.5;
+    margin-top: 6px;
   }
-  .btn {
-    margin-top: 24px;
+  .story h2 {
+    font-family: var(--fran);
+    font-size: clamp(20px, 2.6vw, 28px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 40px 0 12px;
+  }
+  .story h2 em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+  .story p {
+    color: var(--text2);
+    font-size: 1.06rem;
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+  .story p em {
+    color: var(--teal2);
+    font-style: italic;
+  }
+  .about-cta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 44px;
   }
 </style>

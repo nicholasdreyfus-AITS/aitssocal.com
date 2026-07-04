@@ -9,6 +9,13 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 
 const fmt = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+// Card thumbnail: editorial hero if the post has one, else the episode's
+// YouTube thumbnail, else no image (text-only card).
+const thumb = (data: (typeof posts)[number]['data']) =>
+  data.heroImage ?? (data.youtube ? `https://i.ytimg.com/vi/${data.youtube}/hqdefault.jpg` : null);
+
+const [featured, ...rest] = posts;
 ---
 
 <BaseLayout
@@ -18,35 +25,65 @@ const fmt = (d: Date) =>
 >
   <section class="section">
     <div class="container">
-      <p class="section-label">AITS Insights</p>
-      <h1>AI, modernized — written for the people who run the business.</h1>
-      <p class="lede prose">
+      <span class="section-label">AITS Insights</span>
+      <h1 class="section-heading">AI, modernized — <em>written for the people who run the business.</em></h1>
+      <p class="section-sub">
         No jargon. Just clear, practical guidance on deploying AI, managing risk, and modernizing
-        your technology — built for small and mid-sized businesses.
+        your technology — most of it straight from The Digital Dilemma podcast.
       </p>
 
       {posts.length === 0 && <p class="muted">First posts are on the way.</p>}
 
-      <ul class="post-list">
+      {
+        featured && (
+          <a href={`/blog/${featured.id}`} class="card post-card featured">
+            {thumb(featured.data) && (
+              <div class="thumb">
+                <img src={thumb(featured.data)} alt="" width="1280" height="720" loading="eager" />
+              </div>
+            )}
+            <div class="body">
+              <span class="feat-tag">Latest</span>
+              <time datetime={featured.data.pubDate.toISOString()}>{fmt(featured.data.pubDate)}</time>
+              <h2>{featured.data.title}</h2>
+              <p>{featured.data.description}</p>
+              <div class="tags">
+                {featured.data.tags.map((t) => (
+                  <span class="tag">{t}</span>
+                ))}
+              </div>
+            </div>
+          </a>
+        )
+      }
+
+      <div class="post-grid">
         {
-          posts.map((post) => (
-            <li class="post-card">
-              <a href={`/blog/${post.id}`}>
+          rest.map((post) => (
+            <a href={`/blog/${post.id}`} class="card post-card">
+              {thumb(post.data) ? (
+                <div class="thumb">
+                  <img src={thumb(post.data)} alt="" width="640" height="360" loading="lazy" />
+                </div>
+              ) : (
+                <div class="thumb thumb-empty" aria-hidden="true">
+                  <span>AITS</span>
+                </div>
+              )}
+              <div class="body">
                 <time datetime={post.data.pubDate.toISOString()}>{fmt(post.data.pubDate)}</time>
                 <h2>{post.data.title}</h2>
                 <p>{post.data.description}</p>
-                {post.data.tags.length > 0 && (
-                  <div class="tags">
-                    {post.data.tags.map((t) => (
-                      <span class="tag">{t}</span>
-                    ))}
-                  </div>
-                )}
-              </a>
-            </li>
+                <div class="tags">
+                  {post.data.tags.map((t) => (
+                    <span class="tag">{t}</span>
+                  ))}
+                </div>
+              </div>
+            </a>
           ))
         }
-      </ul>
+      </div>
 
       <NewsletterSignup />
     </div>
@@ -54,33 +91,45 @@ const fmt = (d: Date) =>
 </BaseLayout>
 
 <style>
-  .lede {
-    color: var(--muted);
-    font-size: 1.15rem;
-    margin: 16px 0 40px;
-  }
-  .post-list {
-    list-style: none;
-    display: grid;
-    gap: 20px;
-  }
   .post-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    transition: border-color 0.15s ease, transform 0.15s ease;
+    display: block;
+    color: inherit;
+    padding: 0;
+    overflow: hidden;
   }
   .post-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-  }
-  .post-card a {
-    display: block;
-    padding: 24px;
+    text-decoration: none;
     color: inherit;
   }
-  .post-card a:hover {
-    text-decoration: none;
+  .thumb {
+    aspect-ratio: 16 / 8;
+    overflow: hidden;
+    border-bottom: 0.5px solid var(--border2);
+    background: var(--bg3);
+  }
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+  }
+  .post-card:hover .thumb img {
+    transform: scale(1.04);
+  }
+  .thumb-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .thumb-empty span {
+    font-family: var(--fran);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--border3);
+    letter-spacing: 0.2em;
+  }
+  .body {
+    padding: 22px 24px 24px;
   }
   .post-card time {
     font-family: var(--jak);
@@ -88,11 +137,16 @@ const fmt = (d: Date) =>
     color: var(--muted);
   }
   .post-card h2 {
-    font-size: 1.35rem;
+    font-family: var(--fran);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
     margin: 8px 0;
   }
   .post-card p {
+    font-size: 14px;
     color: var(--muted);
+    line-height: 1.65;
   }
   .tags {
     display: flex;
@@ -100,7 +154,57 @@ const fmt = (d: Date) =>
     gap: 6px;
     margin-top: 14px;
   }
+  .featured {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    margin-bottom: 20px;
+    border-color: rgba(59, 110, 240, 0.35);
+  }
+  .featured .thumb {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 260px;
+    border-bottom: none;
+    border-right: 0.5px solid var(--border2);
+  }
+  .featured .body {
+    padding: 30px 32px;
+    align-self: center;
+  }
+  .featured h2 {
+    font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  }
+  .feat-tag {
+    display: inline-block;
+    background: var(--aglow);
+    border: 0.5px solid rgba(59, 110, 240, 0.3);
+    color: var(--accent3);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 100px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    margin-right: 10px;
+  }
+  .post-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+  }
   .muted {
     color: var(--muted);
+  }
+  @media (max-width: 760px) {
+    .featured {
+      grid-template-columns: 1fr;
+    }
+    .featured .thumb {
+      min-height: 0;
+      aspect-ratio: 16 / 8;
+      border-right: none;
+      border-bottom: 0.5px solid var(--border2);
+    }
   }
 </style>
