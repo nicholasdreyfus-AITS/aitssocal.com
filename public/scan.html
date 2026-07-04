@@ -312,7 +312,7 @@ window.addEventListener("message", function(e) {
 var PROXY_URL = "https://aits-scan.nicholasdreyfus.workers.dev";
 
 var QUESTIONS = [
-  {id:"industry",label:"What industry are you in?",type:"single",options:["Healthcare / Medical","Legal","Financial services","Construction / Trades","Professional services","Retail / E-commerce","Real estate","Nonprofit","Technology","Other"]},
+  {id:"industry",label:"What industry are you in?",type:"single",options:["Healthcare / Medical","Legal","Financial services","Construction / Trades","Professional services","Retail / E-commerce","Real estate","Education / Schools","Nonprofit","Technology","Other"]},
   {id:"size",label:"How many people work in the business?",type:"single",options:["Just me","2-10","11-25","26-100","100+"]},
   {id:"leads",label:"How do most new customers first reach you?",type:"single",options:["They call us","Website or web form","Email","Social media or ads","Referrals and repeat customers"]},
   {id:"missed",label:"What happens when a call comes in and no one can pick up?",type:"single",options:["Someone always answers","It goes to voicemail","Calls often get missed entirely","Honestly, I'm not sure"]},
@@ -339,6 +339,7 @@ var DATA_PRIORITY = {
   "Professional services": ["Legal or financial documents", "Card payments"],
   "Retail / E-commerce": ["Card payments"],
   "Real estate": ["Legal or financial documents", "Card payments"],
+  "Education / Schools": ["Children's data", "Card payments"],
   "Nonprofit": ["Children's data", "Card payments"],
   "Technology": ["Card payments", "Legal or financial documents"]
 };
