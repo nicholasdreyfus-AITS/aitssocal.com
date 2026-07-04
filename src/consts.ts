@@ -6,10 +6,10 @@ export const SITE = {
   legalName: 'Advanced Intelligent Technology Solutions',
   url: 'https://aits.llc',
   // Homepage <title> — keyword-rich for SEO/AEO. (OG site name is SITE.name.)
-  title: 'AITS — All-in-One AI & Business Tech, One Managed Fee',
-  tagline: 'AI that works for your business, not just tech teams.',
+  title: 'AITS — Managed AI for Small Business, One Flat Fee',
+  tagline: 'AI that still works in month three.',
   description:
-    'AITS gives small and mid-sized businesses every tool they need to grow — CRM, marketing automation, AI receptionist, booking, reviews, and reporting — managed for one flat monthly fee. Headquartered in San Diego, serving businesses nationwide.',
+    'Most AI works on day one and breaks by week three. AITS is built on 25+ years of deploying and managing technology that has to work: every automation tested regularly, monitored, and fixed — for one flat monthly fee. San Diego HQ, serving businesses nationwide.',
   // Default social share image (place a 1200x630 PNG at /public/og-default.png).
   defaultOgImage: '/og-default.png',
   locale: 'en_US',

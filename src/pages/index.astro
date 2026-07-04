@@ -2,68 +2,96 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE } from '../consts';
 
-// Capability groups — the full breadth of what one AITS partnership covers,
-// organized by the customer journey. Deliberately describes capabilities,
-// never the underlying platform by name.
+// Capability groups — what an AITS partnership changes for the CLIENT'S
+// business, organized by the customer journey. Every line is a client
+// outcome first, mechanism second. Never names the underlying platform.
 const capabilityGroups = [
   {
     label: 'Capture every lead',
     icon: '🎯',
     items: [
-      { name: 'AI receptionist & website chat', desc: 'Every call and visitor answered 24/7' },
-      { name: 'Missed-call text-back', desc: 'A missed call becomes a text, not a lost job' },
-      { name: 'Forms, surveys & quizzes', desc: 'Capture inquiries from anywhere' },
-      { name: 'Websites, funnels & landing pages', desc: 'Built, hosted, and maintained for you' },
+      { name: 'Every call answered — 24/7', desc: 'An AI receptionist and website chat greet, qualify, and book callers at 2 pm or 2 am' },
+      { name: 'A missed call is no longer a lost job', desc: 'The customer gets an instant text back — before they dial your competitor' },
+      { name: 'Your website books work while you sleep', desc: 'Built, hosted, and maintained for you — designed to turn visitors into appointments' },
     ],
   },
   {
     label: 'Convert them to customers',
     icon: '📈',
     items: [
-      { name: 'CRM & sales pipeline', desc: 'Every lead tracked from first touch to close' },
-      { name: 'Email & SMS marketing', desc: 'Campaigns and blasts that run themselves' },
-      { name: 'Automated follow-up', desc: 'Nurture sequences so no lead goes cold' },
-      { name: 'Online scheduling & reminders', desc: 'Booking without the back-and-forth' },
+      { name: 'No lead ever goes cold', desc: 'Automated follow-up keeps the conversation alive until they book — or tell you no' },
+      { name: 'Every lead tracked to close', desc: 'One pipeline from first touch to won job — nothing forgotten in an inbox' },
+      { name: 'Customers book themselves', desc: 'Online scheduling with reminders that cut no-shows' },
+      { name: 'Your marketing runs without you', desc: 'Email and SMS campaigns go out consistently — no late nights writing blasts' },
     ],
   },
   {
     label: 'Get paid & keep them',
     icon: '💳',
     items: [
-      { name: 'Estimates, invoices & payments', desc: 'Quote to cash in one place' },
-      { name: 'Review & reputation management', desc: 'More 5-star reviews, automatically' },
-      { name: 'Social media scheduling', desc: 'A consistent presence with no daily effort' },
-      { name: 'Memberships & courses', desc: 'New revenue from what you already know' },
+      { name: 'Quotes out same day, paid faster', desc: 'Estimates, invoices, and payments in one place — from yes to money in the bank' },
+      { name: 'Your reputation compounds', desc: 'Happy customers become 5-star reviews, automatically' },
+      { name: 'You show up online every week', desc: 'Social presence on autopilot — zero staff hours spent' },
     ],
   },
   {
     label: 'See what is working',
     icon: '🧭',
     items: [
-      { name: 'Unified inbox', desc: 'Calls, texts, emails & DMs in one thread' },
-      { name: 'Reporting & ROI dashboards', desc: 'What is working, at a glance' },
-      { name: 'Call tracking & attribution', desc: 'Know which marketing actually pays off' },
-      { name: 'Mobile app', desc: 'Your whole business in your pocket' },
+      { name: 'One inbox, nothing missed', desc: 'Calls, texts, emails, and DMs in a single thread your team can actually manage' },
+      { name: "Know what's making you money", desc: 'Dashboards and call tracking that prove which marketing actually pays' },
+      { name: 'Your whole business in your pocket', desc: 'Run it all from the mobile app, wherever the day takes you' },
     ],
   },
 ];
 
-const promises = [
+// The manifesto — why AITS is different, from the ground up. This is the
+// site's spine: hero leads with it, this section carries it, services/about
+// echo it, and the closing CTA lands on it.
+const convictions = [
   {
-    h: 'We build it and run it',
-    p: 'Your fee includes engineering time every single month. We are not a vendor who hands you software and disappears — we are the team operating it alongside you.',
+    h: "We've done this for 25+ years",
+    p: 'Onboarding, integrating, deploying, and managing software, hardware, and full solutions — so they are reliable, they actually work, and they are properly tested regularly. AI is our newest tool, not our first rodeo.',
   },
   {
-    h: 'We test it regularly',
-    p: 'Every automation we deploy is checked on a schedule, and uptime is monitored continuously. You find out something needed attention after we have already handled it.',
+    h: "Day one isn't the finish line",
+    p: 'Most AI deployments break by week two or three, when one of the tools underneath pushes an update and a connection quietly snaps. We test everything on a schedule — because updates never stop.',
   },
   {
-    h: 'We jump on issues',
-    p: 'When something breaks, you are not opening a ticket into the void. You have a partner who picks up, diagnoses, and fixes — because reliability is what you are paying for.',
+    h: 'We profit when nothing breaks',
+    p: 'One monthly fee, fixes included. Every "it\'s broken" call costs us, not you — so we are incentivized to engineer things so you never have to make one.',
+  },
+  {
+    h: 'We grow when you grow',
+    p: 'As your business scales, you need more automation to keep your team on the work that drives revenue — not the busywork pulling them away from it. We add those services as you grow. That is the partnership.',
   },
 ];
 
+const vsThem = [
+  'Deploy it, demo it, disappear',
+  'An update breaks a link by week three',
+  'You find out when a customer does',
+  'Every fix is a new invoice',
+  'They profit when it breaks',
+];
+
+const vsUs = [
+  '25+ years deploying and managing technology',
+  'Every automation tested on a schedule',
+  'Breaks caught before you feel them',
+  'One flat fee — fixes included',
+  "We profit when it doesn't",
+];
+
 const faqs = [
+  {
+    q: 'What makes AITS different from other AI companies?',
+    a: 'Most AI companies are new to running technology that has to work every day. AITS was built from the ground up on 25+ years of onboarding, integrating, deploying, and managing software, hardware, and full solutions. That experience shows up as discipline: everything we deploy is tested regularly, monitored continuously, and covered by one flat monthly fee — so our incentive is to keep things working, not to bill you when they break.',
+  },
+  {
+    q: 'Why do AI automations break a few weeks after they are deployed?',
+    a: 'Because the tools underneath them never stop changing. An automation is usually several pieces of software connected together — and when any one of them pushes an update, a connection can quietly break. Most vendors deploy something that works on day one and leave; by week two or three something snaps, you find out when a customer does, and you get charged for every fix. AITS tests every automation on a schedule precisely so those breaks get caught and fixed before you ever feel them.',
+  },
   {
     q: 'How much does it cost for a small business to deploy AI?',
     a: 'One flat monthly fee covers the entire platform — CRM, marketing automation, AI receptionist, booking, reviews, funnels, and reporting — plus the engineering time to run it. It starts with a free 30-minute assessment so you see the value before spending, and engagements are month-to-month with no lock-in.',
@@ -78,7 +106,7 @@ const faqs = [
   },
   {
     q: 'Who manages the tools after they are set up?',
-    a: 'We do — that is the point. Most businesses buy software and become their own unpaid IT department. With AITS, your automations are tested regularly, uptime is monitored, and when anything needs attention our engineers handle it. You run your business; we run the technology.',
+    a: 'We do — that is the point. Most businesses buy software and become their own unpaid IT department, or get billed by their vendor every time something breaks. With AITS, your automations are tested regularly, uptime is monitored, and when anything needs attention our engineers handle it at no extra charge — the flat fee means we are incentivized to reduce the number of times you ever have to call us. You run your business; we run the technology.',
   },
   {
     q: 'How long until we see results from AI?',
@@ -124,7 +152,7 @@ const serviceSchema = {
   provider: { '@id': `${SITE.url}/#organization` },
   areaServed: { '@type': 'Country', name: 'United States' },
   description:
-    'CRM and sales pipeline, email and SMS marketing, automated follow-up, an AI receptionist and website chat, missed-call text-back, online scheduling, estimates and invoicing with payments, review and reputation management, social media scheduling, memberships and courses, websites and funnels, a unified inbox, call tracking, and reporting dashboards — delivered as one managed platform for one flat monthly fee that includes engineering, regular testing, and uptime monitoring.',
+    'Every call answered 24/7 by an AI receptionist, missed calls texted back instantly, automated follow-up so no lead goes cold, self-service scheduling with reminders, same-day estimates and invoicing with payments, automatic review generation, consistent email, SMS, and social presence, a unified inbox, and dashboards that show which marketing pays — delivered as one managed platform for one flat monthly fee that includes engineering, regular testing, uptime monitoring, and fixes. Built on 25+ years of deploying and managing business technology.',
   offers: {
     '@type': 'Offer',
     priceCurrency: 'USD',
@@ -206,13 +234,13 @@ const team = [
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-badge"><span class="badge-dot"></span>SMB AI &amp; technology partners</div>
-    <h1>Every tool your business runs on.<br /><em>One fee. One partner.</em></h1>
+    <div class="hero-badge"><span class="badge-dot"></span>Built differently — from the ground up</div>
+    <h1>Anyone can launch AI that works on day one.<br /><em>Ours still works in month three.</em></h1>
     <div class="hero-divider"></div>
     <p class="hero-sub">
-      One managed platform for everything a small business needs — CRM, marketing automation, an
-      AI receptionist, booking, reviews, and reporting — built, tested, and supported by our team
-      for one flat monthly fee. The tools <em>and</em> the people who keep them working.
+      AITS was built on 25+ years of onboarding, integrating, deploying, and managing technology
+      that has to work. One flat monthly fee covers the tools <em>and</em> the team that tests,
+      monitors, and fixes them — so we profit when nothing breaks, not when everything does.
     </p>
     <p class="hero-name">Headquartered in San Diego • Serving businesses nationwide</p>
     <div class="hero-actions">
@@ -224,12 +252,59 @@ const team = [
   <!-- PROOF BAR -->
   <div class="proof-bar">
     <div class="container proof-inner">
-      <div class="proof-item"><span class="proof-dot"></span>AI receptionists answering live calls for real businesses</div>
-      <div class="proof-item"><span class="proof-dot"></span>Automations live in under 30 days</div>
-      <div class="proof-item"><span class="proof-dot"></span>One flat monthly fee — platform, engineering, and support</div>
+      <div class="proof-item"><span class="proof-dot"></span>25+ years deploying &amp; managing business technology</div>
+      <div class="proof-item"><span class="proof-dot"></span>Every automation tested on a schedule</div>
+      <div class="proof-item"><span class="proof-dot"></span>One flat monthly fee — fixes included</div>
       <div class="proof-item"><span class="proof-dot"></span>No long-term contracts, ever</div>
     </div>
   </div>
+
+  <!-- MANIFESTO: WHY WE'RE DIFFERENT -->
+  <section class="section" id="different">
+    <div class="container">
+      <span class="section-label">Why we're different</span>
+      <h2 class="section-heading">We do things differently.<br /><em class="hl-em">From the ground up.</em></h2>
+      <p class="section-sub">
+        The demo is always impressive. Then week two or three arrives: one of the tools underneath
+        pushes an update, a connection quietly breaks, and nobody on your team knows how to fix it.
+        So you call the company that built it — and they charge you. Every single time.
+      </p>
+
+      <div class="vs-grid">
+        <div class="vs-card vs-them">
+          <p class="vs-label">Most AI companies</p>
+          <ul>
+            {vsThem.map((line, i) => <li class:list={[{ 'vs-final': i === vsThem.length - 1 }]}>{line}</li>)}
+          </ul>
+        </div>
+        <div class="vs-card vs-us">
+          <p class="vs-label">The AITS partnership</p>
+          <ul>
+            {vsUs.map((line, i) => <li class:list={[{ 'vs-final': i === vsUs.length - 1 }]}>{line}</li>)}
+          </ul>
+        </div>
+      </div>
+
+      <div class="promise-grid">
+        {
+          convictions.map((c, i) => (
+            <div class="promise-card">
+              <div class="promise-num">{String(i + 1).padStart(2, '0')}</div>
+              <h3>{c.h}</h3>
+              <p>{c.p}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="manifesto-close">
+        Our incentive is simple: reduce the number of times you ever have to call us.
+        <em>That is what a real technology partnership looks like.</em>
+      </p>
+    </div>
+  </section>
+
+  <hr class="divider" />
 
   <!-- ONE PLATFORM, ONE FEE -->
   <section class="section" id="platform">
@@ -237,9 +312,9 @@ const team = [
       <span class="section-label">The AITS model</span>
       <h2 class="section-heading">One partner replaces your entire stack.<br /><em class="hl-em">One fee. Everything below.</em></h2>
       <p class="section-sub">
-        The tools most businesses buy separately — six, eight, ten subscriptions nobody has time to
-        connect, learn, or maintain — delivered as one system we build, run, and keep working for
-        you. Here is what a single partnership covers:
+        Forget the feature list — here is what actually changes in your business. Every phone call
+        answered. Every lead followed up. Every invoice out the door faster. Delivered as one system
+        we build, run, and keep working, instead of six subscriptions nobody owns:
       </p>
       <div class="cap-groups">
         {
@@ -263,20 +338,9 @@ const team = [
       </div>
 
       <p class="cap-tagline">
-        That is sixteen jobs, one login, one bill, and one team accountable for all of it.
+        Thirteen jobs your business needs done — one login, one bill, and one team accountable for
+        all of it.
       </p>
-
-      <div class="promise-grid">
-        {
-          promises.map((p, i) => (
-            <div class="promise-card">
-              <div class="promise-num">{String(i + 1).padStart(2, '0')}</div>
-              <h3>{p.h}</h3>
-              <p>{p.p}</p>
-            </div>
-          ))
-        }
-      </div>
 
       <div class="how-note">
         <strong>How is all of this one fee?</strong> AITS partners directly with enterprise-grade
@@ -476,12 +540,12 @@ const team = [
   <section class="cta-section">
     <div class="cta-glow"></div>
     <span class="section-label" style="text-align:center">Free AI assessment</span>
-    <h2 class="cta-h2">One platform. One fee.<br /><em>One partner who runs it.</em></h2>
+    <h2 class="cta-h2">Day one is easy.<br /><em>Month three is the difference.</em></h2>
     <div class="hero-divider" style="margin-inline:auto"></div>
     <p class="cta-sub">
-      Stop paying for six disconnected tools nobody owns. Get everything your business runs on in
-      one managed platform — and a team that builds it, tests it, and jumps on issues. Start with a
-      free 30-minute assessment.
+      Work with a partner who has spent 25+ years keeping technology working — and whose fee
+      depends on it staying that way. As you grow, we grow with you: more automations, more time
+      for your team to do the work that drives revenue. Start with a free 30-minute assessment.
     </p>
     <div class="hero-actions" style="justify-content:center">
       <a href="/contact" class="btn-primary">Get your free AI assessment</a>
@@ -695,6 +759,85 @@ const team = [
     max-width: 520px;
     margin: 14px 0 0;
   }
+  /* Manifesto: versus grid */
+  .vs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .vs-card {
+    border-radius: 16px;
+    padding: 26px 28px;
+  }
+  .vs-them {
+    background: rgba(226, 75, 74, 0.05);
+    border: 0.5px solid rgba(226, 75, 74, 0.28);
+  }
+  .vs-us {
+    background: rgba(0, 201, 167, 0.05);
+    border: 0.5px solid rgba(0, 201, 167, 0.3);
+  }
+  .vs-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .vs-them .vs-label {
+    color: #f09595;
+  }
+  .vs-us .vs-label {
+    color: var(--teal2);
+  }
+  .vs-card ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .vs-card li {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    padding: 8px 0;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
+  }
+  .vs-card li:last-child {
+    border-bottom: none;
+  }
+  .vs-them li::before {
+    content: '✕ ';
+    color: #f09595;
+    font-weight: 700;
+  }
+  .vs-us li::before {
+    content: '✓ ';
+    color: var(--teal2);
+    font-weight: 700;
+  }
+  .vs-them li.vs-final {
+    color: #f09595;
+    font-weight: 600;
+  }
+  .vs-us li.vs-final {
+    color: var(--teal2);
+    font-weight: 600;
+  }
+  .manifesto-close {
+    font-family: var(--fran);
+    font-size: clamp(17px, 2.2vw, 22px);
+    color: var(--text2);
+    text-align: center;
+    max-width: 680px;
+    margin: 12px auto 0;
+    line-height: 1.5;
+  }
+  .manifesto-close em {
+    font-style: italic;
+    color: var(--teal2);
+  }
+
   .promise-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));

@@ -2,22 +2,23 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE } from '../consts';
 
+// Every service is stated as the CLIENT outcome first, mechanism second.
 const services = [
   {
-    h: 'All-in-one growth platform, managed',
-    p: 'CRM and sales pipeline, email and SMS marketing, AI receptionist, appointment booking, review management, missed-call text-back, websites and funnels, and reporting — delivered as one managed platform for one flat monthly fee, with the engineering time to run it included. We build it, test it regularly, monitor uptime, and jump on issues so you never manage a pile of subscriptions again.',
+    h: 'Your whole front office, handled',
+    p: 'Calls answered 24/7, missed calls texted back, leads followed up until they book, appointments scheduled with reminders, invoices out same-day, reviews collected automatically, and dashboards that show which marketing pays. One managed system for one flat monthly fee — we build it, test it regularly, monitor uptime, and fix issues at no extra charge, so you never manage a pile of subscriptions again.',
   },
   {
     h: 'AI assessment & roadmap',
-    p: 'We map where AI should be working in your business, score your exposure to shadow AI and compliance gaps, and hand you a prioritized plan you can act on immediately.',
+    p: 'We map where AI should be working in your business, score your exposure to shadow AI and compliance gaps, and hand you a prioritized plan you can act on immediately — with ROI attached to every recommendation.',
   },
   {
     h: 'Task automation',
-    p: 'We automate the work your team hates most first — the repetitive, manual tasks that drain hours every week — and prove the value before expanding.',
+    p: 'We automate the work your team hates most first — the repetitive, manual tasks that drain hours every week — so your people get back to the work that drives revenue. We prove the value before expanding.',
   },
   {
     h: 'Technology modernization',
-    p: 'AI-first, with the infrastructure underneath it. We make sure the foundation your business runs on is reliable, secure, and ready to scale.',
+    p: 'AI-first, with the infrastructure underneath it. We make sure the foundation your business runs on is reliable, secure, and ready to scale — because an automation is only as dependable as what it sits on.',
   },
   {
     h: 'Team enablement & adoption',
@@ -29,7 +30,7 @@ const services = [
   },
   {
     h: 'Ongoing managed support',
-    p: 'Month-to-month and responsive. Every automation we deploy is tested on a regular schedule and monitored for uptime, and when something needs attention our engineers are on it — you are never left running the tools alone. We stay because the results justify it, not because you signed a contract that makes leaving painful.',
+    p: 'This is where 25+ years of deploying and managing technology shows. Most AI works on day one and breaks by week three, when an update quietly snaps a connection — and most vendors charge you for every fix. We test every automation on a schedule and monitor uptime continuously, and fixes are included in the flat fee. Our incentive is to reduce the number of times you ever have to call us. Month-to-month: you stay because the results justify it.',
   },
 ];
 
@@ -48,19 +49,19 @@ const serviceSchema = {
 
 <BaseLayout
   title="Services"
-  description="An all-in-one managed growth platform for one flat monthly fee — plus AI assessment, task automation, technology modernization, team enablement, AI governance, and managed support for small and mid-sized businesses."
+  description="Calls answered 24/7, leads followed up, invoices out faster — one managed system for one flat monthly fee, built on 25+ years of deploying and managing technology that has to keep working."
   path="/services"
   schemas={[serviceSchema]}
 >
   <section class="section">
     <div class="container">
       <p class="section-label">What we do</p>
-      <h1>Every industry has tasks AI should be doing.</h1>
+      <h1>We sell what changes in your business. Not a feature list.</h1>
       <p class="lede prose">
-        We lead with the outcome your business needs and work backwards to the right solution. Most
-        vendors lead with tools — we lead with your problem. And instead of selling you a stack of
-        separate subscriptions, one flat monthly fee covers the platform <em>and</em> the people
-        who keep it working.
+        Most vendors lead with tools; we lead with your problem and work backwards. And unlike most
+        AI companies, we have spent 25+ years onboarding, integrating, deploying, and managing
+        technology that has to keep working — so everything below is tested regularly, monitored,
+        and covered by one flat monthly fee. Fixes included, because we profit when nothing breaks.
       </p>
       <div class="grid">
         {
