@@ -4,6 +4,8 @@ description: 'The headlines say AI is replacing the workforce. The data from Gol
 pubDate: 2025-02-27
 author: 'Nick Dreyfus'
 youtube: 'XLowAsJ20RU'
+heroImage: '/images/blog/replace-hero.jpg'
+heroAlt: 'A professional working alongside a glowing AI interface at a desk'
 tags: ['AI & Jobs', 'Workforce', 'AI Strategy']
 faq:
   - question: 'Is AI going to replace my job?'
@@ -26,6 +28,11 @@ The most honest description of where AI stands today is "a talented but drunk in
 
 What lives in that gap is the human element AI can't replicate right now — context, empathy, judgment. The thing you build over ten or twenty years of doing the work. AI can replicate textbook knowledge. It cannot replicate the instinct that tells you a deal is ready to close, or that a prospect isn't being honest about their real problem.
 
+<figure class="post-fig right">
+  <img src="/images/blog/replace-a.jpg" alt="A human hand and a holographic hand reaching toward the same document" width="1280" height="720" loading="lazy" />
+  <figcaption>Partnership, not replacement — the businesses winning with AI are pairing it with judgment.</figcaption>
+</figure>
+
 ## The data tells a different story than the headlines
 
 This isn't wishful thinking — the numbers back it up:
@@ -44,6 +51,11 @@ If experience is the moat, the question every leader is asking is: what do I act
 That means being honest with your team about what AI is for: it takes the 80% of boring admin work — scheduling, basic emails, data sorting, formatting — off their plate so they can do the creative, high-value work they were actually hired for. Framed that way, the question stops being "will I be replaced?" and becomes "what could I do with that time back?"
 
 > AI is not coming for the good humans. It's coming for the tasks that never needed a human in the first place. The question isn't whether you'll be replaced — it's whether you'll lead the change or get caught watching it happen.
+
+<figure class="post-fig left">
+  <img src="/images/blog/replace-b.jpg" alt="A professional reviewing AI-generated work with a discerning expression" width="1280" height="720" loading="lazy" />
+  <figcaption>Judgment is the moat. AI drafts; your people decide.</figcaption>
+</figure>
 
 ## What to do Monday morning
 
