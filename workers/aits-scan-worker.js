@@ -1,27 +1,30 @@
-// AITS AI Risk Scan — Cloudflare Worker (analyst-note generator)
+// AITS AI Risk Scan — Cloudflare Worker
 // ---------------------------------------------------------------------------
-// Deploy at workers.cloudflare.com. Set secret: ANTHROPIC_API_KEY = <your key>.
-// The deployed Worker URL is the PROXY_URL used in public/scan.html.
+// Deploy at workers.cloudflare.com (paste this whole file). Secrets required:
+//   ANTHROPIC_API_KEY  — analyst note generation
+//   RESEND_API_KEY     — lead + client emails
+// Optional binding: KV namespace "LEADS" — durable lead log (falls back to
+// console logging, visible in the dashboard's Live Logs / wrangler tail).
 //
-// 2026-07-01 rework: the scan report is now computed deterministically in the
-// page itself and renders complete without this Worker. This Worker's only
-// job is the personalized ANALYST NOTE — the page shows a solid fallback note
-// if this call fails, so an outage here can never blank the report again.
-//
-// Contract:  POST { answers: {...}, computed: { score, band, shadowLevel,
-//            flags[], hours, findings[{tag, headline}] } }
-//        →   200 { analystNote: "..." }   |   4xx/5xx { error: "..." }
-// Legacy {messages:[...]} bodies (old scan.html) are still proxied through so
-// the two sides can deploy in either order.
+// Endpoints:
+//   POST /       {answers, computed}            → {analystNote}
+//   POST /lead   {lead, computed, answers, analystNote}
+//     1. Runs an SEO/AEO audit of lead.website (if reachable)
+//     2. Builds a branded 2-page PDF report (Opportunity Brief style,
+//        AITS logo top-left) — generated right here, no libraries
+//     3. Emails the CLIENT their report (CC AITS so replies reach us)
+//     4. Emails AITS the full internal version: report + audit + analyst
+//        note + raw answers + the PDF attached
+//     5. Logs the lead (console + KV when bound)
 // ---------------------------------------------------------------------------
 
 const MODEL = "claude-sonnet-5";
 
-// Where full-report lead notifications go.
 const NOTIFY_TO = ["gavin@aits.llc"];
 const NOTIFY_CC = ["nick@aitssocal.com"];
-// Must be a sender on the Resend-verified domain (see workers/README.md §Resend).
-const NOTIFY_FROM = "AITS Scan <scan@aits.llc>";
+const NOTIFY_FROM = "AITS <scan@aits.llc>";
+const REPLY_TO = "gavin@aits.llc";
+const LOGO_URL = "https://aits.llc/images/aits-logo-flat.jpg"; // pre-flattened on brand navy
 
 const SYSTEM_PROMPT = `You are the senior analyst at AITS (Advanced Intelligent Technology Solutions), a San Diego-headquartered firm that gives small businesses an all-in-one managed technology platform for one flat monthly fee — built, tested regularly, monitored, and fixed by AITS engineers.
 
@@ -49,20 +52,523 @@ function esc(s) {
   return String(s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 }
 
-// Full report as email-safe HTML (inline styles, table layout, no external
-// assets). Renders in Gmail/Outlook/Apple Mail, prints cleanly as a client
-// handout, and is ALWAYS present in the email body — never dependent on a PDF.
-function reportHtml(lead, c, note, answers, clientUrl) {
+/* ===========================================================================
+   SEO / AEO WEBSITE AUDIT
+   Deterministic checks against the lead's homepage — the same gaps we
+   audited by hand for businesscasual.us (empty meta descriptions, missing
+   H1s, hollow schema, one social channel, no booking path, no content).
+   ======================================================================== */
+
+function normalizeUrl(raw) {
+  let s = String(raw || "").trim();
+  if (!s) return null;
+  if (!/^https?:\/\//i.test(s)) s = "https://" + s;
+  let u;
+  try { u = new URL(s); } catch { return null; }
+  if (!/\./.test(u.hostname) || /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/i.test(u.hostname)) return null;
+  u.hash = ""; u.search = "";
+  return u;
+}
+
+async function fetchWithTimeout(url, ms, opts) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(url, {
+      redirect: "follow",
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; AITSAuditBot/1.0; +https://aits.llc)" },
+      signal: ctrl.signal,
+      ...(opts || {}),
+    });
+  } finally { clearTimeout(t); }
+}
+
+async function auditWebsite(rawUrl) {
+  const u = normalizeUrl(rawUrl);
+  if (!u) return { ok: false, url: String(rawUrl || ""), error: "No usable website URL provided" };
+
+  let res, html;
+  try {
+    res = await fetchWithTimeout(u.href, 9000);
+    if (!res.ok) return { ok: false, url: u.href, error: "Site returned HTTP " + res.status };
+    html = (await res.text()).slice(0, 1_500_000);
+  } catch {
+    return { ok: false, url: u.href, error: "Site unreachable (timeout or connection error)" };
+  }
+
+  const finalUrl = new URL(res.url || u.href);
+  const lower = html.toLowerCase();
+  const checks = [];
+  const add = (label, status, note, aeo) => checks.push({ label, status, note, aeo: !!aeo });
+
+  // -- HTTPS
+  add("HTTPS", finalUrl.protocol === "https:" ? "pass" : "fail",
+    finalUrl.protocol === "https:" ? "Site serves over a secure connection" : "Site is not on HTTPS — trust and ranking penalty");
+
+  // -- Title
+  const title = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]?.trim() || "";
+  if (!title) add("Page title", "fail", "No <title> tag — the single most basic ranking signal is missing", true);
+  else if (title.length < 12 || title.length > 65) add("Page title", "warn", `"${title.slice(0, 50)}" (${title.length} chars — ideal is 12-60)`, true);
+  else add("Page title", "pass", `"${title.slice(0, 55)}"`, true);
+
+  // -- Meta description (the businesscasual.us killer)
+  const md = (html.match(/<meta[^>]+name=["']description["'][^>]*>/i) || [])[0] || "";
+  const mdContent = (md.match(/content=["']([^"']*)["']/i) || [])[1]?.trim() || "";
+  if (!mdContent) add("Meta description", "fail", "Missing or empty — Google and AI assistants have nothing to quote", true);
+  else if (mdContent.length < 50 || mdContent.length > 165) add("Meta description", "warn", `${mdContent.length} chars — ideal is 50-160`, true);
+  else add("Meta description", "pass", `${mdContent.length} chars, well-formed`, true);
+
+  // -- H1
+  const h1s = (html.match(/<h1[\s>]/gi) || []).length;
+  if (h1s === 0) add("H1 heading", "fail", "No H1 on the homepage — pages can't declare what they're about", true);
+  else if (h1s > 1) add("H1 heading", "warn", `${h1s} H1s found — should be exactly one`, true);
+  else add("H1 heading", "pass", "Exactly one H1", true);
+
+  // -- Structured data (JSON-LD)
+  const ldBlocks = html.match(/<script[^>]+application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi) || [];
+  let ldTypes = [], ldEmptyFields = 0;
+  for (const b of ldBlocks) {
+    const inner = (b.match(/>([\s\S]*)<\/script>/i) || [])[1] || "";
+    try {
+      const parsed = JSON.parse(inner.trim());
+      const items = Array.isArray(parsed) ? parsed : parsed["@graph"] || [parsed];
+      for (const it of items) {
+        if (it && it["@type"]) ldTypes.push(String(it["@type"]));
+        ldEmptyFields += (JSON.stringify(it).match(/:\s*""/g) || []).length;
+      }
+    } catch { /* unparseable block */ }
+  }
+  if (!ldBlocks.length) add("Structured data (schema)", "fail", "No JSON-LD schema — AI assistants have no entity to cite", true);
+  else if (ldEmptyFields > 2) add("Structured data (schema)", "warn", `${ldTypes.join(", ").slice(0, 40)} present but ${ldEmptyFields} fields ship empty — reads as an unverified claim`, true);
+  else add("Structured data (schema)", "pass", `Types: ${[...new Set(ldTypes)].join(", ").slice(0, 50) || "present"}`, true);
+
+  // -- FAQ schema (the AEO workhorse)
+  add("FAQ schema", ldTypes.some((t) => /faq/i.test(t)) ? "pass" : "fail",
+    ldTypes.some((t) => /faq/i.test(t)) ? "FAQPage present — answer engines can lift Q&A directly" : "No FAQPage schema — the easiest AI-answer real estate is unclaimed", true);
+
+  // -- Open Graph
+  const ogCount = ["og:title", "og:description", "og:image"].filter((p) => lower.includes(`property="${p}"`) || lower.includes(`property='${p}'`)).length;
+  add("Social preview (Open Graph)", ogCount === 3 ? "pass" : ogCount > 0 ? "warn" : "fail",
+    ogCount === 3 ? "Complete" : `${ogCount} of 3 core tags — shared links look broken or blank`);
+
+  // -- Canonical
+  add("Canonical URL", /<link[^>]+rel=["']canonical["']/i.test(html) ? "pass" : "warn",
+    /<link[^>]+rel=["']canonical["']/i.test(html) ? "Present" : "Missing — duplicate-URL signals can split ranking");
+
+  // -- Mobile viewport
+  add("Mobile-ready (viewport)", /<meta[^>]+name=["']viewport["']/i.test(html) ? "pass" : "fail",
+    /<meta[^>]+name=["']viewport["']/i.test(html) ? "Present" : "No viewport meta — mobile ranking penalty");
+
+  // -- Image alt coverage
+  const imgs = html.match(/<img[^>]*>/gi) || [];
+  const withAlt = imgs.filter((i) => /alt=["'][^"']+["']/i.test(i)).length;
+  const altPct = imgs.length ? Math.round((withAlt / imgs.length) * 100) : 100;
+  add("Image alt text", imgs.length === 0 || altPct >= 70 ? "pass" : altPct >= 40 ? "warn" : "fail",
+    imgs.length ? `${altPct}% of ${imgs.length} images described` : "No images on page");
+
+  // -- robots.txt & sitemap
+  let robotsOk = false, sitemapOk = false;
+  try { robotsOk = (await fetchWithTimeout(finalUrl.origin + "/robots.txt", 5000)).ok; } catch {}
+  try { sitemapOk = (await fetchWithTimeout(finalUrl.origin + "/sitemap.xml", 5000)).ok; } catch {}
+  add("robots.txt", robotsOk ? "pass" : "warn", robotsOk ? "Present" : "Missing — crawlers get no instructions");
+  add("XML sitemap", sitemapOk ? "pass" : "fail", sitemapOk ? "Present" : "Missing — new pages wait to be discovered", true);
+
+  // -- llms.txt (AEO frontier)
+  let llmsOk = false;
+  try { llmsOk = (await fetchWithTimeout(finalUrl.origin + "/llms.txt", 5000)).ok; } catch {}
+  add("llms.txt (AI crawler guide)", llmsOk ? "pass" : "warn",
+    llmsOk ? "Present — ahead of nearly everyone" : "Not present — an easy early-mover AEO win", true);
+
+  // -- Social channels
+  const socials = ["linkedin.com", "instagram.com", "facebook.com", "youtube.com", "tiktok.com", "x.com", "twitter.com"]
+    .filter((d) => lower.includes(d));
+  add("Social channels linked", socials.length >= 2 ? "pass" : socials.length === 1 ? "warn" : "fail",
+    socials.length ? socials.map((s) => s.split(".")[0]).join(", ") : "None found — the brand has one surface: this site");
+
+  // -- Booking / contact path
+  const hasBooking = /calendly\.com|cal\.com|acuityscheduling|tel:|book(ing)?[- ]?(now|online|a[- ]call)/i.test(html);
+  add("Booking / contact path", hasBooking ? "pass" : "warn",
+    hasBooking ? "Direct booking or call path found" : "No calendar link or click-to-call — interested visitors must work to reach you");
+
+  // -- Content flywheel
+  const hasContent = /href=["'][^"']*\/(blog|insights|news|articles|resources|case-stud)/i.test(html);
+  add("Content flywheel (blog/insights)", hasContent ? "pass" : "fail",
+    hasContent ? "Content section linked" : "No blog or insights — nothing new for Google or AI assistants to index between visits", true);
+
+  const passes = checks.filter((c) => c.status === "pass").length;
+  const fails = checks.filter((c) => c.status === "fail").length;
+  return { ok: true, url: finalUrl.origin, checks, passes, fails, total: checks.length };
+}
+
+/* ===========================================================================
+   BRANDED PDF — hand-rolled (no libraries), Opportunity Brief style.
+   Letter pages, dark navy, AITS logo top-left, Helvetica family.
+   ======================================================================== */
+
+// Helvetica advance widths (/1000 units) for layout math.
+const HW = { " ": 278, "!": 278, '"': 355, "#": 556, $: 556, "%": 889, "&": 667, "'": 191, "(": 333, ")": 333, "*": 389, "+": 584, ",": 278, "-": 333, ".": 278, "/": 278, "0": 556, "1": 556, "2": 556, "3": 556, "4": 556, "5": 556, "6": 556, "7": 556, "8": 556, "9": 556, ":": 278, ";": 278, "<": 584, "=": 584, ">": 584, "?": 556, "@": 1015, A: 667, B: 667, C: 722, D: 722, E: 667, F: 611, G: 778, H: 722, I: 278, J: 500, K: 667, L: 556, M: 833, N: 722, O: 778, P: 667, Q: 778, R: 722, S: 667, T: 611, U: 722, V: 667, W: 944, X: 667, Y: 667, Z: 611, "[": 278, "\\": 278, "]": 278, "^": 469, _: 556, a: 556, b: 556, c: 500, d: 556, e: 556, f: 278, g: 556, h: 556, i: 222, j: 222, k: 500, l: 222, m: 833, n: 556, o: 556, p: 556, q: 556, r: 333, s: 500, t: 278, u: 556, v: 500, w: 722, x: 500, y: 500, z: 500 };
+function textWidth(s, size, bold) {
+  let w = 0;
+  for (const ch of String(s)) w += HW[ch] || 556;
+  return (w / 1000) * size * (bold ? 1.05 : 1);
+}
+// WinAnsi-safe PDF string: escape specials, map common typographic chars.
+function pdfStr(s) {
+  return String(s || "")
+    .replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)")
+    .replace(/—/g, "\\227").replace(/–/g, "\\226")
+    .replace(/’/g, "\\222").replace(/‘/g, "\\221")
+    .replace(/“/g, "\\223").replace(/”/g, "\\224")
+    .replace(/·/g, "\\267").replace(/•/g, "\\225").replace(/…/g, "...")
+    .replace(/[^\x20-\x7E\\]/g, "");
+}
+function wrapText(s, size, bold, maxW, maxLines) {
+  const words = String(s || "").split(/\s+/).filter(Boolean);
+  const lines = [];
+  let cur = "";
+  for (const w of words) {
+    const t = cur ? cur + " " + w : w;
+    if (textWidth(t, size, bold) <= maxW) cur = t;
+    else {
+      if (cur) lines.push(cur);
+      cur = w;
+      if (maxLines && lines.length === maxLines - 1) break;
+    }
+  }
+  if (cur && (!maxLines || lines.length < maxLines)) lines.push(cur);
+  if (maxLines && lines.length === maxLines && words.join(" ") !== lines.join(" ")) {
+    let last = lines[maxLines - 1];
+    while (textWidth(last + "…", size, bold) > maxW && last.length) last = last.slice(0, -1);
+    lines[maxLines - 1] = last + "…";
+  }
+  return lines;
+}
+
+// Colors (0-1 rgb triplets)
+const C_BG = "0.027 0.035 0.059";      // #07090f
+const C_SURFACE = "0.047 0.059 0.102"; // #0c0f1a
+const C_LINE = "0.157 0.184 0.29";
+const C_TEXT = "0.91 0.925 0.956";
+const C_MUTED = "0.537 0.58 0.702";
+const C_BLUE = "0.42 0.608 1";         // #6b9bff
+const C_TEAL = "0 0.788 0.655";        // #00c9a7
+const C_RED = "1 0.541 0.541";
+const C_AMBER = "0.878 0.639 0.25";
+const sevColor = (s) => (s === "danger" ? C_RED : s === "info" ? C_BLUE : C_AMBER);
+const bandColorPdf = (b) => (b === "HIGH" ? C_RED : b === "ELEVATED" ? "0.996 0.62 0.43" : b === "MODERATE" ? C_AMBER : C_TEAL);
+
+// Content-stream builder for one page.
+function pageCtx() {
+  const ops = [];
+  return {
+    ops,
+    rect(x, y, w, h, color) { ops.push(`${color} rg ${x.toFixed(1)} ${y.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)} re f`); },
+    strokeRect(x, y, w, h, color, lw) { ops.push(`${color} RG ${(lw || 0.75).toFixed(2)} w ${x.toFixed(1)} ${y.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)} re S`); },
+    line(x1, y1, x2, y2, color, lw) { ops.push(`${color} RG ${(lw || 0.75).toFixed(2)} w ${x1.toFixed(1)} ${y1.toFixed(1)} m ${x2.toFixed(1)} ${y2.toFixed(1)} l S`); },
+    text(str, x, y, size, font, color, spacing) {
+      ops.push(`BT /${font} ${size} Tf ${spacing ? `${spacing} Tc ` : ""}${color} rg 1 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)} Tm (${pdfStr(str)}) Tj ${spacing ? "0 Tc " : ""}ET`);
+    },
+    textRight(str, xRight, y, size, font, color, bold) {
+      const w = textWidth(str, size, bold);
+      this.text(str, xRight - w, y, size, font, color);
+    },
+    image(name, x, y, w, h) { ops.push(`q ${w.toFixed(1)} 0 0 ${h.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)} cm /${name} Do Q`); },
+    stream() { return ops.join("\n"); },
+  };
+}
+
+// Assemble a complete PDF from page content streams + optional JPEG logo.
+function assemblePdf(pageStreams, jpeg) {
+  const enc = new TextEncoder();
+  const chunks = [];
+  const offsets = [0]; // object byte offsets, 1-indexed
+  let pos = 0;
+  const push = (data) => {
+    const bytes = typeof data === "string" ? enc.encode(data) : data;
+    chunks.push(bytes); pos += bytes.length;
+  };
+  const beginObj = () => { offsets.push(pos); };
+
+  push("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");
+
+  const nPages = pageStreams.length;
+  const fontIds = { F1: 3 + nPages * 2, F2: 4 + nPages * 2, F3: 5 + nPages * 2 };
+  const imgId = jpeg ? 6 + nPages * 2 : 0;
+
+  // 1: Catalog
+  beginObj(); push(`1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n`);
+  // 2: Pages
+  const kids = Array.from({ length: nPages }, (_, i) => `${3 + i} 0 R`).join(" ");
+  beginObj(); push(`2 0 obj\n<< /Type /Pages /Kids [${kids}] /Count ${nPages} >>\nendobj\n`);
+  // 3..: Page objects
+  for (let i = 0; i < nPages; i++) {
+    beginObj();
+    const res = `<< /Font << /F1 ${fontIds.F1} 0 R /F2 ${fontIds.F2} 0 R /F3 ${fontIds.F3} 0 R >>${jpeg ? ` /XObject << /Logo ${imgId} 0 R >>` : ""} >>`;
+    push(`${3 + i} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources ${res} /Contents ${3 + nPages + i} 0 R >>\nendobj\n`);
+  }
+  // Content streams
+  for (let i = 0; i < nPages; i++) {
+    beginObj();
+    const s = enc.encode(pageStreams[i]);
+    push(`${3 + nPages + i} 0 obj\n<< /Length ${s.length} >>\nstream\n`);
+    push(s); push(`\nendstream\nendobj\n`);
+  }
+  // Fonts
+  const fontDef = (id, base) => { beginObj(); push(`${id} 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /${base} /Encoding /WinAnsiEncoding >>\nendobj\n`); };
+  fontDef(fontIds.F1, "Helvetica");
+  fontDef(fontIds.F2, "Helvetica-Bold");
+  fontDef(fontIds.F3, "Helvetica-Oblique");
+  // Logo image
+  if (jpeg) {
+    beginObj();
+    push(`${imgId} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${jpeg.width} /Height ${jpeg.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpeg.data.length} >>\nstream\n`);
+    push(jpeg.data); push(`\nendstream\nendobj\n`);
+  }
+
+  // xref
+  const xrefPos = pos;
+  const count = offsets.length; // includes the 0 slot
+  let xref = `xref\n0 ${count}\n0000000000 65535 f \n`;
+  for (let i = 1; i < count; i++) xref += String(offsets[i]).padStart(10, "0") + " 00000 n \n";
+  push(xref);
+  push(`trailer\n<< /Size ${count} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`);
+
+  const total = chunks.reduce((a, c) => a + c.length, 0);
+  const out = new Uint8Array(total);
+  let o = 0;
+  for (const c of chunks) { out.set(c, o); o += c.length; }
+  return out;
+}
+
+// Parse JPEG dimensions from bytes (SOF0/SOF2 markers).
+function jpegSize(bytes) {
+  let i = 2;
+  while (i < bytes.length - 8) {
+    if (bytes[i] !== 0xff) { i++; continue; }
+    const m = bytes[i + 1];
+    if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) {
+      return { height: (bytes[i + 5] << 8) | bytes[i + 6], width: (bytes[i + 7] << 8) | bytes[i + 8] };
+    }
+    i += 2 + ((bytes[i + 2] << 8) | bytes[i + 3]);
+  }
+  return { width: 640, height: 350 };
+}
+
+let logoCache = null;
+async function getLogo() {
+  if (logoCache) return logoCache;
+  try {
+    const r = await fetchWithTimeout(LOGO_URL, 6000);
+    if (!r.ok) return null;
+    const data = new Uint8Array(await r.arrayBuffer());
+    const { width, height } = jpegSize(data);
+    logoCache = { data, width, height };
+    return logoCache;
+  } catch { return null; }
+}
+
+const PAGE_W = 612, MARGIN = 42, CW = PAGE_W - MARGIN * 2; // content width 528
+
+function drawFinding(p, f, idx, y) {
+  // Returns new y after drawing one finding block at top y.
+  const col = sevColor(f.sev);
+  const headLines = wrapText(f.headline, 11.5, true, CW - 24, 2);
+  const fixLines = wrapText("What to do: " + (f.fix || ""), 9.5, false, CW - 24, 3);
+  const prevLines = f.prev
+    ? wrapText(`How common — ${f.prev.s}% of small businesses, ${f.prev.m}% of mid-sized, and ${f.prev.e}% of enterprises also miss this. ${f.prev.edge}`, 8, false, CW - 24, 2)
+    : [];
+  const h = 26 + headLines.length * 14 + fixLines.length * 12 + (prevLines.length ? 6 + prevLines.length * 10.5 : 0) + 10;
+  p.rect(MARGIN, y - h, CW, h, C_SURFACE);
+  p.rect(MARGIN, y - h, 3, h, col);
+  let ty = y - 16;
+  p.text((f.tag || "FINDING").toUpperCase(), MARGIN + 14, ty, 8, "F2", col, 0.6);
+  p.text(`· FINDING 0${idx + 1}`, MARGIN + 14 + textWidth((f.tag || "").toUpperCase(), 8, true) + 14, ty, 8, "F1", C_MUTED);
+  ty -= 15;
+  for (const ln of headLines) { p.text(ln, MARGIN + 14, ty, 11.5, "F2", C_TEXT); ty -= 14; }
+  ty -= 1;
+  for (const ln of fixLines) { p.text(ln, MARGIN + 14, ty, 9.5, "F1", C_TEAL); ty -= 12; }
+  if (prevLines.length) {
+    ty -= 4;
+    for (const ln of prevLines) { p.text(ln, MARGIN + 14, ty, 8, "F1", C_MUTED); ty -= 10.5; }
+  }
+  return y - h - 10;
+}
+
+function buildReportPdf(lead, c, note, audit, logo) {
+  const M = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const d = new Date();
+  const dateStr = `${M[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+  const bandCol = bandColorPdf(c.band);
+  const findings = (c.findings || []).slice(0, 6);
+
+  /* ---------- PAGE 1 ---------- */
+  const p1 = pageCtx();
+  p1.rect(0, 0, 612, 792, C_BG);
+  // Header: logo left, meta right
+  if (logo) {
+    const lw = 108, lh = lw * (logo.height / logo.width);
+    p1.image("Logo", MARGIN, 792 - 38 - lh, lw, lh);
+  } else {
+    p1.text("AITS", MARGIN, 792 - 64, 22, "F2", C_TEXT, 2);
+    p1.text("ADVANCED INTELLIGENT TECHNOLOGY SOLUTIONS", MARGIN, 792 - 78, 6.5, "F1", C_MUTED, 1);
+  }
+  p1.textRight("AI READINESS & RISK REPORT", PAGE_W - MARGIN, 792 - 52, 9, "F2", C_BLUE, true);
+  p1.textRight(dateStr, PAGE_W - MARGIN, 792 - 66, 8.5, "F1", C_MUTED);
+  p1.textRight(`Prepared for ${lead.company || lead.name}`, PAGE_W - MARGIN, 792 - 80, 10, "F2", C_TEXT, true);
+  if (lead.website) p1.textRight(String(lead.website).replace(/^https?:\/\//, ""), PAGE_W - MARGIN, 792 - 93, 8.5, "F1", C_MUTED);
+  p1.line(MARGIN, 792 - 108, PAGE_W - MARGIN, 792 - 108, C_LINE);
+
+  // Score block
+  let y = 792 - 132;
+  p1.text("THE PICTURE", MARGIN, y, 8, "F2", C_TEAL, 1.2);
+  y -= 34;
+  p1.text(String(c.score), MARGIN, y, 38, "F2", bandCol);
+  p1.text("/ 100 exposure", MARGIN + textWidth(String(c.score), 38, true) + 8, y + 2, 11, "F1", C_MUTED);
+  p1.textRight(String(c.band), PAGE_W - MARGIN, y + 2, 15, "F2", bandCol, true);
+  y -= 16;
+  const pct = Math.max(0.04, Math.min(1, (Number(c.score) || 0) / 100));
+  p1.rect(MARGIN, y, CW, 7, "0.11 0.133 0.216");
+  p1.rect(MARGIN, y, CW * pct, 7, bandCol);
+  y -= 24;
+  // Stat tiles
+  const tiles = [
+    ["SHADOW AI", String(c.shadowLevel || "—"), C_AMBER],
+    ["COMPLIANCE FLAGS", String((c.flags || []).length), C_RED],
+    ["RECOVERABLE HRS/WK", String(c.hours || "—"), C_TEAL],
+  ];
+  const tw = (CW - 20) / 3;
+  tiles.forEach((t, i) => {
+    const tx = MARGIN + i * (tw + 10);
+    p1.rect(tx, y - 44, tw, 44, C_SURFACE);
+    p1.strokeRect(tx, y - 44, tw, 44, C_LINE, 0.6);
+    p1.text(t[0], tx + 11, y - 16, 7, "F2", t[2], 0.7);
+    p1.text(t[1], tx + 11, y - 33, 13, "F2", C_TEXT);
+  });
+  y -= 66;
+  p1.text("FINDINGS — AND WHAT TO DO ABOUT EACH", MARGIN, y, 8, "F2", C_MUTED, 1.2);
+  y -= 14;
+  let fi = 0;
+  while (fi < findings.length && y - 120 > 46) {
+    y = drawFinding(p1, findings[fi], fi, y);
+    fi++;
+  }
+  p1.text("Page 1 of 2", PAGE_W - MARGIN - textWidth("Page 1 of 2", 7.5, false), 26, 7.5, "F1", C_MUTED);
+  p1.text("AITS · Advanced Intelligent Technology Solutions · aits.llc", MARGIN, 26, 7.5, "F1", C_MUTED);
+
+  /* ---------- PAGE 2 ---------- */
+  const p2 = pageCtx();
+  p2.rect(0, 0, 612, 792, C_BG);
+  y = 792 - 46;
+  if (fi < findings.length) {
+    p2.text("FINDINGS · CONTINUED", MARGIN, y, 8, "F2", C_MUTED, 1.2);
+    y -= 14;
+    while (fi < findings.length) { y = drawFinding(p2, findings[fi], fi, y); fi++; }
+    y -= 6;
+  }
+
+  // Website snapshot
+  p2.text("YOUR WEBSITE — SEO & AI-SEARCH SNAPSHOT", MARGIN, y, 8, "F2", C_TEAL, 1.2);
+  y -= 16;
+  if (audit && audit.ok) {
+    p2.text(`${audit.url.replace(/^https?:\/\//, "")} — ${audit.passes} of ${audit.total} checks passing · ${audit.fails} to fix`, MARGIN, y, 9.5, "F2", C_TEXT);
+    y -= 8;
+    // Fails first so the most valuable rows survive if space runs out.
+    const rank = { fail: 0, warn: 1, pass: 2 };
+    const sorted = [...audit.checks].sort((a, b) => rank[a.status] - rank[b.status]);
+    const floor = note ? 300 : 210;
+    for (const ch of sorted) {
+      if (y < floor) break;
+      y -= 14.5;
+      const stCol = ch.status === "pass" ? C_TEAL : ch.status === "fail" ? C_RED : C_AMBER;
+      const stTxt = ch.status === "pass" ? "PASS" : ch.status === "fail" ? "FIX" : "WARN";
+      p2.text(stTxt, MARGIN, y, 7.5, "F2", stCol, 0.5);
+      p2.text(ch.label + (ch.aeo ? " · AEO" : ""), MARGIN + 38, y, 9, "F2", C_TEXT);
+      const noteX = MARGIN + 200;
+      p2.text(wrapText(ch.note, 8, false, PAGE_W - MARGIN - noteX, 1)[0] || "", noteX, y, 8, "F1", C_MUTED);
+    }
+  } else {
+    y -= 14;
+    p2.text(audit && audit.error ? `Snapshot skipped — ${audit.error}` : "Snapshot skipped — no website provided", MARGIN, y, 9, "F1", C_MUTED);
+  }
+  y -= 26;
+
+  // Analyst note
+  if (note) {
+    p2.text("ANALYST NOTE", MARGIN, y, 8, "F2", C_BLUE, 1.2);
+    y -= 6;
+    const noteLines = wrapText(note, 9.5, false, CW - 26, 5);
+    const nh = noteLines.length * 12.5 + 20;
+    p2.rect(MARGIN, y - nh, CW, nh, C_SURFACE);
+    p2.rect(MARGIN, y - nh, 3, nh, C_BLUE);
+    let ny = y - 17;
+    for (const ln of noteLines) { p2.text(ln, MARGIN + 14, ny, 9.5, "F3", "0.77 0.795 0.86"); ny -= 12.5; }
+    y -= nh + 22;
+  }
+
+  // CTA + footer
+  const ctaTxt = "Book the free 30-minute review — aits.llc/contact · (858) 337-2866";
+  const ctaW = textWidth(ctaTxt, 10.5, true) + 40;
+  p2.rect(MARGIN, y - 34, ctaW, 34, "0.231 0.431 0.941");
+  p2.text(ctaTxt, MARGIN + 20, y - 22, 10.5, "F2", "1 1 1");
+  y -= 58;
+  p2.line(MARGIN, y, PAGE_W - MARGIN, y, C_LINE);
+  y -= 20;
+  p2.text("AI that works for your business — not just your tech team.", MARGIN, y, 11, "F3", C_BLUE);
+  y -= 15;
+  p2.text("Headquartered in San Diego · Serving businesses across the United States", MARGIN, y, 8.5, "F1", C_MUTED);
+  y -= 12;
+  p2.text("aits.llc · gavin@aits.llc · (858) 337-2866", MARGIN, y, 8.5, "F1", C_MUTED);
+  if (logo) {
+    const lw2 = 86, lh2 = lw2 * (logo.height / logo.width);
+    p2.image("Logo", PAGE_W - MARGIN - lw2, y - 8, lw2, lh2);
+  }
+  p2.text("Prevalence figures are industry-informed estimates.", MARGIN, 26, 7, "F1", "0.35 0.38 0.47");
+  p2.textRight("Page 2 of 2", PAGE_W - MARGIN, 26, 7.5, "F1", C_MUTED, false);
+
+  return assemblePdf([p1.stream(), p2.stream()], logo);
+}
+
+function b64FromBytes(bytes) {
+  let bin = "";
+  const CHUNK = 0x8000;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(bin);
+}
+
+/* ===========================================================================
+   EMAIL HTML
+   ======================================================================== */
+
+function auditHtml(audit) {
+  if (!audit) return "";
+  if (!audit.ok) {
+    return `<div style="border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;margin:16px 0;background:#fafafa;font:400 13px Arial,sans-serif;color:#6b7280"><b style="color:#111827">Website snapshot:</b> skipped — ${esc(audit.error || "no URL")}</div>`;
+  }
+  const rows = audit.checks.map((ch) => {
+    const col = ch.status === "pass" ? "#0f766e" : ch.status === "fail" ? "#d9243c" : "#b0891a";
+    const lab = ch.status === "pass" ? "PASS" : ch.status === "fail" ? "FIX" : "WARN";
+    return `<tr><td style="padding:3px 8px 3px 0;font:700 10px Arial,sans-serif;color:${col};white-space:nowrap">${lab}</td><td style="padding:3px 8px 3px 0;font:700 12px Arial,sans-serif;color:#111827;white-space:nowrap">${esc(ch.label)}${ch.aeo ? ' <span style="font:700 8px Arial,sans-serif;color:#3b6ef0">AEO</span>' : ""}</td><td style="padding:3px 0;font:400 12px Arial,sans-serif;color:#6b7280">${esc(ch.note)}</td></tr>`;
+  }).join("");
+  return `<div style="margin:16px 0"><div style="font:700 11px Arial,sans-serif;letter-spacing:.5px;color:#6b7280;margin-bottom:6px">WEBSITE — SEO &amp; AI-SEARCH SNAPSHOT &nbsp;<span style="color:#111827">${esc(audit.url)}</span> &nbsp;·&nbsp; ${audit.passes}/${audit.total} passing</div><table style="border-collapse:collapse;width:100%">${rows}</table></div>`;
+}
+
+// Shared core (score + findings). internal=true adds lead block, raw answers,
+// audit table, and the client-report button; internal=false is client-safe.
+function reportHtml(lead, c, note, answers, clientUrl, opts) {
+  const internal = !!(opts && opts.internal);
+  const audit = opts && opts.audit;
   const M = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const d = new Date();
   const dateStr = M[d.getUTCMonth()] + " " + d.getUTCDate() + ", " + d.getUTCFullYear();
   const bandColor = c.band === "HIGH" ? "#d9243c" : c.band === "ELEVATED" ? "#e0642e" : c.band === "MODERATE" ? "#b0891a" : "#12977a";
-  const sevColor = (s) => s === "danger" ? "#d9243c" : s === "info" ? "#3b6ef0" : "#e0642e";
+  const sevC = (s) => s === "danger" ? "#d9243c" : s === "info" ? "#3b6ef0" : "#e0642e";
   const scorePct = Math.max(4, Math.min(100, Number(c.score) || 0));
 
   const findingCards = (c.findings || []).map((f, i) =>
-    `<div style="border:1px solid #e5e7eb;border-left:4px solid ${sevColor(f.sev)};border-radius:8px;padding:13px 15px;margin:0 0 10px;background:#ffffff">`
-    + `<div style="font:700 11px Arial,sans-serif;letter-spacing:.5px;color:${sevColor(f.sev)}">${esc(f.tag)} &nbsp;<span style="color:#9ca3af;font-weight:400">· FINDING 0${i + 1}</span></div>`
+    `<div style="border:1px solid #e5e7eb;border-left:4px solid ${sevC(f.sev)};border-radius:8px;padding:13px 15px;margin:0 0 10px;background:#ffffff">`
+    + `<div style="font:700 11px Arial,sans-serif;letter-spacing:.5px;color:${sevC(f.sev)}">${esc(f.tag)} &nbsp;<span style="color:#9ca3af;font-weight:400">· FINDING 0${i + 1}</span></div>`
     + `<div style="font:700 16px/1.35 Arial,sans-serif;color:#111827;margin:7px 0 6px">${esc(f.headline)}</div>`
     + (f.detail ? `<div style="font:400 14px/1.6 Arial,sans-serif;color:#4b5563;margin:0 0 8px">${esc(f.detail)}</div>` : "")
     + `<div style="font:400 14px/1.6 Arial,sans-serif;color:#0f766e"><strong>What to do:</strong> ${esc(f.fix || "")}</div>`
@@ -73,17 +579,21 @@ function reportHtml(lead, c, note, answers, clientUrl) {
   const tiles = [["SHADOW AI", c.shadowLevel, "#e0642e"], ["COMPLIANCE FLAGS", String((c.flags || []).length), "#d9243c"], ["RECOVERABLE HRS/WK", c.hours, "#0f766e"]]
     .map((t) => `<td style="width:33.3%;vertical-align:top;padding:0 4px"><div style="border:1px solid #e5e7eb;border-radius:8px;padding:11px 12px;background:#fff"><div style="font:700 9px Arial,sans-serif;letter-spacing:.5px;color:${t[2]}">${t[0]}</div><div style="font:700 17px Arial,sans-serif;color:#111827;margin-top:3px">${esc(t[1])}</div></div></td>`).join("");
 
-  const leadRows = [
+  const leadRows = internal ? [
     ["Name", `<strong>${esc(lead.name)}</strong>`],
     ["Company", esc(lead.company)],
     lead.website ? ["Website", esc(lead.website)] : null,
     ["Email", `<a href="mailto:${esc(lead.email)}" style="color:#3b6ef0">${esc(lead.email)}</a>`],
     ["Cell", esc(lead.cell)],
     (lead.contact && lead.contact.length) ? ["Best contact", `<strong>${esc(lead.contact.join(" / "))}</strong>`] : null,
-  ].filter(Boolean).map((r) => `<tr><td style="padding:2px 12px 2px 0;color:#6b7280;font-size:13px;white-space:nowrap">${r[0]}</td><td style="padding:2px 0;font-size:13px;color:#111827">${r[1]}</td></tr>`).join("");
+  ].filter(Boolean).map((r) => `<tr><td style="padding:2px 12px 2px 0;color:#6b7280;font-size:13px;white-space:nowrap">${r[0]}</td><td style="padding:2px 0;font-size:13px;color:#111827">${r[1]}</td></tr>`).join("") : "";
 
-  const answersHtml = Object.entries(answers || {})
-    .map(([k, v]) => `<tr><td style="padding:2px 10px 2px 0;color:#9ca3af;font-size:12px">${esc(k)}</td><td style="padding:2px 0;font-size:12px;color:#4b5563">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`).join("");
+  const answersHtml = internal ? Object.entries(answers || {})
+    .map(([k, v]) => `<tr><td style="padding:2px 10px 2px 0;color:#9ca3af;font-size:12px">${esc(k)}</td><td style="padding:2px 0;font-size:12px;color:#4b5563">${esc(Array.isArray(v) ? v.join(", ") : v)}</td></tr>`).join("") : "";
+
+  const firstName = String(lead.name || "").split(/\s+/)[0] || "there";
+  const clientIntro = internal ? "" :
+    `<div style="font:400 14px/1.65 Arial,sans-serif;color:#4b5563;margin:0 0 18px">Hi ${esc(firstName)} — thanks for running the AITS AI Readiness &amp; Risk Scan. Here is your full report, exactly as computed from your answers. Reply to this email any time — it comes straight to our team, and we're happy to walk through any finding with you.</div>`;
 
   return `<div style="background:#f3f4f6;padding:16px 8px;font-family:Arial,Helvetica,sans-serif">`
     + `<div style="max-width:640px;margin:0 auto">`
@@ -93,11 +603,11 @@ function reportHtml(lead, c, note, answers, clientUrl) {
         + `<div style="font:400 13px Arial,sans-serif;color:#9ca3af;margin-top:4px">Prepared for <strong style="color:#ffffff">${esc(lead.company)}</strong> &nbsp;·&nbsp; ${dateStr}</div>`
       + `</div>`
       + `<div style="background:#ffffff;padding:22px 24px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px">`
-        + `<div style="background:#f9fafb;border:1px solid #eef0f3;border-radius:8px;padding:12px 14px;margin:0 0 20px">`
+        + clientIntro
+        + (internal ? `<div style="background:#f9fafb;border:1px solid #eef0f3;border-radius:8px;padding:12px 14px;margin:0 0 20px">`
           + `<div style="font:700 10px Arial,sans-serif;letter-spacing:.5px;color:#6b7280;margin-bottom:6px">LEAD · CONTACT</div>`
-          + `<table style="border-collapse:collapse">${leadRows}</table>`
-        + `</div>`
-        + (clientUrl ? `<div style="text-align:center;margin:0 0 20px"><a href="${clientUrl}" style="display:inline-block;background:#0c0f1a;color:#ffffff;text-decoration:none;font:700 13px Arial,sans-serif;padding:11px 20px;border-radius:8px">Open client-ready branded report &rarr;</a><div style="font:400 11px Arial,sans-serif;color:#9ca3af;margin-top:6px">Opens the premium version — Print &rarr; Save as PDF to send the client.</div></div>` : "")
+          + `<table style="border-collapse:collapse">${leadRows}</table></div>` : "")
+        + (internal && clientUrl ? `<div style="text-align:center;margin:0 0 20px"><a href="${clientUrl}" style="display:inline-block;background:#0c0f1a;color:#ffffff;text-decoration:none;font:700 13px Arial,sans-serif;padding:11px 20px;border-radius:8px">Open client-ready branded report &rarr;</a><div style="font:400 11px Arial,sans-serif;color:#9ca3af;margin-top:6px">Branded PDF is also attached to this email.</div></div>` : "")
         + `<div style="font:700 10px Arial,sans-serif;letter-spacing:.5px;color:#6b7280">EXPOSURE SCORE</div>`
         + `<table style="width:100%;border-collapse:collapse;margin:4px 0 8px"><tr>`
           + `<td style="vertical-align:bottom"><span style="font:700 34px Arial,sans-serif;color:${bandColor}">${esc(c.score)}</span><span style="font:400 14px Arial,sans-serif;color:#6b7280"> / 100</span></td>`
@@ -107,15 +617,29 @@ function reportHtml(lead, c, note, answers, clientUrl) {
         + `<table style="width:100%;border-collapse:collapse;margin:0 0 20px"><tr>${tiles}</tr></table>`
         + `<div style="font:700 11px Arial,sans-serif;letter-spacing:.5px;color:#6b7280;margin:0 0 10px">FINDINGS — AND WHAT TO DO ABOUT EACH</div>`
         + findingCards
-        + `<div style="font:700 10px Arial,sans-serif;letter-spacing:.5px;color:#7c3aed;margin:16px 0 6px">ANALYST NOTE</div>`
-        + `<div style="border:1px solid #ece9fb;border-left:4px solid #7c3aed;border-radius:8px;padding:12px 14px;background:#faf9ff;font:italic 400 14px/1.6 Arial,sans-serif;color:#4b5563">${esc(note || "")}</div>`
+        + (note ? `<div style="font:700 10px Arial,sans-serif;letter-spacing:.5px;color:#7c3aed;margin:16px 0 6px">ANALYST NOTE</div>`
+          + `<div style="border:1px solid #ece9fb;border-left:4px solid #7c3aed;border-radius:8px;padding:12px 14px;background:#faf9ff;font:italic 400 14px/1.6 Arial,sans-serif;color:#4b5563">${esc(note)}</div>` : "")
+        + (internal ? auditHtml(audit) : "")
         + `<div style="text-align:center;margin:22px 0 4px"><a href="https://aits.llc/contact" style="display:inline-block;background:#3b6ef0;color:#ffffff;text-decoration:none;font:700 14px Arial,sans-serif;padding:12px 22px;border-radius:8px">Book the free 30-minute review &rarr;</a></div>`
         + `<div style="font:400 11px Arial,sans-serif;color:#9ca3af;text-align:center;margin-top:10px">AITS · aits.llc · (858) 337-2866 · gavin@aits.llc</div>`
         + `<div style="font:400 10px Arial,sans-serif;color:#b6bbc6;text-align:center;margin-top:6px">Prevalence figures are industry-informed estimates.</div>`
-        + `<div style="border-top:1px solid #eef0f3;margin-top:18px;padding-top:12px"><div style="font:700 10px Arial,sans-serif;color:#b6bbc6;letter-spacing:.5px;margin-bottom:6px">RAW SCAN ANSWERS</div><table style="border-collapse:collapse">${answersHtml}</table></div>`
+        + (internal ? `<div style="border-top:1px solid #eef0f3;margin-top:18px;padding-top:12px"><div style="font:700 10px Arial,sans-serif;color:#b6bbc6;letter-spacing:.5px;margin-bottom:6px">RAW SCAN ANSWERS</div><table style="border-collapse:collapse">${answersHtml}</table></div>` : "")
       + `</div>`
     + `</div>`
   + `</div>`;
+}
+
+/* ===========================================================================
+   LEAD HANDLER
+   ======================================================================== */
+
+async function sendResend(env, payload) {
+  const r = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return { ok: r.ok, detail: r.ok ? "" : (await r.text().catch(() => "")).slice(0, 300) };
 }
 
 async function handleLead(body, env, json) {
@@ -128,18 +652,24 @@ async function handleLead(body, env, json) {
     return json({ error: "Lead email not configured (missing RESEND_API_KEY)" }, 503);
   }
 
-  // Build a link to the premium, client-ready branded report page, carrying
-  // this prospect's data in the URL hash (never hits a server — the page
-  // decodes it client-side). Gavin/Nick click it, Print → Save as PDF, and
-  // send the client a polished branded PDF.
+  // 1. SEO/AEO snapshot of their website (graceful when absent/unreachable).
+  let audit = null;
+  try { audit = await auditWebsite(lead.website); } catch (e) { audit = { ok: false, url: String(lead.website || ""), error: "Audit error: " + e.message }; }
+
+  // 2. Branded PDF (never let PDF failure block the lead email).
+  let pdfB64 = "";
+  try {
+    const logo = await getLogo();
+    const pdfBytes = buildReportPdf(lead, c, body.analystNote || "", audit, logo);
+    pdfB64 = b64FromBytes(pdfBytes);
+  } catch (e) { console.log("PDF build failed: " + e.message); }
+
+  // Client-ready /report deep link (decodes client-side, never hits a server).
   let clientUrl = "";
   try {
     const payload = JSON.stringify({
       lead: { company: lead.company },
-      computed: {
-        score: c.score, band: c.band, shadowLevel: c.shadowLevel,
-        flags: c.flags || [], hours: c.hours, findings: c.findings || [],
-      },
+      computed: { score: c.score, band: c.band, shadowLevel: c.shadowLevel, flags: c.flags || [], hours: c.hours, findings: c.findings || [] },
       note: body.analystNote || "",
     });
     const bytes = new TextEncoder().encode(payload);
@@ -148,37 +678,57 @@ async function handleLead(body, env, json) {
     clientUrl = "https://aits.llc/report#" + btoa(bin);
   } catch { clientUrl = ""; }
 
-  const html = reportHtml(lead, c, body.analystNote, body.answers, clientUrl);
+  const safeCompany = String(lead.company || "report").replace(/[^a-z0-9]+/gi, "-").slice(0, 40) || "report";
 
-  const payload = {
+  // 3. INTERNAL email first — the lead must never be lost.
+  const internalHtml = reportHtml(lead, c, body.analystNote, body.answers, clientUrl, { internal: true, audit });
+  const internalPayload = {
     from: NOTIFY_FROM,
     to: NOTIFY_TO,
     cc: NOTIFY_CC,
     reply_to: lead.email,
-    subject: `Scan lead: ${lead.name} — ${lead.company} (${c.band} ${c.score})`,
-    html,
+    subject: `Scan lead: ${lead.name} — ${lead.company} (${c.band} ${c.score})${audit && audit.ok ? ` · site ${audit.passes}/${audit.total}` : ""}`,
+    html: internalHtml,
   };
-  // Attach the PDF when the client managed to generate one (~cap 4MB base64).
-  if (typeof body.pdfBase64 === "string" && body.pdfBase64.length > 100 && body.pdfBase64.length < 4_000_000) {
-    const safeCompany = String(lead.company).replace(/[^a-z0-9]+/gi, "-").slice(0, 40) || "report";
-    payload.attachments = [{ filename: `aits-risk-scan-${safeCompany}.pdf`, content: body.pdfBase64 }];
+  if (pdfB64) internalPayload.attachments = [{ filename: `AITS-AI-Readiness-Report-${safeCompany}.pdf`, content: pdfB64 }];
+  const internal = await sendResend(env, internalPayload);
+  if (!internal.ok) {
+    return json({ error: "Email send failed", detail: internal.detail }, 502);
   }
 
-  const resendRes = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
+  // 4. CLIENT email — their copy of the report, CC AITS so replies reach us.
+  const clientHtml = reportHtml(lead, c, body.analystNote, null, "", { internal: false });
+  const client = await sendResend(env, {
+    from: NOTIFY_FROM,
+    to: [lead.email],
+    cc: [...NOTIFY_TO, ...NOTIFY_CC],
+    reply_to: REPLY_TO,
+    subject: `Your AI Readiness & Risk Report — ${lead.company}`,
+    html: clientHtml,
   });
 
-  if (!resendRes.ok) {
-    const detail = await resendRes.text().catch(() => "");
-    return json({ error: "Email send failed", detail: detail.slice(0, 300) }, 502);
-  }
-  return json({ ok: true }, 200);
+  // 5. Log the lead (console always; KV when bound).
+  const logEntry = {
+    t: "scan-lead",
+    ts: new Date().toISOString(),
+    name: lead.name, company: lead.company, email: lead.email, cell: lead.cell,
+    website: lead.website || "", contact: lead.contact || [],
+    score: c.score, band: c.band,
+    audit: audit && audit.ok ? `${audit.passes}/${audit.total}` : (audit && audit.error) || "n/a",
+    clientEmail: client.ok ? "sent" : "failed: " + client.detail,
+    pdf: pdfB64 ? "attached" : "failed",
+  };
+  console.log(JSON.stringify(logEntry));
+  try {
+    if (env.LEADS) await env.LEADS.put(`lead:${logEntry.ts}:${lead.email}`, JSON.stringify({ ...logEntry, answers: body.answers, computed: c, auditFull: audit }));
+  } catch (e) { console.log("KV log failed: " + e.message); }
+
+  return json({ ok: true, clientEmail: client.ok ? "sent" : "failed" }, 200);
 }
+
+/* ===========================================================================
+   ROUTER + ANALYST NOTE
+   ======================================================================== */
 
 function extractJson(text) {
   if (!text) return null;
@@ -220,15 +770,12 @@ export default {
       return json({ error: "Invalid JSON body" }, 400);
     }
 
-    // ---- POST /lead — full-report unlock: email the PDF + lead to AITS ----
     if (new URL(request.url).pathname === "/lead") {
       return handleLead(body, env, json);
     }
 
-    // New contract: structured answers + computed report summary.
-    let messages;
-    let system;
-    let maxTokens;
+    // Analyst note (or legacy passthrough).
+    let messages, system, maxTokens;
     if (body && body.answers && body.computed) {
       const a = body.answers;
       const c = body.computed;
@@ -258,7 +805,6 @@ export default {
       system = SYSTEM_PROMPT;
       maxTokens = 400;
     } else if (body && Array.isArray(body.messages)) {
-      // Legacy passthrough for the previous scan.html contract.
       messages = body.messages;
       system = undefined;
       maxTokens = 1000;
@@ -289,7 +835,6 @@ export default {
         return json({ error: message }, upstream.ok ? 502 : upstream.status);
       }
 
-      // Legacy path returns the raw Anthropic response shape.
       if (!system) {
         return json(data, 200);
       }
@@ -305,3 +850,6 @@ export default {
     }
   },
 };
+
+// Exported for local testing (harmless in the Worker runtime).
+export { auditWebsite, buildReportPdf, reportHtml, jpegSize, assemblePdf };
