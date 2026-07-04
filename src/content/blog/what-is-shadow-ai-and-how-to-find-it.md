@@ -3,6 +3,8 @@ title: 'What Is Shadow AI — and How to Find It in Your Business'
 description: 'Shadow AI is the unsanctioned AI tools your team already uses at work. Here is what it is, why it is risky, and a practical way to find it.'
 pubDate: 2026-04-17
 author: 'AITS'
+heroImage: '/images/blog/whatshadow-hero.jpg'
+heroAlt: 'An office worker typing while a faint AI interface hovers unseen over their shoulder'
 tags: ['Shadow AI', 'AI Risk', 'Small Business']
 faq:
   - question: 'What is shadow AI?'
@@ -32,6 +34,11 @@ In practice it looks like:
 
 None of this is malicious. Your team is trying to do good work faster. But every one of those actions moves company data into a system you do not control.
 
+<figure class="post-fig right">
+  <img src="/images/blog/whatshadow-a.jpg" alt="A glowing translucent figure standing among empty office desks at night" width="1600" height="893" loading="lazy" />
+  <figcaption>It's already in the building — you just haven't met it yet.</figcaption>
+</figure>
+
 ## Why shadow AI is a real risk — not a hypothetical one
 
 Three things make shadow AI dangerous, especially for smaller businesses that do not have a dedicated security team:
@@ -41,6 +48,11 @@ Three things make shadow AI dangerous, especially for smaller businesses that do
 3. **Compliance exposure.** If you operate under **HIPAA, CJIS, or CMMC** — or simply handle sensitive client or financial data — shadow AI can put you out of compliance without a single document changing hands.
 
 The hard part is that none of this shows up on a balance sheet. It is invisible until something goes wrong.
+
+<figure class="post-fig left">
+  <img src="/images/blog/whatshadow-b.jpg" alt="Hands typing confidential documents into a laptop with data streaming out" width="1600" height="893" loading="lazy" />
+  <figcaption>Every paste into an unsanctioned tool is company data leaving the building.</figcaption>
+</figure>
 
 ## How to find shadow AI in your organization
 

@@ -3,6 +3,8 @@ title: 'Secure AI, or Explain the Breach to Your Board?'
 description: 'Nearly 35% of what employees paste into ChatGPT is sensitive data. Here is the real risk profile of every major AI tool — and how to deploy AI securely.'
 pubDate: 2026-05-04
 author: 'Nick Dreyfus'
+heroImage: '/images/blog/secureai-hero.jpg'
+heroAlt: 'Executives in a boardroom at dusk facing a large screen with a security dashboard'
 tags: ['AI Security', 'Shadow AI', 'Compliance']
 faq:
   - question: 'Is it safe for employees to use ChatGPT for work?'
@@ -39,6 +41,11 @@ Think about it from the employee's side. If a task that takes four hours by hand
 
 **Microsoft Copilot.** The one everyone assumes is safe because of the Microsoft name. But Copilot has no security model of its own — it inherits every permission already in your Microsoft 365 environment. If SharePoint permissions are messy, Copilot makes them searchable. Ask it "show me the executive compensation report" and it answers — because it has permission to. One study found 16 percent of business-critical data is overshared in the average organization — over 800,000 files. Copilot doesn't create that problem; it exposes it at machine speed. The U.S. House of Representatives banned staff from using Copilot over data-exposure risk.
 
+<figure class="post-fig right">
+  <img src="/images/blog/secureai-a.jpg" alt="A glowing digital shield hovering over a boardroom table" width="1600" height="893" loading="lazy" />
+  <figcaption>Secure it before you deploy it — the shield goes up first, not after the breach.</figcaption>
+</figure>
+
 ## Shadow AI is the new shadow IT — but worse
 
 Years ago we dealt with shadow IT: employees signing up for random cloud apps without approval. Shadow AI is the same problem, but worse, because AI tools process, summarize, and store information at a speed and scale those apps never could.
@@ -52,6 +59,11 @@ Your employees aren't the only ones putting your data into AI. Your accountant h
 Do any of them have an AI usage policy? When their bookkeeper pastes your accounts-receivable spreadsheet into a chatbot to reconcile numbers faster, your client data is now in a public platform — and you didn't even authorize it.
 
 > When your vendor causes the breach, you're still the one explaining it to your clients.
+
+<figure class="post-fig left">
+  <img src="/images/blog/secureai-b.jpg" alt="An executive reviewing a printed policy document at a desk" width="1600" height="893" loading="lazy" />
+  <figcaption>Governance isn't paperwork for its own sake — it's what lets your team move fast safely.</figcaption>
+</figure>
 
 ## What deploying AI securely actually looks like
 

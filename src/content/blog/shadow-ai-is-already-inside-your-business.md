@@ -3,6 +3,8 @@ title: 'Shadow AI Is Already Inside Your Business — IBM''s 2025 Numbers'
 description: 'IBM''s 2025 data: 1 in 5 organizations breached through shadow AI, $670K in added cost, 247 days to detect. The risk, the Amazon story, and 4 steps to take this week.'
 pubDate: 2026-04-17
 author: 'Nick Dreyfus'
+heroImage: '/images/blog/shadowinside-hero.jpg'
+heroAlt: 'An open-plan office with glowing data trails rising from every laptop'
 tags: ['Shadow AI', 'AI Risk', 'Cyber Insurance']
 faq:
   - question: 'How common is shadow AI in the workplace?'
@@ -33,6 +35,11 @@ Now think about your business. You don't have Amazon's security team, monitoring
 
 Picture it: your marketing person pastes a client's name, revenue, and six months of strategy into a chatbot to polish a proposal. Your HR manager pastes an employee's name, salary, and history into one to rewrite a review — potentially a HIPAA or CCPA issue. Your salesperson uploads your pricing sheet before a big pitch. Each time, that data leaves your company, into a tool with no enterprise agreement and no confidentiality guarantee.
 
+<figure class="post-fig left">
+  <img src="/images/blog/shadowinside-a.jpg" alt="A glowing iceberg with a small tip above water and a massive hidden mass below" width="1600" height="893" loading="lazy" />
+  <figcaption>The usage you can see is the tip. The risk is everything below the waterline.</figcaption>
+</figure>
+
 ## The numbers every CFO needs to see
 
 IBM's 2025 Cost of a Data Breach Report (via the Ponemon Institute) studied 600 organizations breached between March 2024 and February 2025. On shadow AI specifically:
@@ -57,6 +64,11 @@ Buying an enterprise AI tool is the starting line, not the finish line. The gove
 ## Your insurance carrier already knows
 
 Cyber insurance carriers have read the IBM data, and they're asking new questions at renewal: What's your AI acceptable-use policy? How do you enforce it? Which tools are approved? Most policies require you to maintain *reasonable security controls* as a condition of coverage — and "no AI governance policy" is not reasonable care anymore. IBM found 32% of breached organizations paid regulatory fines on top of breach costs, with 48% of those fines exceeding $100,000.
+
+<figure class="post-fig right">
+  <img src="/images/blog/shadowinside-b.jpg" alt="A security professional discovering anomalies on a monitor in a dark office" width="1600" height="893" loading="lazy" />
+  <figcaption>Finding it is step one — and it doesn't require punishing anyone.</figcaption>
+</figure>
 
 ## What to do this week
 

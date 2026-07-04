@@ -3,6 +3,8 @@ title: '15 Minutes or 4 Hours: Why AI Should Do 80% of Your Team''s Busywork'
 description: 'Your highest-paid people spend half their day on grunt work a machine should handle. Here is the data, the real ROI, and how to deploy AI the right way.'
 pubDate: 2026-05-11
 author: 'Nick Dreyfus'
+heroImage: '/images/blog/automate-hero.jpg'
+heroAlt: 'A relaxed professional at a desk while automated workflows process themselves around a laptop'
 tags: ['AI Automation', 'Productivity', 'ROI']
 faq:
   - question: 'How much of the workday do employees spend on low-value work?'
@@ -39,6 +41,11 @@ Those are fair questions. Hand your team a public AI tool with no guardrails, no
 
 But most owners use that fear as a reason to do **nothing**. They hear "AI risk" and freeze. That is not safer. It is slower, more expensive, and it puts them further behind every day. The answer is not to avoid AI — it is to **deploy it securely**, in a controlled environment where your team gets the productivity gains and your data stays inside the walls.
 
+<figure class="post-fig left">
+  <img src="/images/blog/automate-a.jpg" alt="A towering stack of paperwork beside a single glowing document" width="1600" height="893" loading="lazy" />
+  <figcaption>Before and after: the same work, minus the pile.</figcaption>
+</figure>
+
 ## What actually changes when you do it right
 
 The first thing the team notices is not magic. It is relief. The three-hour meeting-notes process becomes a five-minute review. The manual data entry disappears. The scheduling back-and-forth stops.
@@ -56,6 +63,11 @@ The same thing is happening now with AI. In 2025, over 100,000 employees were im
 Here is the other side of that coin: the companies deploying AI strategically — to eliminate grunt work, not people — are building places top talent *wants* to be. You do not lose great people because you automate. You lose them because you refuse to.
 
 > Automate the 80 percent nobody should be doing manually. Let your experts focus on the 20 percent that actually moves the needle. If you do not, someone else will — and your best talent follows the money.
+
+<figure class="post-fig right">
+  <img src="/images/blog/automate-b.jpg" alt="Glowing gears and streams of light rising from an open laptop at night" width="1600" height="893" loading="lazy" />
+  <figcaption>The workflow runs while nobody's watching. That's the point.</figcaption>
+</figure>
 
 ## This is a business survival decision
 
