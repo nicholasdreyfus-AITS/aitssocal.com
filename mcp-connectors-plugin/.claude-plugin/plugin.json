@@ -1,0 +1,11 @@
+{
+  "name": "mcp-connectors",
+  "description": "Bundles popular app MCP connectors (GitHub, Notion, Linear, Sentry, Stripe, Atlassian, and the local filesystem) so a single `claude --plugin-dir ./mcp-connectors-plugin` wires them all up.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Nicholas Dreyfus",
+    "email": "nicholasdreyfus@gmail.com"
+  },
+  "keywords": ["mcp", "connectors", "integrations", "apps"],
+  "license": "MIT"
+}

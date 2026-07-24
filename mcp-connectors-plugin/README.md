@@ -1,11 +1,15 @@
-# connect-apps-plugin
+# mcp-connectors-plugin
 
 A Claude Code plugin that bundles a set of popular **app MCP connectors** into
 one place. Loading the plugin registers every server in `.mcp.json` at once, so
 you don't have to add them to each project's `.mcp.json` by hand.
 
+> **Not** Composio's `connect-apps` plugin. This is a plain, home-grown bundle
+> of standard MCP servers with no third-party middleman. It was renamed from
+> `connect-apps` to avoid colliding with Composio's plugin of that name.
+
 ```bash
-claude --plugin-dir ./connect-apps-plugin
+claude --plugin-dir ./mcp-connectors-plugin
 ```
 
 `--plugin-dir` loads the plugin for the current session only. Each MCP server
@@ -39,7 +43,7 @@ No secrets are stored in this repo. Servers get their credentials one of two way
   ```bash
   export GITHUB_MCP_PAT=ghp_your_token_here      # a GitHub personal access token
   export STRIPE_SECRET_KEY=sk_live_or_test_key   # a Stripe secret key
-  claude --plugin-dir ./connect-apps-plugin
+  claude --plugin-dir ./mcp-connectors-plugin
   ```
 
   The `:-` in `${GITHUB_MCP_PAT:-}` means an unset variable expands to empty
@@ -67,7 +71,7 @@ relaunch Claude Code.
 ## Structure
 
 ```
-connect-apps-plugin/
+mcp-connectors-plugin/
 ├── .claude-plugin/
 │   └── plugin.json     # manifest (name, description, version)
 └── .mcp.json           # the bundled MCP server definitions
