@@ -22,34 +22,29 @@ exactly like a server declared in a project `.mcp.json`.
 | ------------ | ------ | ----------------------------- | ---------------- |
 | `filesystem` | stdio  | none                          | Read/write files under the current project dir (`@modelcontextprotocol/server-filesystem`, run via `npx`) |
 | `github`     | http   | `GITHUB_MCP_PAT` **or** OAuth | GitHub repos, issues, PRs, Actions (official remote server) |
-| `notion`     | http   | OAuth (prompted on first use) | Notion pages and databases |
-| `linear`     | sse    | OAuth (prompted on first use) | Linear issues and projects |
-| `sentry`     | http   | OAuth (prompted on first use) | Sentry issues and error events |
-| `stripe`     | http   | `STRIPE_SECRET_KEY`           | Stripe customers, payments, products |
-| `atlassian`  | sse    | OAuth (prompted on first use) | Jira and Confluence |
 
-These are **starting examples** — a "connect apps" starter kit. Keep the ones
-you use, delete the rest.
+Trimmed to just the connectors in use. Add more later by following the shapes
+in [Customizing the bundle](#customizing-the-bundle).
 
 ## Credentials
 
-No secrets are stored in this repo. Servers get their credentials one of two ways:
+No secrets are stored in this repo. `github` gets its credential one of two ways:
 
-- **OAuth servers** (`notion`, `linear`, `sentry`, `atlassian`): Claude Code
-  opens a browser login the first time you use the server. Nothing to configure.
-- **Token servers** (`github`, `stripe`): set an environment variable before
-  launching. `.mcp.json` expands `${VAR}` from your environment.
+- **Token**: set `GITHUB_MCP_PAT` before launching. `.mcp.json` expands `${VAR}`
+  from your environment.
 
   ```bash
   export GITHUB_MCP_PAT=ghp_your_token_here      # a GitHub personal access token
-  export STRIPE_SECRET_KEY=sk_live_or_test_key   # a Stripe secret key
   claude --plugin-dir ./mcp-connectors-plugin
   ```
 
   The `:-` in `${GITHUB_MCP_PAT:-}` means an unset variable expands to empty
-  rather than breaking the whole file — that server just won't authenticate
-  until you set it. (GitHub's remote server also supports OAuth, so `github`
-  works without the PAT if you'd rather log in.)
+  rather than breaking the whole file — the server just won't authenticate
+  until you set it.
+- **OAuth**: GitHub's remote server also supports OAuth, so `github` works
+  without the PAT — it'll prompt you to log in on first use.
+
+`filesystem` needs no credentials.
 
 ## Customizing the bundle
 
