@@ -243,6 +243,10 @@ const team = [
   <section class="hero">
     <div class="hero-badge"><span class="badge-dot"></span>Built differently — from the ground up</div>
     <h1>Anyone can launch AI that works on day one.<br /><em>Ours still works in month three.</em></h1>
+    <p class="hero-clarifier">
+      The all-in-one AI &amp; automation platform that small businesses actually keep — built,
+      monitored, and fixed by AITS for one flat monthly fee.
+    </p>
     <div class="hero-divider"></div>
     <p class="hero-sub">
       AITS was built on 25+ years of onboarding, integrating, deploying, and managing technology
@@ -251,8 +255,10 @@ const team = [
     </p>
     <p class="hero-name">Headquartered in San Diego • Serving businesses nationwide</p>
     <div class="hero-actions">
-      <a href="/contact" class="btn-primary">Get your free AI assessment</a>
-      <a href="#results" class="btn-ghost">See real results</a>
+      <a href="/scan.html" class="btn-primary" data-cta="hero-scan"
+        >Run your free 90-second AI scan</a
+      >
+      <a href="/contact" class="btn-ghost" data-cta="hero-assessment">Or book a free assessment</a>
     </div>
   </section>
 
@@ -627,6 +633,14 @@ const team = [
   .hero h1 em {
     font-style: italic;
     color: var(--accent2);
+  }
+  .hero-clarifier {
+    font-size: clamp(17px, 2vw, 21px);
+    line-height: 1.55;
+    color: var(--text);
+    max-width: 660px;
+    margin-top: 18px;
+    font-weight: 500;
   }
   .hero-divider {
     width: 60px;
