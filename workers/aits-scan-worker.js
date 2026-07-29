@@ -727,6 +727,72 @@ async function handleLead(body, env, json) {
 }
 
 /* ===========================================================================
+   CONTACT FORM HANDLER
+   Simple first-party lead capture for /contact. Emails the submission to
+   NOTIFY_TO via Resend (reply-to the sender) and logs to KV when bound.
+   ======================================================================== */
+
+async function handleContact(body, env, json) {
+  const name = String((body && body.name) || "").trim();
+  const email = String((body && body.email) || "").trim();
+  const message = String((body && body.message) || "").trim();
+  const company = String((body && body.company) || "").trim();
+  const phone = String((body && body.phone) || "").trim();
+
+  if (!name || !email || !message) {
+    return json({ error: "Name, email, and a message are all required." }, 400);
+  }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return json({ error: "Please enter a valid email address." }, 400);
+  }
+  if (message.length > 5000) {
+    return json({ error: "Message is too long." }, 400);
+  }
+  if (!env.RESEND_API_KEY) {
+    return json({ error: "Contact email is not configured (missing RESEND_API_KEY)." }, 503);
+  }
+
+  // Each value is pre-escaped (or safe HTML) so the row map never re-escapes.
+  const rows = [
+    ["Name", esc(name)],
+    company ? ["Company", esc(company)] : null,
+    ["Email", `<a href="mailto:${esc(email)}" style="color:#3b6ef0">${esc(email)}</a>`],
+    phone ? ["Phone", esc(phone)] : null,
+  ].filter(Boolean)
+    .map((r) => `<tr><td style="padding:2px 12px 2px 0;color:#6b7280;font-size:13px;white-space:nowrap">${r[0]}</td><td style="padding:2px 0;font-size:13px;color:#111827">${r[1]}</td></tr>`)
+    .join("");
+
+  const html = `<div style="background:#f3f4f6;padding:16px 8px;font-family:Arial,Helvetica,sans-serif">`
+    + `<div style="max-width:600px;margin:0 auto;background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden">`
+    + `<div style="background:#0c0f1a;color:#fff;padding:16px 22px"><div style="font:700 16px Arial,sans-serif">New contact form submission</div><div style="font:400 12px Arial,sans-serif;color:#9ca3af;margin-top:2px">aits.llc/contact</div></div>`
+    + `<div style="padding:18px 22px">`
+    + `<table style="border-collapse:collapse;margin-bottom:14px">${rows}</table>`
+    + `<div style="font:700 10px Arial,sans-serif;letter-spacing:.5px;color:#6b7280;margin-bottom:6px">MESSAGE</div>`
+    + `<div style="font:400 14px/1.6 Arial,sans-serif;color:#111827;white-space:pre-wrap">${esc(message)}</div>`
+    + `</div></div></div>`;
+
+  const send = await sendResend(env, {
+    from: NOTIFY_FROM,
+    to: NOTIFY_TO,
+    cc: NOTIFY_CC,
+    reply_to: email,
+    subject: `Contact form: ${name}${company ? " — " + company : ""}`,
+    html,
+  });
+  if (!send.ok) {
+    return json({ error: "Message send failed", detail: send.detail }, 502);
+  }
+
+  const logEntry = { t: "contact", ts: new Date().toISOString(), name, company, email, phone, message };
+  console.log(JSON.stringify(logEntry));
+  try {
+    if (env.LEADS) await env.LEADS.put(`contact:${logEntry.ts}:${email}`, JSON.stringify(logEntry));
+  } catch (e) { console.log("KV log failed: " + e.message); }
+
+  return json({ ok: true }, 200);
+}
+
+/* ===========================================================================
    ROUTER + ANALYST NOTE
    ======================================================================== */
 
@@ -770,8 +836,12 @@ export default {
       return json({ error: "Invalid JSON body" }, 400);
     }
 
-    if (new URL(request.url).pathname === "/lead") {
+    const pathname = new URL(request.url).pathname;
+    if (pathname === "/lead") {
       return handleLead(body, env, json);
+    }
+    if (pathname === "/contact") {
+      return handleContact(body, env, json);
     }
 
     // Analyst note (or legacy passthrough).

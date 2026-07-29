@@ -35,35 +35,69 @@
 <script is:inline>
   (function () {
     var POPUP_KEY = 'aits_scan_popup_seen';
-    if (!sessionStorage.getItem(POPUP_KEY)) {
-      setTimeout(function () {
-        var p = document.getElementById('scanPopup');
-        if (p) {
-          p.classList.add('open');
-          document.body.style.overflow = 'hidden';
-        }
-      }, 4000);
-    }
-    function closePopup() {
-      var p = document.getElementById('scanPopup');
-      if (p) {
-        p.classList.remove('open');
-        document.body.style.overflow = '';
-      }
-      sessionStorage.setItem(POPUP_KEY, '1');
-    }
+    var sp = document.getElementById('scanPopup');
     var sc = document.getElementById('scanPopupClose');
     var ss = document.getElementById('scanPopupSkip');
-    var sp = document.getElementById('scanPopup');
     var fab = document.getElementById('scanFab');
+    if (!sp) return;
+    var lastFocus = null;
+
+    function focusables() {
+      return sp.querySelectorAll('a[href], button:not([disabled])');
+    }
+    function trapTab(e) {
+      if (e.key !== 'Tab') return;
+      var f = focusables();
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    function openPopup() {
+      if (sp.classList.contains('open') || sessionStorage.getItem(POPUP_KEY)) return;
+      lastFocus = document.activeElement;
+      sp.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      if (sc) sc.focus();
+      sessionStorage.setItem(POPUP_KEY, '1');
+    }
+    function closePopup() {
+      sp.classList.remove('open');
+      document.body.style.overflow = '';
+      sessionStorage.setItem(POPUP_KEY, '1');
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
     if (sc) sc.addEventListener('click', closePopup);
     if (ss) ss.addEventListener('click', closePopup);
-    if (sp) sp.addEventListener('click', function (e) { if (e.target === this) closePopup(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePopup(); });
-    if (sp && fab) {
+    sp.addEventListener('click', function (e) { if (e.target === this) closePopup(); });
+    document.addEventListener('keydown', function (e) {
+      if (!sp.classList.contains('open')) return;
+      if (e.key === 'Escape') closePopup();
+      else trapTab(e);
+    });
+    if (fab) {
       new MutationObserver(function () {
         fab.style.display = sp.classList.contains('open') ? 'none' : 'flex';
       }).observe(sp, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // Never auto-fire on the initial mobile viewport (intrusive-interstitial
+    // risk + poor UX) — the always-visible FAB is the mobile entry point.
+    // On desktop, invite on real engagement signals: exit-intent or 50% scroll.
+    var isMobile = window.matchMedia('(max-width: 767px)').matches;
+    if (!isMobile && !sessionStorage.getItem(POPUP_KEY)) {
+      var onScroll = function () {
+        var scrolled = (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight;
+        if (scrolled >= 0.5) { openPopup(); cleanup(); }
+      };
+      var onExit = function (e) { if (e.clientY <= 0) { openPopup(); cleanup(); } };
+      function cleanup() {
+        window.removeEventListener('scroll', onScroll);
+        document.removeEventListener('mouseout', onExit);
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      document.addEventListener('mouseout', onExit);
     }
   })();
 </script>
@@ -160,7 +194,7 @@
   .scan-popup-cta {
     display: block;
     padding: 15px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -198,7 +232,7 @@
     align-items: center;
     gap: 8px;
     padding: 13px 20px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
     color: #fff;
     border-radius: 50px;
     font-size: 14px;

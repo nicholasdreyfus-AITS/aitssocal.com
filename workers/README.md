@@ -11,7 +11,7 @@ complete even if this Worker is down, unreachable, or not yet redeployed — the
 Analyst Note simply falls back to a solid templated paragraph. **The blank-report
 failure mode is gone regardless of Worker state.**
 
-This Worker now does two jobs:
+This Worker now does three jobs:
 
 1. **POST /** — given the answers + computed report, writes a personalized 3–5
    sentence analyst note (`{"analystNote": "..."}`). Also still accepts the old
@@ -21,6 +21,15 @@ This Worker now does two jobs:
    complete report (PDF attached when the client generated one, HTML fallback
    otherwise) plus the lead's contact details to `NOTIFY_TO` (currently
    `gavin@aits.llc` — edit the constant to add recipients).
+3. **POST /contact** — the `/contact` page's message form. Expects
+   `{name, email, message, company?, phone?}`, emails the submission to
+   `NOTIFY_TO` (reply-to the sender), and logs to KV when bound. Returns
+   `{ok:true}`; `503` if `RESEND_API_KEY` is unset. Uses the same Resend setup
+   as `/lead` — no extra config beyond redeploying this Worker.
+
+> **Redeploy required:** the `/contact` route is new. The contact form will
+> return 405/404 until this Worker is redeployed (see below). The site build
+> ships the form regardless; only the Worker needs the update to receive it.
 
 Model: `claude-sonnet-5`. Cheaper option for this small task: `claude-haiku-4-5`
 (change the `MODEL` constant).

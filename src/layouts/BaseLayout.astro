@@ -1,5 +1,5 @@
 ---
-import { SITE, BUSINESS } from '../consts';
+import { SITE, BUSINESS, LEADERS, GA_MEASUREMENT_ID } from '../consts';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ScanPopup from '../components/ScanPopup.astro';
@@ -43,9 +43,13 @@ const baseSchemas: Record<string, unknown>[] = [
     name: SITE.legalName,
     alternateName: SITE.name,
     url: SITE.url,
+    logo: {
+      '@type': 'ImageObject',
+      url: new URL(SITE.logo, SITE.url).href,
+    },
     description: SITE.description,
     slogan: SITE.tagline,
-    founder: { '@type': 'Person', name: BUSINESS.founder },
+    founder: { '@id': `${SITE.url}/#person-gavin-dreyfus` },
     email: BUSINESS.email,
     telephone: BUSINESS.phone,
     areaServed: BUSINESS.areasServed,
@@ -85,6 +89,17 @@ const baseSchemas: Record<string, unknown>[] = [
     name: SITE.name,
     publisher: { '@id': `${SITE.url}/#organization` },
   },
+  // Leadership as first-class entities — activates the credentials already in
+  // the HTML as machine-readable E-E-A-T (AEO) and links them to the org.
+  ...LEADERS.map((leader) => ({
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': `${SITE.url}/#person-${leader.name.toLowerCase().replace(/\s+/g, '-')}`,
+    name: leader.name,
+    jobTitle: leader.jobTitle,
+    worksFor: { '@id': `${SITE.url}/#organization` },
+    ...(leader.sameAs.length ? { sameAs: leader.sameAs } : {}),
+  })),
 ];
 
 const allSchemas = [...baseSchemas, ...schemas];
@@ -139,8 +154,26 @@ const allSchemas = [...baseSchemas, ...schemas];
         <script type="application/ld+json" set:html={JSON.stringify(s)} />
       ))
     }
+
+    {/* Google Analytics 4 — only loads when GA_MEASUREMENT_ID is set in consts.ts.
+        Fires `cta_click` on primary calls-to-action; `lead_submit` fires from the
+        contact form. No tracking runs while the ID is empty. */}
+    {
+      GA_MEASUREMENT_ID && (
+        <Fragment>
+          <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} />
+          <script is:inline define:vars={{ id: GA_MEASUREMENT_ID }}>
+            {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',id);`}
+          </script>
+          <script is:inline>
+            {`document.addEventListener('click',function(e){if(!window.gtag)return;var el=e.target.closest('[data-cta],.btn-primary,.nav-cta,.scan-fab,.scan-popup-cta,.mobile-cta');if(!el)return;gtag('event','cta_click',{label:el.getAttribute('data-cta')||(el.textContent||'').trim().slice(0,40),href:el.getAttribute('href')||''});},true);`}
+          </script>
+        </Fragment>
+      )
+    }
   </head>
   <body>
+    <a href="#main" class="skip-link">Skip to content</a>
     <div class="site-bg" aria-hidden="true">
       <div class="bg-base"></div>
       <div class="bg-grid"></div>

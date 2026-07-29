@@ -40,7 +40,9 @@ const articleSchema = {
   author: { '@type': data.author === SITE.name ? 'Organization' : 'Person', name: data.author },
   publisher: { '@id': `${SITE.url}/#organization` },
   mainEntityOfPage: url,
-  ...(data.image ? { image: new URL(data.image, SITE.url).href } : {}),
+  ...(data.image || data.heroImage
+    ? { image: new URL((data.image ?? data.heroImage) as string, SITE.url).href }
+    : {}),
 };
 
 // FAQPage schema — high-value for AEO; lets engines lift direct Q&A answers.
@@ -115,7 +117,7 @@ const schemas = [
   description={data.description}
   path={`/blog/${post.id}`}
   ogType="article"
-  image={data.image ?? SITE.defaultOgImage}
+  image={data.image ?? data.heroImage ?? SITE.defaultOgImage}
   schemas={schemas}
 >
   <article class="section">

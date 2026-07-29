@@ -26,8 +26,62 @@ const isActive = (href: string) =>
       }
     </ul>
     <a href="/contact" class="nav-cta">Free assessment</a>
+    <button
+      type="button"
+      class="nav-toggle"
+      id="navToggle"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="mobileMenu"
+    >
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+
+  <div class="mobile-menu" id="mobileMenu" hidden>
+    <ul class="mobile-nav-links">
+      {
+        NAV.map((item) => (
+          <li>
+            <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a href="/contact" class="mobile-cta">Free assessment</a>
+      </li>
+    </ul>
+  </div>
 </header>
+
+<script is:inline>
+  (function () {
+    var toggle = document.getElementById('navToggle');
+    var menu = document.getElementById('mobileMenu');
+    if (!toggle || !menu) return;
+    function setOpen(open) {
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      toggle.classList.toggle('is-open', open);
+      menu.hidden = !open;
+      document.body.style.overflow = open ? 'hidden' : '';
+    }
+    toggle.addEventListener('click', function () {
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+    menu.addEventListener('click', function (e) {
+      if (e.target && e.target.tagName === 'A') setOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+  })();
+</script>
 
 <style>
   .site-header {
@@ -84,6 +138,11 @@ const isActive = (href: string) =>
     font-size: 14px;
     color: var(--muted);
     font-weight: 500;
+    /* Meet WCAG 2.2 target size (>=24px) for standalone controls. */
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 8px 4px;
   }
   .nav-links a:hover,
   .nav-links a[aria-current='page'] {
@@ -100,17 +159,96 @@ const isActive = (href: string) =>
     transition: background 0.2s, box-shadow 0.2s;
   }
   .nav-cta:hover {
-    background: var(--accent2);
+    /* Was --accent2 (#6b9bff): white text on it = 2.74:1, fails WCAG AA.
+       --accent-deep keeps white text >=4.5:1. */
+    background: var(--accent-deep);
     color: #fff;
     box-shadow: 0 4px 24px rgba(59, 110, 240, 0.45);
     text-decoration: none;
   }
+
+  /* Hamburger — hidden on desktop, shown when the inline nav collapses. */
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    margin-inline-start: 12px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .nav-toggle span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    margin-inline: auto;
+    background: var(--text);
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .nav-toggle.is-open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav-toggle.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav-toggle.is-open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Mobile drawer */
+  .mobile-menu {
+    border-top: 1px solid var(--border2);
+    background: rgba(7, 9, 15, 0.97);
+    backdrop-filter: blur(24px);
+  }
+  .mobile-nav-links {
+    list-style: none;
+    margin: 0;
+    padding: 8px 5vw 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .mobile-nav-links a {
+    display: block;
+    padding: 14px 4px;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-nav-links a[aria-current='page'] {
+    color: var(--text);
+  }
+  .mobile-cta {
+    margin-top: 16px;
+    text-align: center;
+    background: var(--accent);
+    color: #fff !important;
+    border: none !important;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
   @media (max-width: 820px) {
     .nav-links {
       display: none;
     }
+    .nav-toggle {
+      display: flex;
+    }
     .logo-full {
       display: none;
+    }
+  }
+  @media (min-width: 821px) {
+    /* Drawer is a mobile-only affordance; never show it on desktop. */
+    .mobile-menu {
+      display: none !important;
     }
   }
 </style>
