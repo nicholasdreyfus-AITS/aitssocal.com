@@ -249,7 +249,7 @@
               <input class="gate-input" id="leadCompany" type="text" autocomplete="organization" placeholder="Company name">
               <input class="gate-input gate-input--wide" id="leadWebsite" type="text" autocomplete="url" placeholder="Company website (or type 'none')">
               <input class="gate-input" id="leadEmail" type="email" autocomplete="email" placeholder="Work email">
-              <input class="gate-input" id="leadCell" type="tel" autocomplete="tel" placeholder="Cell phone">
+              <input class="gate-input" id="leadCell" type="tel" autocomplete="tel" placeholder="Cell phone (optional)">
             </div>
             <div class="gate-contact">
               <span class="gate-contact__label">Best way(s) to reach you</span>
@@ -791,7 +791,7 @@ document.getElementById("unlockBtn").addEventListener("click",function(){
   if(!name.value.trim()){problems.push("name");name.classList.add("invalid");}
   if(!company.value.trim()){problems.push("company");company.classList.add("invalid");}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())){problems.push("a valid email");email.classList.add("invalid");}
-  if((cell.value.replace(/\D/g,"")).length<7){problems.push("cell phone");cell.classList.add("invalid");}
+  if(cell.value.trim() && (cell.value.replace(/\D/g,"")).length<7){problems.push("a valid cell phone");cell.classList.add("invalid");}
   if(problems.length){
     err.textContent="Please add your "+problems.join(", ").replace(/, ([^,]*)$/, " and $1")+".";
     err.style.display="block";
