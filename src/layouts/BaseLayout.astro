@@ -16,6 +16,9 @@ export interface Props {
   /** Extra JSON-LD objects (e.g. Article, FAQPage) injected into <head>. */
   schemas?: Record<string, unknown>[];
   noindex?: boolean;
+  /** Landing mode: minimal chrome (logo-only header, slim footer, no popup)
+      for dedicated conversion pages that shouldn't leak clicks to site nav. */
+  landing?: boolean;
 }
 
 const {
@@ -26,6 +29,7 @@ const {
   ogType = 'website',
   schemas = [],
   noindex = false,
+  landing = false,
 } = Astro.props;
 
 const canonicalPath = path ?? Astro.url.pathname;
@@ -141,16 +145,120 @@ const allSchemas = [...baseSchemas, ...schemas];
     }
   </head>
   <body>
+    {landing && <a href="#main" class="skip-link">Skip to content</a>}
     <div class="site-bg" aria-hidden="true">
       <div class="bg-base"></div>
       <div class="bg-grid"></div>
       <img class="bg-logo" src="/images/bg-logo.png" alt="" />
     </div>
-    <Header />
+    {
+      landing ? (
+        <header class="lp-min-header">
+          <div class="container">
+            <a href="/" class="lp-min-logo" aria-label="AITS home">
+              <img src="/images/logo.png" alt="AITS" width="40" height="40" />
+              <span>AITS</span>
+            </a>
+          </div>
+        </header>
+      ) : (
+        <Header />
+      )
+    }
     <main id="main">
       <slot />
     </main>
-    <Footer />
-    <ScanPopup />
+    {
+      landing ? (
+        <footer class="lp-min-footer">
+          <div class="container">
+            <span>© AITS · Advanced Intelligent Technology Solutions</span>
+            <a href={`tel:${BUSINESS.phone}`}>{BUSINESS.phoneDisplay}</a>
+          </div>
+        </footer>
+      ) : (
+        <Footer />
+      )
+    }
+    {!landing && <ScanPopup />}
   </body>
 </html>
+
+<style>
+  /* Skip link — first tab stop; visible only on focus (WCAG 2.4.1). */
+  .skip-link {
+    position: absolute;
+    left: 12px;
+    top: -60px;
+    z-index: 1000;
+    background: #2d5cd8;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: top 0.2s ease;
+  }
+  .skip-link:focus {
+    top: 12px;
+  }
+
+  /* Minimal landing chrome — logo-only header, slim footer. Keyboard focus
+     is explicit here because the shared global stylesheet has no focus ring. */
+  .lp-min-header {
+    position: relative;
+    z-index: 10;
+    border-bottom: 0.5px solid var(--border2);
+    background: rgba(7, 9, 15, 0.72);
+    backdrop-filter: blur(24px);
+  }
+  .lp-min-header .container {
+    display: flex;
+    align-items: center;
+    height: 66px;
+  }
+  .lp-min-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--fran);
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .lp-min-logo img {
+    height: 38px;
+    width: auto;
+  }
+  .lp-min-footer {
+    position: relative;
+    z-index: 10;
+    border-top: 0.5px solid var(--border2);
+    background: rgba(7, 9, 15, 0.72);
+    padding-block: 20px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .lp-min-footer .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .lp-min-footer a {
+    color: var(--text2);
+    font-weight: 600;
+  }
+  .lp-min-footer a:hover {
+    color: var(--text);
+  }
+  .lp-min-header a:focus-visible,
+  .lp-min-footer a:focus-visible,
+  .skip-link:focus-visible {
+    outline: 2px solid var(--accent2);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+</style>
