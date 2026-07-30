@@ -633,6 +633,44 @@ function reportHtml(lead, c, note, answers, clientUrl, opts) {
    LEAD HANDLER
    ======================================================================== */
 
+// Short, client-facing email: a warm note + what the report covers + a prompt
+// to open the attached PDF. The PDF is the client's nice-looking copy, so this
+// email stays light and never dumps their raw answers back at them.
+function clientEmailHtml(lead) {
+  const M = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const d = new Date();
+  const dateStr = M[d.getUTCMonth()] + " " + d.getUTCDate() + ", " + d.getUTCFullYear();
+  const firstName = String(lead.name || "").split(/\s+/)[0] || "there";
+
+  const bullets = [
+    "Your <b>AI Risk Score</b> and exposure band",
+    "Your <b>top findings</b> — each with a plain-English next step",
+    "Your <b>shadow-AI exposure</b> and any compliance flags",
+    "An estimate of the <b>hours your team could get back</b>",
+    "A snapshot of your <b>website&rsquo;s SEO &amp; AI-search readiness</b>",
+    "A short <b>note from our senior analyst</b>, just for you",
+  ].map((b) => `<tr><td style="padding:5px 0;font:400 14px/1.5 Arial,sans-serif;color:#4b5563;vertical-align:top"><span style="color:#0f9d84;font-weight:700">&#10003;</span>&nbsp;&nbsp;${b}</td></tr>`).join("");
+
+  return `<div style="background:#f3f4f6;padding:16px 8px;font-family:Arial,Helvetica,sans-serif">`
+    + `<div style="max-width:560px;margin:0 auto">`
+      + `<div style="background:#0c0f1a;color:#fff;padding:22px 26px;border-radius:10px 10px 0 0">`
+        + `<img src="https://aits.llc/images/aits-logo.png" alt="AITS" width="140" style="display:block;border:0;margin-bottom:10px">`
+        + `<div style="font:700 20px Arial,sans-serif;color:#fff">Your AI Readiness &amp; Risk Report</div>`
+        + `<div style="font:400 13px Arial,sans-serif;color:#9ca3af;margin-top:4px">Prepared for <strong style="color:#fff">${esc(lead.company)}</strong> &nbsp;&middot;&nbsp; ${dateStr}</div>`
+      + `</div>`
+      + `<div style="background:#fff;padding:24px 26px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px">`
+        + `<p style="font:400 15px/1.65 Arial,sans-serif;color:#374151;margin:0 0 16px">Hi ${esc(firstName)},</p>`
+        + `<p style="font:400 15px/1.65 Arial,sans-serif;color:#374151;margin:0 0 18px">Thanks for taking the AITS AI Risk Scan. We built a report from your answers &mdash; <strong>it&rsquo;s attached to this email as a PDF.</strong> Here&rsquo;s a quick look at what&rsquo;s inside:</p>`
+        + `<div style="background:#f9fafb;border:1px solid #eef0f3;border-radius:10px;padding:14px 18px;margin:0 0 20px"><table style="border-collapse:collapse;width:100%">${bullets}</table></div>`
+        + `<div style="text-align:center;background:#f0f5ff;border:1px solid #dbe6ff;border-radius:10px;padding:16px;margin:0 0 20px"><div style="font:700 13px Arial,sans-serif;color:#3b6ef0;letter-spacing:.3px">&#128206; YOUR FULL REPORT IS ATTACHED</div><div style="font:400 13px Arial,sans-serif;color:#6b7280;margin-top:5px">Open the PDF for everything we found, based on your answers.</div></div>`
+        + `<div style="text-align:center;margin:0 0 6px"><a href="https://aits.llc/contact" style="display:inline-block;background:#3b6ef0;color:#fff;text-decoration:none;font:700 14px Arial,sans-serif;padding:12px 24px;border-radius:8px">Book your free 30-minute review &rarr;</a></div>`
+        + `<p style="font:400 13px/1.6 Arial,sans-serif;color:#6b7280;text-align:center;margin:14px 0 0">Just reply to this email with any questions &mdash; it comes straight to our team.</p>`
+        + `<div style="border-top:1px solid #eef0f3;margin-top:20px;padding-top:14px;font:400 12px Arial,sans-serif;color:#9ca3af;text-align:center">AITS &middot; Advanced Intelligent Technology Solutions<br>aits.llc &middot; gavin@aits.llc &middot; (858) 337-2866</div>`
+      + `</div>`
+    + `</div>`
+  + `</div>`;
+}
+
 async function sendResend(env, payload) {
   const r = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -696,16 +734,22 @@ async function handleLead(body, env, json) {
     return json({ error: "Email send failed", detail: internal.detail }, 502);
   }
 
-  // 4. CLIENT email — their copy of the report, CC AITS so replies reach us.
-  const clientHtml = reportHtml(lead, c, body.analystNote, null, "", { internal: false });
-  const client = await sendResend(env, {
+  // 4. CLIENT email — a short, friendly note with the branded PDF attached.
+  // The PDF is their nice-looking copy; only fall back to the full inline
+  // report if the PDF couldn't be built, so they're never left empty-handed.
+  const clientHtml = pdfB64
+    ? clientEmailHtml(lead)
+    : reportHtml(lead, c, body.analystNote, null, "", { internal: false });
+  const clientPayload = {
     from: NOTIFY_FROM,
     to: [lead.email],
     cc: [...NOTIFY_TO, ...NOTIFY_CC],
     reply_to: REPLY_TO,
     subject: `Your AI Readiness & Risk Report — ${lead.company}`,
     html: clientHtml,
-  });
+  };
+  if (pdfB64) clientPayload.attachments = [{ filename: `AITS-AI-Readiness-Report-${safeCompany}.pdf`, content: pdfB64 }];
+  const client = await sendResend(env, clientPayload);
 
   // 5. Log the lead (console always; KV when bound).
   const logEntry = {
