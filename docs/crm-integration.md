@@ -30,7 +30,7 @@ placeholder slots — this doc is the checklist for connecting the real account.
 
 ## 3. Contact page (later phase)
 
-The contact page currently uses Calendly (`https://calendly.com/nickdre/30min`) — **leave it
+The contact page currently uses Calendly (`https://calendly.com/gavin-aits`) — **leave it
 working until the GHL calendar is fully configured**, then swap:
 
 1. In GHL: **Calendars** → create `Free AI Assessment (30 min)` linked to the right
