@@ -43,6 +43,27 @@ emails/day — plenty).
 Until `RESEND_API_KEY` is set, `/lead` returns 503 — the visitor still gets
 their full report on screen; only the internal email is skipped.
 
+## GoHighLevel integration (optional — lead automation)
+
+Every scan lead (`/lead`) and contact-form submission (`/contact`) is also pushed
+into GoHighLevel so its workflows can run the follow-up (SMS, email sequences,
+calls). This is a **no-op until the `GHL_WEBHOOK_URL` secret is set** — nothing
+breaks if it's absent.
+
+1. In GHL: **Automation → Workflows → Create Workflow → Start from scratch**.
+2. Add trigger **"Inbound Webhook"** and copy the webhook URL it generates.
+3. Set it on the Worker: `wrangler secret put GHL_WEBHOOK_URL` (or dashboard →
+   Settings → Variables and Secrets → Add).
+4. Back in the workflow, add actions: Create/Update Contact (map fields below),
+   then Send SMS / Email / Add to Pipeline / Create Call Task, etc.
+
+Fields posted (JSON) — map these in the workflow:
+- **Scan lead:** `source` ("AI Risk Scan"), `name`, `email`, `phone`, `company`,
+  `website`, `best_contact`, `ai_risk_score`, `risk_band`, `shadow_ai`,
+  `recoverable_hours`, `compliance_flags`
+- **Contact form:** `source` ("Contact Form"), `name`, `email`, `phone`,
+  `company`, `message`
+
 ## Redeploy (required to light up the personalized note)
 
 The Worker runs at `https://aits-scan.nicholasdreyfus.workers.dev`.
