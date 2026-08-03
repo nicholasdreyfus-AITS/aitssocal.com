@@ -10,7 +10,7 @@ placeholder slots — this doc is the checklist for connecting the real account.
 ## 1. Account setup
 
 1. Log into GHL and create (or confirm) the **AITS location** (sub-account).
-2. Set up the business profile inside GHL: name AITS, email gavin@aits.llc, phone (858) 337-2866.
+2. Set up the business profile inside GHL: name AITS, email gavin@aits.llc, phone (619) 837-3320.
 3. Connect the sending domain for email (use a subdomain like `mail.aits.llc` — keep the root
    domain's reputation isolated) and register the SMS/A2P brand + campaign (required before any
    SMS goes out; takes a few days to approve, start early).

@@ -16,8 +16,8 @@ export const SITE = {
 } as const;
 
 export const BUSINESS = {
-  phone: '+1-858-337-2866',
-  phoneDisplay: '(858) 337-2866',
+  phone: '+1-619-837-3320',
+  phoneDisplay: '(619) 837-3320',
   email: 'gavin@aits.llc',
   founder: 'Gavin Dreyfus',
   // Geographic service area (used in LocalBusiness schema + copy).

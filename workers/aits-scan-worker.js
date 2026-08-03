@@ -506,7 +506,7 @@ function buildReportPdf(lead, c, note, audit, logo) {
   }
 
   // CTA + footer
-  const ctaTxt = "Book the free 30-minute review — aits.llc/contact · (858) 337-2866";
+  const ctaTxt = "Book the free 30-minute review — aits.llc/contact · (619) 837-3320";
   const ctaW = textWidth(ctaTxt, 10.5, true) + 40;
   p2.rect(MARGIN, y - 34, ctaW, 34, "0.231 0.431 0.941");
   p2.text(ctaTxt, MARGIN + 20, y - 22, 10.5, "F2", "1 1 1");
@@ -517,7 +517,7 @@ function buildReportPdf(lead, c, note, audit, logo) {
   y -= 15;
   p2.text("Headquartered in San Diego · Serving businesses across the United States", MARGIN, y, 8.5, "F1", C_MUTED);
   y -= 12;
-  p2.text("aits.llc · gavin@aits.llc · (858) 337-2866", MARGIN, y, 8.5, "F1", C_MUTED);
+  p2.text("aits.llc · gavin@aits.llc · (619) 837-3320", MARGIN, y, 8.5, "F1", C_MUTED);
   if (logo) {
     const lw2 = 86, lh2 = lw2 * (logo.height / logo.width);
     p2.image("Logo", PAGE_W - MARGIN - lw2, y - 8, lw2, lh2);
@@ -621,7 +621,7 @@ function reportHtml(lead, c, note, answers, clientUrl, opts) {
           + `<div style="border:1px solid #ece9fb;border-left:4px solid #7c3aed;border-radius:8px;padding:12px 14px;background:#faf9ff;font:italic 400 14px/1.6 Arial,sans-serif;color:#4b5563">${esc(note)}</div>` : "")
         + (internal ? auditHtml(audit) : "")
         + `<div style="text-align:center;margin:22px 0 4px"><a href="https://aits.llc/contact" style="display:inline-block;background:#3b6ef0;color:#ffffff;text-decoration:none;font:700 14px Arial,sans-serif;padding:12px 22px;border-radius:8px">Book the free 30-minute review &rarr;</a></div>`
-        + `<div style="font:400 11px Arial,sans-serif;color:#9ca3af;text-align:center;margin-top:10px">AITS · aits.llc · (858) 337-2866 · gavin@aits.llc</div>`
+        + `<div style="font:400 11px Arial,sans-serif;color:#9ca3af;text-align:center;margin-top:10px">AITS · aits.llc · (619) 837-3320 · gavin@aits.llc</div>`
         + `<div style="font:400 10px Arial,sans-serif;color:#b6bbc6;text-align:center;margin-top:6px">Prevalence figures are industry-informed estimates.</div>`
         + (internal ? `<div style="border-top:1px solid #eef0f3;margin-top:18px;padding-top:12px"><div style="font:700 10px Arial,sans-serif;color:#b6bbc6;letter-spacing:.5px;margin-bottom:6px">RAW SCAN ANSWERS</div><table style="border-collapse:collapse">${answersHtml}</table></div>` : "")
       + `</div>`
@@ -665,7 +665,7 @@ function clientEmailHtml(lead) {
         + `<div style="text-align:center;background:#f0f5ff;border:1px solid #dbe6ff;border-radius:10px;padding:16px;margin:0 0 20px"><div style="font:700 13px Arial,sans-serif;color:#3b6ef0;letter-spacing:.3px">&#128206; YOUR FULL REPORT IS ATTACHED</div><div style="font:400 13px Arial,sans-serif;color:#6b7280;margin-top:5px">Open the PDF for everything we found, based on your answers.</div></div>`
         + `<div style="text-align:center;margin:0 0 6px"><a href="https://aits.llc/contact" style="display:inline-block;background:#3b6ef0;color:#fff;text-decoration:none;font:700 14px Arial,sans-serif;padding:12px 24px;border-radius:8px">Book your free 30-minute review &rarr;</a></div>`
         + `<p style="font:400 13px/1.6 Arial,sans-serif;color:#6b7280;text-align:center;margin:14px 0 0">Just reply to this email with any questions &mdash; it comes straight to our team.</p>`
-        + `<div style="border-top:1px solid #eef0f3;margin-top:20px;padding-top:14px;font:400 12px Arial,sans-serif;color:#9ca3af;text-align:center">AITS &middot; Advanced Intelligent Technology Solutions<br>aits.llc &middot; gavin@aits.llc &middot; (858) 337-2866</div>`
+        + `<div style="border-top:1px solid #eef0f3;margin-top:20px;padding-top:14px;font:400 12px Arial,sans-serif;color:#9ca3af;text-align:center">AITS &middot; Advanced Intelligent Technology Solutions<br>aits.llc &middot; gavin@aits.llc &middot; (619) 837-3320</div>`
       + `</div>`
     + `</div>`
   + `</div>`;

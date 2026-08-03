@@ -17,7 +17,7 @@
     @media(min-width:1000px){.wrap{width:75vw}}
     .header{text-align:center;margin-bottom:22px}
     .header-brand{font-family:monospace;font-size:10px;color:#6b9bff;letter-spacing:3px;margin-bottom:8px}
-    .header-logo{width:48px;height:48px;background:#101527;border:1px solid #3b6ef0;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+    .header-logo{width:150px;height:52px;background:url(/images/aits-logo.png) center/contain no-repeat;margin:0 auto 10px}
     .header-title{font-size:26px;font-weight:800;letter-spacing:-0.5px}
     .header-status{font-family:monospace;font-size:11px;color:#5a637f;margin-top:5px;min-height:18px}
     .panel{background:#0c0f1a;border:1px solid #1d2333;border-radius:12px;overflow:hidden;box-shadow:0 24px 48px rgba(0,0,0,0.6);margin-bottom:16px}
@@ -135,15 +135,7 @@
 <div class="wrap">
   <div class="header">
     <div class="header-brand">AITS — ADVANCED INTELLIGENT TECHNOLOGY SOLUTIONS</div>
-    <div class="header-logo">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <circle cx="14" cy="14" r="5" fill="#3b6ef0" opacity="0.9"/>
-        <circle cx="14" cy="14" r="10" stroke="#6b9bff" stroke-width="1.5" stroke-dasharray="4 3"/>
-        <circle cx="14" cy="4" r="2" fill="#6b9bff" opacity="0.5"/>
-        <circle cx="24" cy="19" r="2" fill="#6b9bff" opacity="0.5"/>
-        <circle cx="4" cy="19" r="2" fill="#6b9bff" opacity="0.5"/>
-      </svg>
-    </div>
+    <div class="header-logo" role="img" aria-label="AITS — Advanced Intelligent Technology Solutions"></div>
     <div class="header-title">AI Risk Scan</div>
     <div class="header-status" id="status">▮ SYSTEM READY</div>
   </div>
@@ -284,7 +276,7 @@
     </div>
   </div>
 
-  <div class="footer">AITS · aits.llc · (858) 337-2866<br><a href="mailto:gavin@aits.llc">gavin@aits.llc</a></div>
+  <div class="footer">AITS · aits.llc · (619) 837-3320<br><a href="mailto:gavin@aits.llc">gavin@aits.llc</a></div>
 </div>
 
 <!-- CALENDLY MODAL -->
@@ -954,7 +946,7 @@ function renderPdf(lead,r,note){
   doc.setFont("helvetica","italic");doc.setFontSize(9);setT([206,206,222]);doc.text(noteL,M+5.5,y+6);y+=nh+9;
 
   ensure(12);doc.setFont("helvetica","normal");doc.setFontSize(8);setT(MUT);
-  doc.text("AITS · aits.llc · (858) 337-2866 · gavin@aits.llc",M,y);y+=4;
+  doc.text("AITS · aits.llc · (619) 837-3320 · gavin@aits.llc",M,y);y+=4;
   doc.text("Book a free 30-minute review at aits.llc/contact",M,y);
   return doc.output("datauristring").split(",")[1]||null;
 }
@@ -992,7 +984,7 @@ function buildTextPdf(lead,r,note){
     line("SCAN ANSWERS",9,"bold",[110,110,110],2);
     QUESTIONS.forEach(function(q){var a=answers[q.id];line(q.label+"  —  "+(Array.isArray(a)?(a.join(", ")||"(skipped)"):(a||"(skipped)")),9,"normal",[100,100,100],1);});
     y+=4;
-    line("AITS · aits.llc · (858) 337-2866 · gavin@aits.llc — free 30-minute review: aits.llc/contact",9,"normal",[110,110,110],0);
+    line("AITS · aits.llc · (619) 837-3320 · gavin@aits.llc — free 30-minute review: aits.llc/contact",9,"normal",[110,110,110],0);
     return doc.output("datauristring").split(",")[1]||null;
   }catch(e){return null;}
 }
