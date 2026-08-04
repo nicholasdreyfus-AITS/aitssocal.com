@@ -733,17 +733,10 @@ function showResults(r){
   var hidden=r.findings.slice(SHOWN_FINDINGS);
   document.getElementById("findingsList").innerHTML=shown.map(function(f,i){return renderFinding(f,i);}).join("");
 
-  // Locked teaser: real tags visible, content ghosted until the lead form.
-  document.getElementById("lockedLabel").textContent=hidden.length
-    ?("+"+hidden.length+" MORE FINDING"+(hidden.length>1?"S":"")+" IN YOUR FULL REPORT")
-    :"YOUR ANALYST NOTE + PDF REPORT";
-  document.getElementById("lockedCards").innerHTML=hidden.map(function(f,i){
-    var ft=f.sev==="danger"?"tag-danger":f.sev==="info"?"tag-blue":"tag-warn";
-    return '<div class="locked"><div class="locked-ghost">'
-      +'<div style="display:flex;justify-content:space-between;margin-bottom:7px"><span class="tag '+ft+'">'+f.tag+'</span><span class="finding-num">FINDING 0'+(i+1+SHOWN_FINDINGS)+'</span></div>'
-      +'<div class="ghost-bar" style="width:72%"></div><div class="ghost-bar" style="width:88%"></div><div class="ghost-bar" style="width:55%"></div></div>'
-      +'<div class="locked-overlay"><span style="font-size:15px">🔒</span><span class="lock-label">UNLOCKS WITH YOUR FULL REPORT</span></div></div>';
-  }).join("");
+  // Every finding not shown in full — here and again after the lead form —
+  // is real tag + real headline, with the security-verification reasoning
+  // in place of detail/fix. Never a vague blurred "unlocks later" tease.
+  renderLockedSection(hidden,SHOWN_FINDINGS);
 
   show("resultsScreen");
   resultsShown=true;
@@ -806,12 +799,27 @@ document.getElementById("unlockBtn").addEventListener("click",function(){
   submitLead(currentLead);
 });
 
+// Shared copy for every locked finding, on screen, in the PDF, and in email —
+// keep this in sync with LOCKED_FINDING_NOTE in workers/aits-scan-worker.js.
+var LOCKED_FINDING_NOTE="For your organization's security, we confirm a real person from your company is asking before we share this — never an automated system. It's free with no obligation: book your 30-minute review and we'll walk through this finding together, then you'll have the complete write-up in hand right after the call.";
+
 function renderLockedFinding(f,i){
   var ft=f.sev==="danger"?"tag-danger":f.sev==="info"?"tag-blue":"tag-warn";
   return '<div class="locked locked-guidance"><div class="finding-top"><span class="tag '+ft+'">'+f.tag+'</span><span class="finding-num">FINDING 0'+(i+1)+'</span></div>'
     +'<div class="finding-headline">'+f.head+'</div>'
-    +'<div class="locked-note"><span class="lock-ico">🔒</span>We verify we\'re speaking with someone from your organization before sharing findings that touch your security exposure — it\'s part of how we protect you. Book your free 30-minute review and we\'ll walk through this finding together; you\'ll have the complete write-up in hand right after the call.</div>'
+    +'<div class="locked-note"><span class="lock-ico">🔒</span>'+LOCKED_FINDING_NOTE+'</div>'
     +'</div>';
+}
+
+// Renders the locked-finding section (label + cards) — used both on the
+// initial results screen (before the lead form) and after unlock, so every
+// finding not shown in full gets the same real tag/headline + security
+// explanation, never a vague blurred tease.
+function renderLockedSection(locked,startIndex){
+  document.getElementById("lockedLabel").textContent=locked.length
+    ?("LOCKED FOR YOUR SECURITY — "+locked.length+" FINDING"+(locked.length>1?"S":""))
+    :"";
+  document.getElementById("lockedCards").innerHTML=locked.map(function(f,i){return renderLockedFinding(f,i+startIndex);}).join("");
 }
 
 function unlockReport(){
@@ -821,10 +829,7 @@ function unlockReport(){
   var locked=r.findings.slice(UNLOCKED_ON_SUBMIT);
   document.getElementById("findingsList").innerHTML=shown.map(function(f,i){return renderFinding(f,i);}).join("");
   document.getElementById("shownLabel").textContent="YOUR FINDINGS — AND WHAT TO DO ABOUT EACH";
-  document.getElementById("lockedLabel").textContent=locked.length
-    ?("LOCKED FOR YOUR SECURITY — "+locked.length+" FINDING"+(locked.length>1?"S":""))
-    :"";
-  document.getElementById("lockedCards").innerHTML=locked.map(function(f,i){return renderLockedFinding(f,i+UNLOCKED_ON_SUBMIT);}).join("");
+  renderLockedSection(locked,UNLOCKED_ON_SUBMIT);
   document.getElementById("gateSection").style.display="none";
   var box=document.getElementById("analystBox");
   document.getElementById("analystText").textContent=aiNote||r.fallbackNote;
