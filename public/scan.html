@@ -233,13 +233,16 @@
         <div class="findings-label" id="shownLabel">YOUR TOP FINDINGS — AND WHAT TO DO ABOUT EACH</div>
         <div id="findingsList"></div>
 
-        <!-- LEAD GATE: remaining findings + analyst note unlock with contact info -->
+        <!-- Locked findings persist across the lead-gate submit — they live
+             outside #gateSection so hiding the form on submit never hides them. -->
+        <div class="findings-label" id="lockedLabel"></div>
+        <div id="lockedCards"></div>
+
+        <!-- LEAD GATE FORM: unlocks one more finding + shows the analyst note -->
         <div id="gateSection">
-          <div class="findings-label" id="lockedLabel"></div>
-          <div id="lockedCards"></div>
           <div class="gate">
-            <div class="gate-title">Unlock your full report</div>
-            <div class="gate-sub">Every remaining finding with what to do about it, plus your analyst note — on screen immediately. Our senior analyst also gets a copy to prepare recommendations before we reach out.</div>
+            <div class="gate-title">Unlock one more finding</div>
+            <div class="gate-sub">One more finding with what to do about it, plus your analyst note — on screen immediately. Our senior analyst also gets a copy to prepare recommendations before we reach out.</div>
             <div class="gate-fields">
               <input class="gate-input" id="leadName" type="text" autocomplete="name" placeholder="Your name">
               <input class="gate-input" id="leadCompany" type="text" autocomplete="organization" placeholder="Company name">
@@ -256,7 +259,7 @@
               </div>
             </div>
             <div class="gate-error" id="gateError" style="display:none"></div>
-            <button class="btn-cta" id="unlockBtn">UNLOCK MY FULL REPORT →</button>
+            <button class="btn-cta" id="unlockBtn">UNLOCK ONE MORE FINDING →</button>
             <div class="gate-fine">No spam. One follow-up from a real person — usually with something useful.</div>
           </div>
         </div>
