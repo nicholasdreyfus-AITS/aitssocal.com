@@ -736,7 +736,7 @@ function showResults(r){
   // Every finding not shown in full — here and again after the lead form —
   // is real tag + real headline, with the security-verification reasoning
   // in place of detail/fix. Never a vague blurred "unlocks later" tease.
-  renderLockedSection(hidden,SHOWN_FINDINGS);
+  renderLockedSection(hidden,SHOWN_FINDINGS,true);
 
   show("resultsScreen");
   resultsShown=true;
@@ -799,27 +799,31 @@ document.getElementById("unlockBtn").addEventListener("click",function(){
   submitLead(currentLead);
 });
 
-// Shared copy for every locked finding, on screen, in the PDF, and in email —
-// keep this in sync with LOCKED_FINDING_NOTE in workers/aits-scan-worker.js.
-var LOCKED_FINDING_NOTE="For your organization's security, we confirm a real person from your company is asking before we share this — never an automated system. It's free with no obligation: book your 30-minute review and we'll walk through this finding together, then you'll have the complete write-up in hand right after the call.";
+// Pre-form note: the next step is filling in the form, not booking yet.
+var PRE_FORM_LOCKED_NOTE="Fill out the information below to unlock this finding.";
+// Post-form note: the next step is booking, framed as a security/verification
+// step — keep this in sync with LOCKED_FINDING_NOTE in workers/aits-scan-worker.js
+// (the PDF and email only ever exist post-form, so they always use this one).
+var LOCKED_FINDING_NOTE="This finding stays locked for security — until we've confirmed it's genuinely someone from your organization asking. Book your free, no-obligation 30-minute review and we'll verify who we're talking to; you'll have the complete write-up in hand right after the call.";
 
-function renderLockedFinding(f,i){
+function renderLockedFinding(f,i,note){
   var ft=f.sev==="danger"?"tag-danger":f.sev==="info"?"tag-blue":"tag-warn";
   return '<div class="locked locked-guidance"><div class="finding-top"><span class="tag '+ft+'">'+f.tag+'</span><span class="finding-num">FINDING 0'+(i+1)+'</span></div>'
     +'<div class="finding-headline">'+f.head+'</div>'
-    +'<div class="locked-note"><span class="lock-ico">🔒</span>'+LOCKED_FINDING_NOTE+'</div>'
+    +'<div class="locked-note"><span class="lock-ico">🔒</span>'+note+'</div>'
     +'</div>';
 }
 
 // Renders the locked-finding section (label + cards) — used both on the
-// initial results screen (before the lead form) and after unlock, so every
-// finding not shown in full gets the same real tag/headline + security
-// explanation, never a vague blurred tease.
-function renderLockedSection(locked,startIndex){
+// initial results screen (before the lead form, preForm=true) and after
+// unlock (preForm=false), so the copy always matches the actual next step:
+// fill in the form first, then book to unlock the rest.
+function renderLockedSection(locked,startIndex,preForm){
+  var note=preForm?PRE_FORM_LOCKED_NOTE:LOCKED_FINDING_NOTE;
   document.getElementById("lockedLabel").textContent=locked.length
-    ?("LOCKED FOR YOUR SECURITY — "+locked.length+" FINDING"+(locked.length>1?"S":""))
+    ?((preForm?"FILL OUT THE FORM TO UNLOCK — ":"LOCKED FOR YOUR SECURITY — ")+locked.length+" FINDING"+(locked.length>1?"S":""))
     :"";
-  document.getElementById("lockedCards").innerHTML=locked.map(function(f,i){return renderLockedFinding(f,i+startIndex);}).join("");
+  document.getElementById("lockedCards").innerHTML=locked.map(function(f,i){return renderLockedFinding(f,i+startIndex,note);}).join("");
 }
 
 function unlockReport(){
@@ -829,7 +833,7 @@ function unlockReport(){
   var locked=r.findings.slice(UNLOCKED_ON_SUBMIT);
   document.getElementById("findingsList").innerHTML=shown.map(function(f,i){return renderFinding(f,i);}).join("");
   document.getElementById("shownLabel").textContent="YOUR FINDINGS — AND WHAT TO DO ABOUT EACH";
-  renderLockedSection(locked,UNLOCKED_ON_SUBMIT);
+  renderLockedSection(locked,UNLOCKED_ON_SUBMIT,false);
   document.getElementById("gateSection").style.display="none";
   var box=document.getElementById("analystBox");
   document.getElementById("analystText").textContent=aiNote||r.fallbackNote;

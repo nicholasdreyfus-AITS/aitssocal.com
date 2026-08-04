@@ -24,8 +24,10 @@ const MODEL = "claude-sonnet-5";
 // full; the rest render as locked "needs a guided walkthrough" cards. The
 // internal (Gavin) report/PDF always gets every finding, unrestricted.
 const CLIENT_UNLOCKED_FINDINGS = 3;
-// Keep this in sync with LOCKED_FINDING_NOTE in public/scan.html.
-const LOCKED_FINDING_NOTE = "For your organization's security, we confirm a real person from your company is asking before we share this — never an automated system. It's free with no obligation: book your 30-minute review and we'll walk through this finding together, then you'll have the complete write-up in hand right after the call.";
+// Keep this in sync with LOCKED_FINDING_NOTE in public/scan.html. The PDF and
+// email only ever exist post-form-submit, so they always use the
+// booking/verification framing (never the pre-form "fill out the form" one).
+const LOCKED_FINDING_NOTE = "This finding stays locked for security — until we've confirmed it's genuinely someone from your organization asking. Book your free, no-obligation 30-minute review and we'll verify who we're talking to; you'll have the complete write-up in hand right after the call.";
 
 const NOTIFY_TO = ["gavin@aits.llc"];
 const NOTIFY_CC = ["nick@aitssocal.com"];
@@ -701,7 +703,7 @@ function clientEmailHtml(lead) {
         + `<p style="font:400 15px/1.65 Arial,sans-serif;color:#374151;margin:0 0 16px">Hi ${esc(firstName)},</p>`
         + `<p style="font:400 15px/1.65 Arial,sans-serif;color:#374151;margin:0 0 18px">Thanks for taking the AITS AI Risk Scan. We built a report from your answers &mdash; <strong>it&rsquo;s attached to this email as a PDF.</strong> Here&rsquo;s what's unlocked so far:</p>`
         + `<div style="background:#f9fafb;border:1px solid #eef0f3;border-radius:10px;padding:14px 18px;margin:0 0 20px"><table style="border-collapse:collapse;width:100%">${bullets}</table></div>`
-        + `<div style="background:#faf9ff;border:1px solid #ece9fb;border-radius:10px;padding:14px 18px;margin:0 0 20px"><div style="font:700 13px Arial,sans-serif;color:#7c3aed;letter-spacing:.3px">&#128274; THE REMAINING FINDINGS ARE LOCKED FOR YOUR SECURITY</div><div style="font:400 13px/1.6 Arial,sans-serif;color:#6b7280;margin-top:5px">Including the single most overlooked exposure we find. For your organization's security, we confirm a real person from your company is asking before we share it &mdash; never an automated system. It's free with no obligation: book your 30-minute review and we'll walk through them together, then you'll have the complete report in hand right after the call.</div></div>`
+        + `<div style="background:#faf9ff;border:1px solid #ece9fb;border-radius:10px;padding:14px 18px;margin:0 0 20px"><div style="font:700 13px Arial,sans-serif;color:#7c3aed;letter-spacing:.3px">&#128274; THE REMAINING FINDINGS ARE LOCKED FOR YOUR SECURITY</div><div style="font:400 13px/1.6 Arial,sans-serif;color:#6b7280;margin-top:5px">Including the single most overlooked exposure we find. They stay locked until we've confirmed it's genuinely someone from your organization asking. Book your free, no-obligation 30-minute review and we'll verify who we're talking to &mdash; then you'll have the complete report in hand right after the call.</div></div>`
         + `<div style="text-align:center;margin:0 0 6px"><a href="https://aits.llc/contact" style="display:inline-block;background:#3b6ef0;color:#fff;text-decoration:none;font:700 14px Arial,sans-serif;padding:12px 24px;border-radius:8px">Book your free 30-minute review &rarr;</a></div>`
         + `<p style="font:400 13px/1.6 Arial,sans-serif;color:#6b7280;text-align:center;margin:14px 0 0">Just reply to this email with any questions &mdash; it comes straight to our team.</p>`
         + `<div style="border-top:1px solid #eef0f3;margin-top:20px;padding-top:14px;font:400 12px Arial,sans-serif;color:#9ca3af;text-align:center">AITS &middot; Advanced Intelligent Technology Solutions<br>aits.llc &middot; gavin@aits.llc &middot; (619) 837-3320</div>`
