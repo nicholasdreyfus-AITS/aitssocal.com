@@ -95,6 +95,8 @@
     .ghost-bar{height:7px;background:#2a3149;border-radius:4px;margin-bottom:6px}
     .locked-overlay{position:absolute;inset:0;background:rgba(12,15,26,0.85);display:flex;align-items:center;justify-content:center;gap:8px}
     .lock-label{font-family:monospace;font-size:10px;color:#5a637f;letter-spacing:1px}
+    .locked-guidance .locked-note{margin-top:9px;padding-top:9px;border-top:1px solid #1d2333;font-size:13px;line-height:1.6;color:#8b93ad}
+    .locked-guidance .lock-ico{margin-right:4px}
     .gate{background:#101527;border:1px solid rgba(59,110,240,0.35);border-radius:10px;padding:20px 18px;margin:14px 0 18px}
     .gate-title{font-size:17px;font-weight:800;margin-bottom:6px}
     .gate-sub{font-size:13px;color:#8b93ad;line-height:1.6;margin-bottom:14px}
@@ -293,14 +295,6 @@
 </div>
 
 <script>
-window.addEventListener("message", function(e) {
-  if (e.data && e.data.event && e.data.event === "calendly.event_scheduled") {
-    window.location.href = "/thank-you.html";
-  }
-});
-</script>
-
-<script>
 // The report below is computed ENTIRELY in this page from the answers — it
 // renders complete even if the AI backend is unreachable. The Worker call
 // only enhances the Analyst Note with a personalized paragraph.
@@ -376,8 +370,9 @@ var MSGS = [
 ];
 
 var currentQ=0, answers={}, scanProg=0, scanTick=null, blinkOn=true;
-var aiNote=null, resultsShown=false, unlocked=false, currentReport=null;
+var aiNote=null, resultsShown=false, unlocked=false, currentReport=null, currentLead=null;
 var SHOWN_FINDINGS=2;
+var UNLOCKED_ON_SUBMIT=3;
 
 setInterval(function(){
   blinkOn=!blinkOn;
@@ -610,8 +605,14 @@ function computeReport(a){
     detail:"Most cyber policies written before the last renewal cycle have silent gaps or outright exclusions for AI-driven data exposure. A breach traced back to an AI tool can fall outside coverage — and you find that out at claim time, not before.",
     fix:"We check your posture against how insurers are now writing AI exclusions, so you know exactly where you stand before you ever need to file."});
 
-  cands.sort(function(x,y){return y.w-x.w;});
-  var findings=cands.slice(0,5);
+  // The two universal findings above apply to any business and reveal
+  // nothing specific about this one, so they always lead the report — the
+  // free + first-unlock findings should stay generic until we've verified
+  // we're actually talking to someone from the organization.
+  var universal=cands.filter(function(c){return c.tag==="THIRD-PARTY ACCESS"||c.tag==="CYBER INSURANCE";});
+  var personalized=cands.filter(function(c){return c.tag!=="THIRD-PARTY ACCESS"&&c.tag!=="CYBER INSURANCE";});
+  personalized.sort(function(x,y){return y.w-x.w;});
+  var findings=universal.concat(personalized).slice(0,5);
 
   // --- The hero finding: always present, always LOCKED (revealed only after
   // the visitor enters their info). Appended last so it never lands in the two
@@ -748,10 +749,6 @@ function showResults(r){
   resultsShown=true;
   document.getElementById("status").textContent="▮ SCAN COMPLETE";
   document.getElementById("status").dataset.phase="results";
-  setTimeout(function(){
-    var cta=document.getElementById("ctaSection");
-    cta.style.opacity="1";cta.style.transform="translateY(0)";
-  },900);
 }
 
 function renderFinding(f,i){
@@ -797,7 +794,7 @@ document.getElementById("unlockBtn").addEventListener("click",function(){
   }
   err.style.display="none";
   var contact=[].slice.call(document.querySelectorAll("#leadChips .gate-chip.is-on")).map(function(b){return b.dataset.c;});
-  var lead={
+  currentLead={
     name:name.value.trim(),
     company:company.value.trim(),
     website:website.value.trim(),
@@ -806,20 +803,35 @@ document.getElementById("unlockBtn").addEventListener("click",function(){
     contact:contact
   };
   unlockReport();
-  submitLead(lead);
+  submitLead(currentLead);
 });
+
+function renderLockedFinding(f,i){
+  var ft=f.sev==="danger"?"tag-danger":f.sev==="info"?"tag-blue":"tag-warn";
+  return '<div class="locked locked-guidance"><div class="finding-top"><span class="tag '+ft+'">'+f.tag+'</span><span class="finding-num">FINDING 0'+(i+1)+'</span></div>'
+    +'<div class="finding-headline">'+f.head+'</div>'
+    +'<div class="locked-note"><span class="lock-ico">🔒</span>We verify we\'re speaking with someone from your organization before sharing findings that touch your security exposure — it\'s part of how we protect you. Book your free 30-minute review and we\'ll walk through this finding together; you\'ll have the complete write-up in hand right after the call.</div>'
+    +'</div>';
+}
 
 function unlockReport(){
   unlocked=true;
   var r=currentReport;
-  var hidden=r.findings.slice(SHOWN_FINDINGS);
-  document.getElementById("findingsList").innerHTML=r.findings.map(function(f,i){return renderFinding(f,i);}).join("");
-  document.getElementById("shownLabel").textContent="YOUR FULL FINDINGS — AND WHAT TO DO ABOUT EACH";
+  var shown=r.findings.slice(0,UNLOCKED_ON_SUBMIT);
+  var locked=r.findings.slice(UNLOCKED_ON_SUBMIT);
+  document.getElementById("findingsList").innerHTML=shown.map(function(f,i){return renderFinding(f,i);}).join("");
+  document.getElementById("shownLabel").textContent="YOUR FINDINGS — AND WHAT TO DO ABOUT EACH";
+  document.getElementById("lockedLabel").textContent=locked.length
+    ?("LOCKED FOR YOUR SECURITY — "+locked.length+" FINDING"+(locked.length>1?"S":""))
+    :"";
+  document.getElementById("lockedCards").innerHTML=locked.map(function(f,i){return renderLockedFinding(f,i+UNLOCKED_ON_SUBMIT);}).join("");
   document.getElementById("gateSection").style.display="none";
   var box=document.getElementById("analystBox");
   document.getElementById("analystText").textContent=aiNote||r.fallbackNote;
   box.style.display="block";
-  box.scrollIntoView&&hidden.length&&document.getElementById("findingsList").scrollIntoView({behavior:"smooth",block:"nearest"});
+  var cta=document.getElementById("ctaSection");
+  cta.style.opacity="1";cta.style.transform="translateY(0)";
+  document.getElementById("findingsList").scrollIntoView&&document.getElementById("findingsList").scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 
 // Send the lead + full report data to the Worker, which builds the report
@@ -842,6 +854,40 @@ function submitLead(lead){
     })
   }).catch(function(){/* best-effort; the visitor already has their report */});
 }
+
+// Fired when the Calendly widget reports a completed booking. Re-sends the
+// same lead/report data already in memory (the Worker is stateless) so it
+// can send the short "thanks for booking" confirmation with the same
+// client-limited PDF attached. keepalive so the request survives the
+// redirect to /thank-you.html that follows right after.
+function notifyBooked(){
+  if(!currentLead||!currentReport) return;
+  try{
+    fetch(PROXY_URL+"/booked",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        lead:currentLead,
+        answers:answers,
+        computed:{
+          score:currentReport.score,band:currentReport.band,
+          shadowLevel:currentReport.shadowLevel,flags:currentReport.flags,
+          hours:currentReport.hoursVal,
+          findings:currentReport.findings.map(function(f){return {tag:f.tag,headline:f.head,detail:f.detail,fix:f.fix,sev:f.sev,prev:f.prev};})
+        },
+        analystNote:aiNote||currentReport.fallbackNote
+      }),
+      keepalive:true
+    }).catch(function(){/* best-effort; Calendly's own confirmation still lands */});
+  }catch(e){}
+}
+
+window.addEventListener("message",function(e){
+  if(e.data&&e.data.event&&e.data.event==="calendly.event_scheduled"){
+    notifyBooked();
+    window.location.href="/thank-you.html";
+  }
+});
 
 function esc2(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 

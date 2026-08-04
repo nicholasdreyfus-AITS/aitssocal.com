@@ -20,6 +20,12 @@
 
 const MODEL = "claude-sonnet-5";
 
+// Client-facing reports (screen + email + PDF) show this many findings in
+// full; the rest render as locked "needs a guided walkthrough" cards. The
+// internal (Gavin) report/PDF always gets every finding, unrestricted.
+const CLIENT_UNLOCKED_FINDINGS = 3;
+const LOCKED_FINDING_NOTE = "We verify we're speaking with someone from your organization before sharing findings that touch your security exposure — it's part of how we protect you. Book your free 30-minute review and we'll walk through this finding together; you'll have the complete write-up in hand right after the call.";
+
 const NOTIFY_TO = ["gavin@aits.llc"];
 const NOTIFY_CC = ["nick@aitssocal.com"];
 const NOTIFY_FROM = "AITS <scan@aits.llc>";
@@ -394,7 +400,26 @@ function drawFinding(p, f, idx, y) {
   return y - h - 10;
 }
 
-function buildReportPdf(lead, c, note, audit, logo) {
+function drawLockedFinding(p, f, idx, y) {
+  // Compact card: real tag + real headline, but the explanation is replaced
+  // with the guided-walkthrough note instead of detail/fix/prevalence.
+  const headLines = wrapText(f.headline, 11.5, true, CW - 24, 2);
+  const noteLines = wrapText(LOCKED_FINDING_NOTE, 9, false, CW - 24, 4);
+  const h = 26 + headLines.length * 14 + 5 + noteLines.length * 12 + 10;
+  p.rect(MARGIN, y - h, CW, h, C_SURFACE);
+  p.rect(MARGIN, y - h, 3, h, C_MUTED);
+  let ty = y - 16;
+  p.text((f.tag || "FINDING").toUpperCase(), MARGIN + 14, ty, 8, "F2", C_MUTED, 0.6);
+  p.text(`· LOCKED — FINDING 0${idx + 1}`, MARGIN + 14 + textWidth((f.tag || "").toUpperCase(), 8, true) + 14, ty, 8, "F1", C_MUTED);
+  ty -= 15;
+  for (const ln of headLines) { p.text(ln, MARGIN + 14, ty, 11.5, "F2", C_TEXT); ty -= 14; }
+  ty -= 1;
+  for (const ln of noteLines) { p.text(ln, MARGIN + 14, ty, 9, "F3", C_MUTED); ty -= 12; }
+  return y - h - 10;
+}
+
+function buildReportPdf(lead, c, note, audit, logo, opts) {
+  const clientLimited = !!(opts && opts.clientLimited);
   const M = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const d = new Date();
   const dateStr = `${M[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
@@ -449,7 +474,7 @@ function buildReportPdf(lead, c, note, audit, logo) {
   y -= 14;
   let fi = 0;
   while (fi < findings.length && y - 120 > 46) {
-    y = drawFinding(p1, findings[fi], fi, y);
+    y = (clientLimited && fi >= CLIENT_UNLOCKED_FINDINGS) ? drawLockedFinding(p1, findings[fi], fi, y) : drawFinding(p1, findings[fi], fi, y);
     fi++;
   }
   p1.text("Page 1 of 2", PAGE_W - MARGIN - textWidth("Page 1 of 2", 7.5, false), 26, 7.5, "F1", C_MUTED);
@@ -462,7 +487,7 @@ function buildReportPdf(lead, c, note, audit, logo) {
   if (fi < findings.length) {
     p2.text("FINDINGS · CONTINUED", MARGIN, y, 8, "F2", C_MUTED, 1.2);
     y -= 14;
-    while (fi < findings.length) { y = drawFinding(p2, findings[fi], fi, y); fi++; }
+    while (fi < findings.length) { y = (clientLimited && fi >= CLIENT_UNLOCKED_FINDINGS) ? drawLockedFinding(p2, findings[fi], fi, y) : drawFinding(p2, findings[fi], fi, y); fi++; }
     y -= 6;
   }
 
@@ -566,13 +591,26 @@ function reportHtml(lead, c, note, answers, clientUrl, opts) {
   const sevC = (s) => s === "danger" ? "#d9243c" : s === "info" ? "#3b6ef0" : "#e0642e";
   const scorePct = Math.max(4, Math.min(100, Number(c.score) || 0));
 
-  const findingCards = (c.findings || []).map((f, i) =>
+  const clientLimited = !!(opts && opts.clientLimited);
+  const allFindings = c.findings || [];
+  const unlockedFindings = clientLimited ? allFindings.slice(0, CLIENT_UNLOCKED_FINDINGS) : allFindings;
+  const lockedFindings = clientLimited ? allFindings.slice(CLIENT_UNLOCKED_FINDINGS) : [];
+
+  const findingCards = unlockedFindings.map((f, i) =>
     `<div style="border:1px solid #e5e7eb;border-left:4px solid ${sevC(f.sev)};border-radius:8px;padding:13px 15px;margin:0 0 10px;background:#ffffff">`
     + `<div style="font:700 11px Arial,sans-serif;letter-spacing:.5px;color:${sevC(f.sev)}">${esc(f.tag)} &nbsp;<span style="color:#9ca3af;font-weight:400">· FINDING 0${i + 1}</span></div>`
     + `<div style="font:700 16px/1.35 Arial,sans-serif;color:#111827;margin:7px 0 6px">${esc(f.headline)}</div>`
     + (f.detail ? `<div style="font:400 14px/1.6 Arial,sans-serif;color:#4b5563;margin:0 0 8px">${esc(f.detail)}</div>` : "")
     + `<div style="font:400 14px/1.6 Arial,sans-serif;color:#0f766e"><strong>What to do:</strong> ${esc(f.fix || "")}</div>`
     + (f.prev ? `<div style="margin-top:9px;padding-top:8px;border-top:1px solid #eef0f3;font:400 12px/1.55 Arial,sans-serif;color:#6b7280"><span style="font:700 9px Arial,sans-serif;letter-spacing:.5px;color:#3b6ef0">HOW COMMON</span> — <b style="color:#111827">${f.prev.s}%</b> of small businesses, <b style="color:#111827">${f.prev.m}%</b> of mid-sized, and <b style="color:#111827">${f.prev.e}%</b> of enterprises also miss this. ${esc(f.prev.edge)}</div>` : "")
+    + `</div>`
+  ).join("");
+
+  const lockedCards = lockedFindings.map((f, i) =>
+    `<div style="border:1px solid #e5e7eb;border-radius:8px;padding:13px 15px;margin:0 0 10px;background:#fafafa">`
+    + `<div style="font:700 11px Arial,sans-serif;letter-spacing:.5px;color:#6b7280">${esc(f.tag)} &nbsp;<span style="font-weight:400">· LOCKED — FINDING 0${i + 1 + CLIENT_UNLOCKED_FINDINGS}</span></div>`
+    + `<div style="font:700 16px/1.35 Arial,sans-serif;color:#111827;margin:7px 0 8px">${esc(f.headline)}</div>`
+    + `<div style="font:400 13px/1.6 Arial,sans-serif;color:#6b7280">&#128274; ${esc(LOCKED_FINDING_NOTE)}</div>`
     + `</div>`
   ).join("");
 
@@ -617,6 +655,7 @@ function reportHtml(lead, c, note, answers, clientUrl, opts) {
         + `<table style="width:100%;border-collapse:collapse;margin:0 0 20px"><tr>${tiles}</tr></table>`
         + `<div style="font:700 11px Arial,sans-serif;letter-spacing:.5px;color:#6b7280;margin:0 0 10px">FINDINGS — AND WHAT TO DO ABOUT EACH</div>`
         + findingCards
+        + lockedCards
         + (note ? `<div style="font:700 10px Arial,sans-serif;letter-spacing:.5px;color:#7c3aed;margin:16px 0 6px">ANALYST NOTE</div>`
           + `<div style="border:1px solid #ece9fb;border-left:4px solid #7c3aed;border-radius:8px;padding:12px 14px;background:#faf9ff;font:italic 400 14px/1.6 Arial,sans-serif;color:#4b5563">${esc(note)}</div>` : "")
         + (internal ? auditHtml(audit) : "")
@@ -644,11 +683,10 @@ function clientEmailHtml(lead) {
 
   const bullets = [
     "Your <b>AI Risk Score</b> and exposure band",
-    "Your <b>top findings</b> — each with a plain-English next step",
+    `Your first <b>${CLIENT_UNLOCKED_FINDINGS} findings</b> — each with a plain-English next step`,
     "Your <b>shadow-AI exposure</b> and any compliance flags",
     "An estimate of the <b>hours your team could get back</b>",
     "A snapshot of your <b>website&rsquo;s SEO &amp; AI-search readiness</b>",
-    "A short <b>note from our senior analyst</b>, just for you",
   ].map((b) => `<tr><td style="padding:5px 0;font:400 14px/1.5 Arial,sans-serif;color:#4b5563;vertical-align:top"><span style="color:#0f9d84;font-weight:700">&#10003;</span>&nbsp;&nbsp;${b}</td></tr>`).join("");
 
   return `<div style="background:#f3f4f6;padding:16px 8px;font-family:Arial,Helvetica,sans-serif">`
@@ -660,12 +698,31 @@ function clientEmailHtml(lead) {
       + `</div>`
       + `<div style="background:#fff;padding:24px 26px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px">`
         + `<p style="font:400 15px/1.65 Arial,sans-serif;color:#374151;margin:0 0 16px">Hi ${esc(firstName)},</p>`
-        + `<p style="font:400 15px/1.65 Arial,sans-serif;color:#374151;margin:0 0 18px">Thanks for taking the AITS AI Risk Scan. We built a report from your answers &mdash; <strong>it&rsquo;s attached to this email as a PDF.</strong> Here&rsquo;s a quick look at what&rsquo;s inside:</p>`
+        + `<p style="font:400 15px/1.65 Arial,sans-serif;color:#374151;margin:0 0 18px">Thanks for taking the AITS AI Risk Scan. We built a report from your answers &mdash; <strong>it&rsquo;s attached to this email as a PDF.</strong> Here&rsquo;s what's unlocked so far:</p>`
         + `<div style="background:#f9fafb;border:1px solid #eef0f3;border-radius:10px;padding:14px 18px;margin:0 0 20px"><table style="border-collapse:collapse;width:100%">${bullets}</table></div>`
-        + `<div style="text-align:center;background:#f0f5ff;border:1px solid #dbe6ff;border-radius:10px;padding:16px;margin:0 0 20px"><div style="font:700 13px Arial,sans-serif;color:#3b6ef0;letter-spacing:.3px">&#128206; YOUR FULL REPORT IS ATTACHED</div><div style="font:400 13px Arial,sans-serif;color:#6b7280;margin-top:5px">Open the PDF for everything we found, based on your answers.</div></div>`
+        + `<div style="background:#faf9ff;border:1px solid #ece9fb;border-radius:10px;padding:14px 18px;margin:0 0 20px"><div style="font:700 13px Arial,sans-serif;color:#7c3aed;letter-spacing:.3px">&#128274; THE REMAINING FINDINGS ARE LOCKED FOR YOUR SECURITY</div><div style="font:400 13px/1.6 Arial,sans-serif;color:#6b7280;margin-top:5px">Including the single most overlooked exposure we find. We verify we're speaking with someone from your organization before sharing findings that touch your security exposure &mdash; book your free 30-minute review and we'll walk through them together. You'll have the full report in hand right after the call, whether or not you move forward with us.</div></div>`
         + `<div style="text-align:center;margin:0 0 6px"><a href="https://aits.llc/contact" style="display:inline-block;background:#3b6ef0;color:#fff;text-decoration:none;font:700 14px Arial,sans-serif;padding:12px 24px;border-radius:8px">Book your free 30-minute review &rarr;</a></div>`
         + `<p style="font:400 13px/1.6 Arial,sans-serif;color:#6b7280;text-align:center;margin:14px 0 0">Just reply to this email with any questions &mdash; it comes straight to our team.</p>`
         + `<div style="border-top:1px solid #eef0f3;margin-top:20px;padding-top:14px;font:400 12px Arial,sans-serif;color:#9ca3af;text-align:center">AITS &middot; Advanced Intelligent Technology Solutions<br>aits.llc &middot; gavin@aits.llc &middot; (619) 837-3320</div>`
+      + `</div>`
+    + `</div>`
+  + `</div>`;
+}
+
+// Very short booking-confirmation email, fired once the visitor actually
+// completes the Calendly booking (see handleBooked). Same client-limited
+// PDF re-attached so they have it even if the first email was missed.
+function bookingConfirmationEmailHtml(lead) {
+  const firstName = String(lead.name || "").split(/\s+/)[0] || "there";
+  return `<div style="background:#f3f4f6;padding:16px 8px;font-family:Arial,Helvetica,sans-serif">`
+    + `<div style="max-width:560px;margin:0 auto">`
+      + `<div style="background:#0c0f1a;color:#fff;padding:22px 26px;border-radius:10px 10px 0 0">`
+        + `<img src="https://aits.llc/images/aits-logo.png" alt="AITS" width="140" style="display:block;border:0">`
+      + `</div>`
+      + `<div style="background:#fff;padding:26px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px">`
+        + `<p style="font:400 16px/1.7 Arial,sans-serif;color:#374151;margin:0 0 4px">Hi ${esc(firstName)},</p>`
+        + `<p style="font:400 16px/1.7 Arial,sans-serif;color:#374151;margin:0">Thank you so much for booking time with us. Here&rsquo;s your report &mdash; it&rsquo;s attached as a PDF. We&rsquo;re looking forward to the call.</p>`
+        + `<div style="border-top:1px solid #eef0f3;margin-top:22px;padding-top:14px;font:400 12px Arial,sans-serif;color:#9ca3af;text-align:center">AITS &middot; Advanced Intelligent Technology Solutions<br>aits.llc &middot; gavin@aits.llc &middot; (619) 837-3320</div>`
       + `</div>`
     + `</div>`
   + `</div>`;
@@ -711,12 +768,14 @@ async function handleLead(body, env, json) {
   let audit = null;
   try { audit = await auditWebsite(lead.website); } catch (e) { audit = { ok: false, url: String(lead.website || ""), error: "Audit error: " + e.message }; }
 
-  // 2. Branded PDF (never let PDF failure block the lead email).
-  let pdfB64 = "";
+  // 2. Branded PDFs — internal gets everything, client gets the limited
+  // (first CLIENT_UNLOCKED_FINDINGS, rest locked) version. Never let a PDF
+  // failure block the lead email.
+  let pdfB64Internal = "", pdfB64Client = "";
   try {
     const logo = await getLogo();
-    const pdfBytes = buildReportPdf(lead, c, body.analystNote || "", audit, logo);
-    pdfB64 = b64FromBytes(pdfBytes);
+    pdfB64Internal = b64FromBytes(buildReportPdf(lead, c, body.analystNote || "", audit, logo));
+    pdfB64Client = b64FromBytes(buildReportPdf(lead, c, body.analystNote || "", audit, logo, { clientLimited: true }));
   } catch (e) { console.log("PDF build failed: " + e.message); }
 
   // Client-ready /report deep link (decodes client-side, never hits a server).
@@ -745,18 +804,19 @@ async function handleLead(body, env, json) {
     subject: `Scan lead: ${lead.name} — ${lead.company} (${c.band} ${c.score})${audit && audit.ok ? ` · site ${audit.passes}/${audit.total}` : ""}`,
     html: internalHtml,
   };
-  if (pdfB64) internalPayload.attachments = [{ filename: `AITS-AI-Readiness-Report-${safeCompany}.pdf`, content: pdfB64 }];
+  if (pdfB64Internal) internalPayload.attachments = [{ filename: `AITS-AI-Readiness-Report-${safeCompany}.pdf`, content: pdfB64Internal }];
   const internal = await sendResend(env, internalPayload);
   if (!internal.ok) {
     return json({ error: "Email send failed", detail: internal.detail }, 502);
   }
 
-  // 4. CLIENT email — a short, friendly note with the branded PDF attached.
-  // The PDF is their nice-looking copy; only fall back to the full inline
-  // report if the PDF couldn't be built, so they're never left empty-handed.
-  const clientHtml = pdfB64
+  // 4. CLIENT email — a short, friendly note with the client-limited PDF
+  // attached (first CLIENT_UNLOCKED_FINDINGS in full, the rest locked).
+  // Only fall back to the inline report if the PDF couldn't be built, so
+  // they're never left empty-handed — that fallback is client-limited too.
+  const clientHtml = pdfB64Client
     ? clientEmailHtml(lead)
-    : reportHtml(lead, c, body.analystNote, null, "", { internal: false });
+    : reportHtml(lead, c, body.analystNote, null, "", { internal: false, clientLimited: true });
   const clientPayload = {
     from: NOTIFY_FROM,
     to: [lead.email],
@@ -765,7 +825,7 @@ async function handleLead(body, env, json) {
     subject: `Your AI Readiness & Risk Report — ${lead.company}`,
     html: clientHtml,
   };
-  if (pdfB64) clientPayload.attachments = [{ filename: `AITS-AI-Readiness-Report-${safeCompany}.pdf`, content: pdfB64 }];
+  if (pdfB64Client) clientPayload.attachments = [{ filename: `AITS-AI-Readiness-Report-${safeCompany}.pdf`, content: pdfB64Client }];
   const client = await sendResend(env, clientPayload);
 
   // 4b. Push the lead into GoHighLevel for follow-up automation (no-op if off).
@@ -793,7 +853,7 @@ async function handleLead(body, env, json) {
     score: c.score, band: c.band,
     audit: audit && audit.ok ? `${audit.passes}/${audit.total}` : (audit && audit.error) || "n/a",
     clientEmail: client.ok ? "sent" : "failed: " + client.detail,
-    pdf: pdfB64 ? "attached" : "failed",
+    pdf: pdfB64Client ? "attached" : "failed",
     ghl: ghl.skipped ? "off" : ghl.ok ? "pushed" : "failed",
   };
   console.log(JSON.stringify(logEntry));
@@ -802,6 +862,61 @@ async function handleLead(body, env, json) {
   } catch (e) { console.log("KV log failed: " + e.message); }
 
   return json({ ok: true, clientEmail: client.ok ? "sent" : "failed" }, 200);
+}
+
+/* ===========================================================================
+   BOOKING CONFIRMATION HANDLER
+   Fired client-side the moment the Calendly widget reports a completed
+   booking (see notifyBooked() in scan.html). The Worker is stateless, so the
+   client resends the same {lead, answers, computed, analystNote} it already
+   captured at /lead time. Sends only the short "thanks for booking" email
+   with the client-limited PDF re-attached — the internal Gavin notification
+   was already sent when the lead form was submitted, so it is not repeated
+   here.
+   ======================================================================== */
+
+async function handleBooked(body, env, json) {
+  const lead = body && body.lead;
+  const c = body && body.computed;
+  if (!lead || !lead.email || !lead.name || !c) {
+    return json({ error: "Expected {lead:{name,company,email}, computed, answers}" }, 400);
+  }
+  if (!env.RESEND_API_KEY) {
+    return json({ error: "Booking email not configured (missing RESEND_API_KEY)" }, 503);
+  }
+
+  let audit = null;
+  try { audit = await auditWebsite(lead.website); } catch (e) { audit = { ok: false, url: String(lead.website || ""), error: "Audit error: " + e.message }; }
+
+  let pdfB64 = "";
+  try {
+    const logo = await getLogo();
+    pdfB64 = b64FromBytes(buildReportPdf(lead, c, body.analystNote || "", audit, logo, { clientLimited: true }));
+  } catch (e) { console.log("Booking PDF build failed: " + e.message); }
+
+  const safeCompany = String(lead.company || "report").replace(/[^a-z0-9]+/gi, "-").slice(0, 40) || "report";
+  const payload = {
+    from: NOTIFY_FROM,
+    to: [lead.email],
+    cc: [...NOTIFY_TO, ...NOTIFY_CC],
+    reply_to: REPLY_TO,
+    subject: `You're booked — here's your AI Readiness & Risk Report`,
+    html: bookingConfirmationEmailHtml(lead),
+  };
+  if (pdfB64) payload.attachments = [{ filename: `AITS-AI-Readiness-Report-${safeCompany}.pdf`, content: pdfB64 }];
+  const send = await sendResend(env, payload);
+
+  const logEntry = {
+    t: "booked", ts: new Date().toISOString(),
+    name: lead.name, company: lead.company, email: lead.email,
+    clientEmail: send.ok ? "sent" : "failed: " + send.detail,
+  };
+  console.log(JSON.stringify(logEntry));
+  try {
+    if (env.LEADS) await env.LEADS.put(`booked:${logEntry.ts}:${lead.email}`, JSON.stringify(logEntry));
+  } catch (e) { console.log("KV log failed: " + e.message); }
+
+  return json({ ok: true, clientEmail: send.ok ? "sent" : "failed" }, 200);
 }
 
 /* ===========================================================================
@@ -920,6 +1035,9 @@ export default {
     const pathname = new URL(request.url).pathname;
     if (pathname === "/lead") {
       return handleLead(body, env, json);
+    }
+    if (pathname === "/booked") {
+      return handleBooked(body, env, json);
     }
     if (pathname === "/contact") {
       return handleContact(body, env, json);
