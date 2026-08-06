@@ -39,7 +39,7 @@ const [featured, ...rest] = posts;
           <a href={`/blog/${featured.id}`} class="card post-card featured">
             {thumb(featured.data) && (
               <div class="thumb">
-                <img src={thumb(featured.data)} alt="" width="1280" height="720" loading="eager" />
+                <img src={thumb(featured.data)} alt={featured.data.title} width="1280" height="720" loading="eager" />
               </div>
             )}
             <div class="body">
@@ -63,7 +63,7 @@ const [featured, ...rest] = posts;
             <a href={`/blog/${post.id}`} class="card post-card">
               {thumb(post.data) ? (
                 <div class="thumb">
-                  <img src={thumb(post.data)} alt="" width="640" height="360" loading="lazy" />
+                  <img src={thumb(post.data)} alt={post.data.title} width="640" height="360" loading="lazy" />
                 </div>
               ) : (
                 <div class="thumb thumb-empty" aria-hidden="true">

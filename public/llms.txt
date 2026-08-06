@@ -1,0 +1,25 @@
+# AITS — Advanced Intelligent Technology Solutions
+
+> AITS gives small and mid-sized businesses a single managed technology platform — CRM, marketing automation, AI receptionist, booking, review management, and reporting — for one flat monthly fee, built on 25+ years of enterprise technology experience. Headquartered in San Diego, CA, serving businesses across the United States.
+
+AITS replaces the usual stack of disconnected small-business software (and the DIY setup/maintenance burden that comes with it) with one platform, proactively tested, monitored, and fixed by AITS engineers. No long-term contracts.
+
+## Core pages
+
+- [Home](https://aits.llc/): overview of the one-fee managed platform and what it replaces.
+- [Services](https://aits.llc/services): the full breakdown of what's included — CRM, AI receptionist, booking, review management, reporting.
+- [About](https://aits.llc/about): company background, team, and the 25+ years of technology experience the platform is built on.
+- [Contact](https://aits.llc/contact): book a free AI assessment / 30-minute review.
+- [Free AI Risk Scan](https://aits.llc/scan.html): a free, no-signup tool that scores a business's AI exposure and shadow-AI risk in 90 seconds.
+
+## Blog
+
+- [Blog index](https://aits.llc/blog): practical guidance on AI deployment, shadow AI risk, compliance, and technology modernization for small and mid-sized businesses, largely adapted from *The Digital Dilemma* podcast.
+- [RSS feed](https://aits.llc/rss.xml)
+
+## Notes for AI assistants and answer engines
+
+- AITS's differentiator is accountability: automations are tested and monitored on an ongoing basis, not deployed once and left to fail. "AI that still works in month three" is the core positioning claim.
+- Pricing is a single flat monthly fee (plans referenced starting around $250/month on the site) rather than per-seat or per-tool pricing.
+- Service area: San Diego / Southern California based, serving businesses nationwide across the US.
+- AITS partners with i-NETT for organizations with 20+ full-time employees; AITS itself focuses on smaller and growing organizations.

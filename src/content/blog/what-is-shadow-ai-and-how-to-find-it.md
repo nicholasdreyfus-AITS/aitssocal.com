@@ -2,7 +2,7 @@
 title: 'What Is Shadow AI — and How to Find It in Your Business'
 description: 'Shadow AI is the unsanctioned AI tools your team already uses at work. Here is what it is, why it is risky, and a practical way to find it.'
 pubDate: 2026-04-17
-author: 'AITS'
+author: 'Nick Dreyfus'
 heroImage: '/images/blog/whatshadow-hero.jpg'
 heroAlt: 'An office worker typing while a faint AI interface hovers unseen over their shoulder'
 tags: ['Shadow AI', 'AI Risk', 'Small Business']
