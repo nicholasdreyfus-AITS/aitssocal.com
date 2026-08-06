@@ -1,0 +1,117 @@
+---
+// Reusable "traveling border beam" highlight for a card group.
+//
+// A short bright segment travels around the card's perimeter, following its
+// exact outline (including rounded corners) at a constant speed. Built with
+// an SVG <rect pathLength="100"> + stroke-dasharray/dashoffset rather than a
+// conic-gradient: pathLength normalizes the perimeter to 100 user units
+// regardless of the card's real pixel size, so the beam's length and speed
+// stay correct automatically for any card dimensions or border-radius --
+// no per-card pixel math needed.
+//
+// Usage: wrap a card's contents in <BorderBeam>, put the card's own visual
+// classes (background, padding, border, existing hover lift, etc.) on this
+// component via `class`. Only one card in a group should render with
+// `active` — see the group's own <script> (e.g. stages section) for the
+// hover/focus transfer logic that moves `data-beam-active` between siblings.
+export interface Props {
+  /** Whether this card shows the beam by default (before any hover/focus). */
+  active?: boolean;
+  /** Must match the card's own border-radius so the beam traces it exactly. */
+  radius?: string;
+  /** Full loop duration -- keep within ~4-7s per the design spec. */
+  duration?: string;
+  /** Beam length as % of perimeter -- keep within ~8-15. */
+  segment?: number;
+  /** Beam color; defaults to the site's accent blue. */
+  color?: string;
+  class?: string;
+  [attr: string]: unknown;
+}
+
+const {
+  active = false,
+  radius = '16px',
+  duration = '5.5s',
+  segment = 12,
+  color = 'var(--accent2)',
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<div
+  class:list={['beam-card', className]}
+  data-beam-active={active ? 'true' : 'false'}
+  style={`--beam-radius:${radius};--beam-duration:${duration};--beam-segment:${segment};--beam-color:${color}`}
+  {...rest}
+>
+  <svg class="beam-svg" aria-hidden="true" focusable="false">
+    <rect class="beam-track" pathLength="100"></rect>
+  </svg>
+  <div class="beam-content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .beam-card {
+    position: relative;
+    isolation: isolate;
+  }
+  /* Overlay sits above the card's own static border, below nothing --
+     content is rendered in its own stacking layer via .beam-content. */
+  .beam-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .beam-track {
+    x: 1px;
+    y: 1px;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    rx: var(--beam-radius);
+    fill: none;
+    stroke: var(--beam-color);
+    stroke-width: 2.5px;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 4px var(--beam-color)) drop-shadow(0 0 2px var(--beam-color));
+    opacity: 0;
+    stroke-dasharray: var(--beam-segment) calc(100 - var(--beam-segment));
+    stroke-dashoffset: 0;
+    transition: opacity 0.35s ease;
+  }
+  .beam-card[data-beam-active='true'] .beam-track {
+    opacity: 1;
+    animation: beam-travel var(--beam-duration) linear infinite;
+  }
+  /* Negative direction + no explicit 0->-100 midpoint keyframe: a single
+     "to" rule loops seamlessly since -100 units is exactly one full perimeter,
+     landing back on the visual start with no jump. */
+  @keyframes beam-travel {
+    to {
+      stroke-dashoffset: -100;
+    }
+  }
+  .beam-content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .beam-card[data-beam-active='true'] .beam-track {
+      animation: none;
+      opacity: 0.6;
+      stroke-dasharray: none;
+      stroke-width: 1.5px;
+    }
+  }
+</style>

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BorderBeam from '../components/BorderBeam.astro';
 import { SITE } from '../consts';
 
 // Capability groups — what an AITS partnership changes for the CLIENT'S
@@ -267,8 +268,8 @@ const team = [
         that can convert, a process that never drops a lead, then the visibility to fill the top
         of the funnel.
       </p>
-      <div class="stage-grid">
-        <div class="stage-card featured">
+      <div class="stage-grid" data-beam-group>
+        <BorderBeam active={true} class="stage-card featured" tabindex="0">
           <span class="stage-start-badge">Start here</span>
           <div class="stage-num">STEP 01</div>
           <h3>Website & brand</h3>
@@ -276,24 +277,53 @@ const team = [
           <p class="stage-note">Already love your site and logo? Keep it — skip straight to step two.</p>
           <span class="stage-price">Starting at $750 <small>one-time</small></span>
           <span class="stage-guarantee">You don't pay until you're happy with the website and logo — or walk away anytime.</span>
-        </div>
+        </BorderBeam>
         <div class="stage-arrow" aria-hidden="true">→</div>
-        <div class="stage-card">
+        <BorderBeam class="stage-card" tabindex="0">
           <div class="stage-num">STEP 02</div>
           <h3>Never miss another lead</h3>
           <p>A real process behind every call, email, and text — captured, tracked, and followed up automatically so nothing falls through the cracks again.</p>
           <span class="stage-guarantee">Month-to-month. Cancel anytime.</span>
-        </div>
+        </BorderBeam>
         <div class="stage-arrow" aria-hidden="true">→</div>
-        <div class="stage-card">
+        <BorderBeam class="stage-card" tabindex="0">
           <div class="stage-num">STEP 03</div>
           <h3>Get found, get growing</h3>
           <p>SEO, AEO, and social — built once the foundation can actually convert what it brings in, so growth compounds instead of leaking away.</p>
           <span class="stage-guarantee">Month-to-month. Cancel anytime.</span>
-        </div>
+        </BorderBeam>
       </div>
     </div>
   </section>
+
+  <script>
+    // Border-beam transfer: exactly one card per data-beam-group shows the
+    // traveling beam at a time. Defaults to whichever card server-rendered
+    // with data-beam-active="true" (the featured card); hover/focus on any
+    // sibling moves the beam there and back on leave. Keyboard focus behaves
+    // the same as hover. Touch devices without hover simply never fire these
+    // events, so the beam just stays on the default card, per spec.
+    document.querySelectorAll('[data-beam-group]').forEach((group) => {
+      const cards = Array.from(group.querySelectorAll(':scope > .beam-card'));
+      const defaultCard = cards.find((c) => c.dataset.beamActive === 'true') ?? cards[0];
+      if (!defaultCard) return;
+
+      const activate = (card) => {
+        cards.forEach((c) => {
+          c.dataset.beamActive = c === card ? 'true' : 'false';
+        });
+      };
+
+      cards.forEach((card) => {
+        card.addEventListener('mouseenter', () => activate(card));
+        card.addEventListener('focusin', () => activate(card));
+        card.addEventListener('mouseleave', () => activate(defaultCard));
+        card.addEventListener('focusout', (e) => {
+          if (!card.contains(e.relatedTarget)) activate(defaultCard);
+        });
+      });
+    });
+  </script>
 
   <hr class="divider" />
 
@@ -755,45 +785,13 @@ const team = [
     padding: 28px 26px;
     transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
   }
-  /* Traveling light — a short bright comet that chases around the card's
-     edge on hover. Built as a thin ring (border + mask trick) so only the
-     outline itself lights up, not a broad glow behind the whole card. */
-  .stage-card::before {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border-radius: 19px;
-    border: 2px solid transparent;
-    background: conic-gradient(
-      from 0deg,
-      transparent 0%,
-      transparent 80%,
-      var(--teal2) 90%,
-      var(--accent2) 97%,
-      transparent 100%
-    ) border-box;
-    -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
-    mask-composite: exclude;
-    opacity: 0;
-    z-index: 1;
-    pointer-events: none;
-    animation: stageRingSpin 2.2s linear infinite;
-    animation-play-state: paused;
-    transition: opacity 0.3s;
-  }
+  /* The traveling border beam itself lives in BorderBeam.astro (SVG-based,
+     shared across the group with hover/focus transfer via that section's
+     script). This card keeps its own static lift/shadow hover response. */
   .stage-card:hover {
     border-color: rgba(59, 110, 240, 0.7);
     transform: translateY(-8px) scale(1.03);
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-  }
-  .stage-card:hover::before {
-    opacity: 1;
-    animation-play-state: running;
-  }
-  @keyframes stageRingSpin {
-    to { transform: rotate(360deg); }
   }
   .stage-card.featured {
     flex: 1.3;
