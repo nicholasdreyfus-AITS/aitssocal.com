@@ -9,45 +9,67 @@
 // stay correct automatically for any card dimensions or border-radius --
 // no per-card pixel math needed.
 //
+// Supports a second, offset beam (`dual`) for a richer two-comet chase, and
+// an `alwaysOn` mode for a permanently-featured card that should never defer
+// to the group's hover/focus state.
+//
 // Usage: wrap a card's contents in <BorderBeam>, put the card's own visual
 // classes (background, padding, border, existing hover lift, etc.) on this
-// component via `class`. Only one card in a group should render with
-// `active` — see the group's own <script> (e.g. stages section) for the
-// hover/focus transfer logic that moves `data-beam-active` between siblings.
+// component via `class`. Within a group, `active` marks whichever card
+// starts highlighted by default -- see the group's own <script> (e.g. the
+// stages section) for the hover/focus transfer logic that moves
+// `data-beam-active` between siblings. `alwaysOn` cards ignore that entirely.
 export interface Props {
   /** Whether this card shows the beam by default (before any hover/focus). */
   active?: boolean;
+  /** Permanently on regardless of hover/focus anywhere else in the group. */
+  alwaysOn?: boolean;
   /** Must match the card's own border-radius so the beam traces it exactly. */
   radius?: string;
   /** Full loop duration -- keep within ~4-7s per the design spec. */
   duration?: string;
   /** Beam length as % of perimeter -- keep within ~8-15. */
   segment?: number;
-  /** Beam color; defaults to the site's accent blue. */
+  /** Primary beam color; defaults to the site's accent blue. */
   color?: string;
+  /** Render a second beam chasing the first, offset by half the loop. */
+  dual?: boolean;
+  /** Second beam color; defaults to the site's teal accent. */
+  color2?: string;
   class?: string;
   [attr: string]: unknown;
 }
 
 const {
   active = false,
+  alwaysOn = false,
   radius = '16px',
   duration = '5.5s',
   segment = 12,
   color = 'var(--accent2)',
+  dual = false,
+  color2 = 'var(--teal2)',
   class: className,
   ...rest
 } = Astro.props;
+
+// Second beam lands opposite the first (half the loop later) so the two
+// comets stay evenly spaced as they chase each other, matching the
+// reference two-beam pattern.
+const durationSeconds = parseFloat(duration);
+const delay = Number.isFinite(durationSeconds) ? `${durationSeconds / 2}s` : '0s';
 ---
 
 <div
   class:list={['beam-card', className]}
   data-beam-active={active ? 'true' : 'false'}
-  style={`--beam-radius:${radius};--beam-duration:${duration};--beam-segment:${segment};--beam-color:${color}`}
+  data-beam-always-on={alwaysOn ? 'true' : 'false'}
+  style={`--beam-radius:${radius};--beam-duration:${duration};--beam-segment:${segment};--beam-color:${color};--beam-color2:${color2};--beam-delay:${delay}`}
   {...rest}
 >
   <svg class="beam-svg" aria-hidden="true" focusable="false">
-    <rect class="beam-track" pathLength="100"></rect>
+    <rect class="beam-track beam-track-1" pathLength="100"></rect>
+    {dual && <rect class="beam-track beam-track-2" pathLength="100"></rect>}
   </svg>
   <div class="beam-content">
     <slot />
@@ -59,7 +81,7 @@ const {
     position: relative;
     isolation: isolate;
   }
-  /* Overlay sits above the card's own static border, below nothing --
+  /* Overlay sits above the card's own static border, below the content --
      content is rendered in its own stacking layer via .beam-content. */
   .beam-svg {
     position: absolute;
@@ -86,13 +108,22 @@ const {
     stroke-dashoffset: 0;
     transition: opacity 0.35s ease;
   }
-  .beam-card[data-beam-active='true'] .beam-track {
+  .beam-track-2 {
+    stroke: var(--beam-color2);
+    filter: drop-shadow(0 0 4px var(--beam-color2)) drop-shadow(0 0 2px var(--beam-color2));
+    animation-delay: var(--beam-delay);
+  }
+  /* Active (hover/focus-driven) OR permanently featured -- either flag lights
+     the beams up, independent of the other. */
+  .beam-card[data-beam-active='true'] .beam-track,
+  .beam-card[data-beam-always-on='true'] .beam-track {
     opacity: 1;
     animation: beam-travel var(--beam-duration) linear infinite;
   }
   /* Negative direction + no explicit 0->-100 midpoint keyframe: a single
      "to" rule loops seamlessly since -100 units is exactly one full perimeter,
-     landing back on the visual start with no jump. */
+     landing back on the visual start with no jump. The second beam reuses
+     the same keyframes, just started var(--beam-delay) later. */
   @keyframes beam-travel {
     to {
       stroke-dashoffset: -100;
@@ -107,11 +138,15 @@ const {
     flex: 1;
   }
   @media (prefers-reduced-motion: reduce) {
-    .beam-card[data-beam-active='true'] .beam-track {
+    .beam-card[data-beam-active='true'] .beam-track,
+    .beam-card[data-beam-always-on='true'] .beam-track {
       animation: none;
       opacity: 0.6;
       stroke-dasharray: none;
       stroke-width: 1.5px;
+    }
+    .beam-track-2 {
+      display: none;
     }
   }
 </style>

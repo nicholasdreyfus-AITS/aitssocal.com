@@ -269,7 +269,7 @@ const team = [
         of the funnel.
       </p>
       <div class="stage-grid" data-beam-group>
-        <BorderBeam active={true} class="stage-card featured" tabindex="0">
+        <BorderBeam active={true} alwaysOn={true} dual={true} class="stage-card featured" tabindex="0">
           <span class="stage-start-badge">Start here</span>
           <div class="stage-num">STEP 01</div>
           <h3>Website & brand</h3>
@@ -279,14 +279,14 @@ const team = [
           <span class="stage-guarantee">You don't pay until you're happy with the website and logo — or walk away anytime.</span>
         </BorderBeam>
         <div class="stage-arrow" aria-hidden="true">→</div>
-        <BorderBeam class="stage-card" tabindex="0">
+        <BorderBeam dual={true} class="stage-card" tabindex="0">
           <div class="stage-num">STEP 02</div>
           <h3>Never miss another lead</h3>
           <p>A real process behind every call, email, and text — captured, tracked, and followed up automatically so nothing falls through the cracks again.</p>
           <span class="stage-guarantee">Month-to-month. Cancel anytime.</span>
         </BorderBeam>
         <div class="stage-arrow" aria-hidden="true">→</div>
-        <BorderBeam class="stage-card" tabindex="0">
+        <BorderBeam dual={true} class="stage-card" tabindex="0">
           <div class="stage-num">STEP 03</div>
           <h3>Get found, get growing</h3>
           <p>SEO, AEO, and social — built once the foundation can actually convert what it brings in, so growth compounds instead of leaking away.</p>
@@ -770,7 +770,7 @@ const team = [
   }
   .stage-grid {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 4px;
     margin-top: 44px;
   }
@@ -819,6 +819,7 @@ const team = [
   }
   .stage-arrow {
     flex-shrink: 0;
+    align-self: center;
     display: flex;
     align-items: center;
     justify-content: center;
