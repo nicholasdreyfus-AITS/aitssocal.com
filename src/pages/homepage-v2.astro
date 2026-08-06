@@ -272,16 +272,21 @@ const team = [
           <div class="stage-num">01</div>
           <h3>Website & brand</h3>
           <p>A site built to convert, not just to look good — redesigned and rebranded if yours isn't pulling its weight yet.</p>
+          <span class="stage-guarantee">You don't pay until you're happy with the website and logo — or walk away anytime.</span>
         </div>
+        <div class="stage-arrow" aria-hidden="true">→</div>
         <div class="stage-card">
           <div class="stage-num">02</div>
           <h3>Never miss another lead</h3>
           <p>A real process behind every call, email, and text — captured, tracked, and followed up automatically so nothing falls through the cracks again.</p>
+          <span class="stage-guarantee">Month-to-month. Cancel anytime.</span>
         </div>
+        <div class="stage-arrow" aria-hidden="true">→</div>
         <div class="stage-card">
           <div class="stage-num">03</div>
           <h3>Get found, get growing</h3>
           <p>SEO, AEO, and social — built once the foundation can actually convert what it brings in, so growth compounds instead of leaking away.</p>
+          <span class="stage-guarantee">Month-to-month. Cancel anytime.</span>
         </div>
       </div>
     </div>
@@ -731,12 +736,15 @@ const team = [
     max-width: 640px;
   }
   .stage-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
     margin-top: 36px;
   }
   .stage-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     background: rgba(59, 110, 240, 0.06);
     border: 0.5px solid rgba(59, 110, 240, 0.28);
     border-radius: 16px;
@@ -749,6 +757,17 @@ const team = [
     box-shadow:
       0 20px 52px rgba(0, 0, 0, 0.55),
       0 0 32px rgba(59, 110, 240, 0.16);
+  }
+  .stage-arrow {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    font-family: var(--fran);
+    font-size: 22px;
+    color: var(--accent2);
+    opacity: 0.6;
   }
   .stage-num {
     font-family: var(--fran);
@@ -767,10 +786,27 @@ const team = [
     font-size: 14px;
     color: var(--muted);
     line-height: 1.7;
+    flex-grow: 1;
+  }
+  .stage-guarantee {
+    display: block;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 0.5px solid rgba(59, 110, 240, 0.2);
+    font-family: var(--jak);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--teal2);
+    line-height: 1.5;
   }
   @media (max-width: 768px) {
     .stage-grid {
-      grid-template-columns: 1fr;
+      flex-direction: column;
+    }
+    .stage-arrow {
+      width: auto;
+      transform: rotate(90deg);
+      padding: 4px 0;
     }
   }
 
