@@ -58,19 +58,32 @@ const {
 // reference two-beam pattern.
 const durationSeconds = parseFloat(duration);
 const delay = Number.isFinite(durationSeconds) ? `${durationSeconds / 2}s` : '0s';
+
+// Precomputed as a single literal string, not `calc(100 - var(--beam-segment))`.
+// Some browsers resolve calc() over a bare-number custom property by coercing
+// it to px (since stroke-dasharray also accepts <length>), which -- combined
+// with pathLength="100" normalizing the path to unitless units -- silently
+// turns "12" into "12px", repeating the dash every 100 real screen pixels
+// instead of once per full perimeter. A plain precomputed "12 88" sidesteps
+// calc() entirely so there's no unit to get coerced.
+const dasharray = `${segment} ${100 - segment}`;
 ---
 
 <div
   class:list={['beam-card', className]}
   data-beam-active={active ? 'true' : 'false'}
   data-beam-always-on={alwaysOn ? 'true' : 'false'}
-  style={`--beam-radius:${radius};--beam-duration:${duration};--beam-segment:${segment};--beam-color:${color};--beam-color2:${color2};--beam-delay:${delay}`}
+  style={`--beam-radius:${radius};--beam-duration:${duration};--beam-dasharray:${dasharray};--beam-color:${color};--beam-color2:${color2};--beam-delay:${delay}`}
   {...rest}
 >
   <svg class="beam-svg" aria-hidden="true" focusable="false">
     <rect class="beam-track beam-track-1" pathLength="100"></rect>
     {dual && <rect class="beam-track beam-track-2" pathLength="100"></rect>}
   </svg>
+  <!-- Direct child of .beam-card (not .beam-content) so slotted badges/
+       overlays position against the card's own edge, not the content's
+       padding box. -->
+  <slot name="badge" />
   <div class="beam-content">
     <slot />
   </div>
@@ -104,7 +117,7 @@ const delay = Number.isFinite(durationSeconds) ? `${durationSeconds / 2}s` : '0s
     stroke-linecap: round;
     filter: drop-shadow(0 0 4px var(--beam-color)) drop-shadow(0 0 2px var(--beam-color));
     opacity: 0;
-    stroke-dasharray: var(--beam-segment) calc(100 - var(--beam-segment));
+    stroke-dasharray: var(--beam-dasharray);
     stroke-dashoffset: 0;
     transition: opacity 0.35s ease;
   }
