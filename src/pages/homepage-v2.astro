@@ -99,7 +99,7 @@ const faqs = [
   },
   {
     q: 'How much does it cost for a small business to deploy AI?',
-    a: 'Most plans start at $250 a month — and that gets you most of what is on this page: the platform, the automations, the proactive testing, and the fixes. It starts with a free 30-minute assessment so you see the value before spending a dollar, and engagements are month-to-month with no lock-in.',
+    a: "It's bespoke to what your business actually needs, but here's the shape of it. Step one — your website and brand redesign — starts at $750 one-time, and you do not pay until you are happy with it, or you can walk away anytime. Already like your current site and logo? You can skip straight to step two. From there, monthly plans start at $297 a month and do not begin until step one is complete and approved, so you are only ever paying for the website work until you are ready to move forward. Add-ons like an AI receptionist run about $200 a month on top. It starts with a free 30-minute assessment so you see the real numbers for your business before spending a dollar, and the monthly engagement is always month-to-month with no lock-in.",
   },
   {
     q: 'What is included in the one monthly fee?',
@@ -161,9 +161,9 @@ const serviceSchema = {
   offers: {
     '@type': 'AggregateOffer',
     priceCurrency: 'USD',
-    lowPrice: '250',
+    lowPrice: '297',
     description:
-      'Most plans start at $250 per month — one flat fee covering the full platform, proactive testing, and fixes.',
+      'Monthly plans start at $297 per month once your website and brand step is complete — covering the full platform, proactive testing, and fixes. Website and brand redesign starts at $750 one-time.',
     availability: 'https://schema.org/InStock',
   },
 };
@@ -261,7 +261,7 @@ const team = [
   <section class="section stages">
     <div class="container">
       <span class="section-label" style="text-align:center;display:block">How we take you from invisible to growing</span>
-      <h2 class="section-heading" style="text-align:center">Three stages. One partner the whole way.</h2>
+      <h2 class="section-heading" style="text-align:center">Three steps. One partner the whole way.</h2>
       <p class="section-sub" style="text-align:center;margin-inline:auto">
         We meet you wherever you are today and build in the order that actually works — a site
         that can convert, a process that never drops a lead, then the visibility to fill the top
@@ -270,23 +270,23 @@ const team = [
       <div class="stage-grid">
         <div class="stage-card featured">
           <span class="stage-start-badge">Start here</span>
-          <div class="stage-num">01</div>
+          <div class="stage-num">STEP 01</div>
           <h3>Website & brand</h3>
           <p>A site built to convert, not just to look good — redesigned and rebranded if yours isn't pulling its weight yet.</p>
-          <p class="stage-note">Already love your site and logo? Keep it — skip straight to stage two.</p>
-          <span class="stage-price">$750 <small>one-time</small></span>
+          <p class="stage-note">Already love your site and logo? Keep it — skip straight to step two.</p>
+          <span class="stage-price">Starting at $750 <small>one-time</small></span>
           <span class="stage-guarantee">You don't pay until you're happy with the website and logo — or walk away anytime.</span>
         </div>
         <div class="stage-arrow" aria-hidden="true">→</div>
         <div class="stage-card">
-          <div class="stage-num">02</div>
+          <div class="stage-num">STEP 02</div>
           <h3>Never miss another lead</h3>
           <p>A real process behind every call, email, and text — captured, tracked, and followed up automatically so nothing falls through the cracks again.</p>
           <span class="stage-guarantee">Month-to-month. Cancel anytime.</span>
         </div>
         <div class="stage-arrow" aria-hidden="true">→</div>
         <div class="stage-card">
-          <div class="stage-num">03</div>
+          <div class="stage-num">STEP 03</div>
           <h3>Get found, get growing</h3>
           <p>SEO, AEO, and social — built once the foundation can actually convert what it brings in, so growth compounds instead of leaking away.</p>
           <span class="stage-guarantee">Month-to-month. Cancel anytime.</span>
@@ -397,8 +397,8 @@ const team = [
         own. Those relationships come with considerable discounts, and we pass them through. That
         is why one competitive monthly fee covers the entire platform <em>and</em> the engineering
         time to keep everything working: built, tested regularly, monitored, and fixed the moment
-        anything needs attention. <strong>Most plans start at $250 a month</strong> — and that gets
-        you most of what is on this page.
+        anything needs attention. <strong>Pricing is bespoke to what your business needs</strong> —
+        see the FAQ below for how it breaks down, or get a free assessment for real numbers.
       </div>
 
       <div class="more">
@@ -605,7 +605,7 @@ const team = [
       <a href="/contact" class="btn-primary">Get your free AI assessment</a>
       <a href="#results" class="btn-ghost">See real results first</a>
     </div>
-    <p class="cta-fine">No pitch. No jargon. Most plans start at $250/month — and month-to-month, always.</p>
+    <p class="cta-fine">No pitch. No jargon. Bespoke pricing, always month-to-month once you're up and running.</p>
   </section>
 </BaseLayout>
 
@@ -755,17 +755,31 @@ const team = [
     padding: 28px 26px;
     transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
   }
-  /* Rotating glow ring — a conic-gradient sitting just behind the card,
-     revealed as a thin ring on hover via the negative inset. */
+  /* Traveling light — a short bright comet that chases around the card's
+     edge on hover. Built as a thin ring (border + mask trick) so only the
+     outline itself lights up, not a broad glow behind the whole card. */
   .stage-card::before {
     content: '';
     position: absolute;
     inset: -3px;
     border-radius: 19px;
-    background: conic-gradient(from 0deg, transparent, var(--accent2), var(--teal2), transparent 55%);
+    border: 2px solid transparent;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0%,
+      transparent 80%,
+      var(--teal2) 90%,
+      var(--accent2) 97%,
+      transparent 100%
+    ) border-box;
+    -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
     opacity: 0;
-    z-index: -1;
-    animation: stageRingSpin 2.8s linear infinite;
+    z-index: 1;
+    pointer-events: none;
+    animation: stageRingSpin 2.2s linear infinite;
     animation-play-state: paused;
     transition: opacity 0.3s;
   }
@@ -784,9 +798,9 @@ const team = [
   .stage-card.featured {
     flex: 1.3;
     padding: 40px 34px;
-    background: #0b0f1c;
+    background: linear-gradient(160deg, rgba(59, 110, 240, 0.16), rgba(0, 201, 167, 0.05));
     border: 1px solid rgba(59, 110, 240, 0.55);
-    box-shadow: 0 0 40px rgba(59, 110, 240, 0.12);
+    box-shadow: 0 0 40px rgba(59, 110, 240, 0.14);
   }
   .stage-card.featured:hover {
     transform: translateY(-10px) scale(1.05);
