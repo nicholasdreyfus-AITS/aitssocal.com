@@ -243,19 +243,23 @@ const team = [
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-badge"><span class="badge-dot"></span>Built differently — from the ground up</div>
-    <h1>Anyone can launch AI that works on day one.<br /><em>Ours still works in month three.</em></h1>
-    <div class="hero-divider"></div>
-    <p class="hero-sub">
-      AITS was built on 25+ years of onboarding, integrating, deploying, and managing technology
-      that has to work. One flat monthly fee covers the tools <em>and</em> the team that tests,
-      monitors, and fixes them — so we profit when nothing breaks, not when everything does.
-    </p>
-    <p class="hero-name">Headquartered in San Diego • Serving businesses nationwide</p>
-    <div class="hero-actions">
-      <a href="/contact" class="btn-primary">Get your free AI assessment</a>
-      <a href="#results" class="btn-ghost">See real results</a>
+    <div class="hero-left">
+      <div class="hero-badge"><span class="badge-dot"></span>Built differently — from the ground up</div>
+      <h1>Anyone can launch AI that works on day one.<br /><em>Ours still works in month three.</em></h1>
+      <div class="hero-divider"></div>
     </div>
+    <BorderBeam alwaysOn={true} dual={true} class="hero-box" tag="div">
+      <p class="hero-sub">
+        AITS was built on 25+ years of onboarding, integrating, deploying, and managing technology
+        that has to work. One flat monthly fee covers the tools <em>and</em> the team that tests,
+        monitors, and fixes them — so we profit when nothing breaks, not when everything does.
+      </p>
+      <p class="hero-name">Headquartered in San Diego • Serving businesses nationwide</p>
+      <div class="hero-actions">
+        <a href="/contact" class="btn-primary">Get your free AI assessment</a>
+        <a href="#results" class="btn-ghost">See real results</a>
+      </div>
+    </BorderBeam>
   </section>
 
   <!-- STAGES: the 3-stage growth path (v2 test) -->
@@ -480,12 +484,6 @@ const team = [
           team hates most, automate those first, and make sure every person sees the benefit to them
           personally before we touch anything else.
         </p>
-        <blockquote class="trust-quote">
-          "The first thing we automated was appointment scheduling. Within two weeks, three
-          employees told me it was the best thing that had happened at work in years. That momentum
-          changed everything."
-          <cite>— Business owner, San Diego (identity withheld at client request)</cite>
-        </blockquote>
       </div>
       <div>
         <span class="section-label">How we bring your team along</span>
@@ -499,6 +497,12 @@ const team = [
             ))
           }
         </div>
+        <blockquote class="trust-quote">
+          "The first thing we automated was appointment scheduling. Within two weeks, three
+          employees told me it was the best thing that had happened at work in years. That momentum
+          changed everything."
+          <cite>— Business owner, San Diego (identity withheld at client request)</cite>
+        </blockquote>
       </div>
     </div>
   </div>
@@ -642,13 +646,12 @@ const team = [
 <style>
   /* Hero */
   .hero {
-    min-height: 88vh;
-    display: flex;
-    flex-direction: column;
+    min-height: auto;
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
     align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 140px 5vw 90px;
+    gap: 64px;
+    padding: 130px 5vw 84px;
     /* Soft scrim so hero text reads over the glowing logo; edges stay
        transparent so the logo still shows around the text. */
     background: radial-gradient(
@@ -658,6 +661,18 @@ const team = [
       rgba(7, 9, 15, 0.18) 82%,
       transparent 100%
     );
+  }
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .hero-box {
+    background: rgba(12, 15, 26, 0.78);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 38px 36px;
   }
   .hero-badge {
     display: inline-flex;
@@ -688,12 +703,11 @@ const team = [
   }
   .hero h1 {
     font-family: var(--fran);
-    font-size: clamp(38px, 5.5vw, 68px);
+    font-size: clamp(34px, 3.6vw, 54px);
     font-weight: 600;
-    line-height: 1.12;
+    line-height: 1.14;
     letter-spacing: -0.01em;
-    max-width: 860px;
-    margin-bottom: 10px;
+    margin-bottom: 0;
   }
   .hero h1 em {
     font-style: italic;
@@ -704,20 +718,19 @@ const team = [
     height: 2px;
     background: linear-gradient(90deg, var(--accent), var(--teal));
     border-radius: 2px;
-    margin: 20px 0 26px;
+    margin: 24px 0 0;
   }
   .hero-sub {
-    font-size: clamp(16px, 1.8vw, 20px);
+    font-size: 16px;
     color: var(--text2);
-    max-width: 620px;
-    margin-bottom: 14px;
+    margin-bottom: 18px;
   }
   .hero-name {
     font-size: 11px;
     color: var(--muted);
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-bottom: 44px;
+    margin-bottom: 24px;
     font-weight: 500;
   }
   .hero-actions {
@@ -725,7 +738,7 @@ const team = [
     align-items: center;
     gap: 14px;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   /* Proof bar */
@@ -1274,6 +1287,7 @@ const team = [
     font-size: 16px;
     color: var(--text2);
     line-height: 1.65;
+    margin-top: 32px;
   }
   .trust-quote cite {
     display: block;
@@ -1619,6 +1633,18 @@ const team = [
     .promise-grid,
     .grid-auto {
       grid-template-columns: repeat(2, 1fr);
+    }
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      padding-top: 110px;
+    }
+    .hero-left {
+      align-items: center;
+      text-align: center;
+    }
+    .hero-divider {
+      margin-inline: auto;
     }
   }
   @media (max-width: 768px) {
