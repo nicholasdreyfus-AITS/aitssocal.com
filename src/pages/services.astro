@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BorderBeam from '../components/BorderBeam.astro';
 import { SITE } from '../consts';
 
 // Every service: client outcome first. Short lede stays visible; the
@@ -138,15 +139,15 @@ const serviceSchema = {
       <div class="grid-auto">
         {
           services.map((s) => (
-            <div class:list={['card', 'svc-card', { feat: s.feat }]} id={s.id}>
-              {s.feat && <span class="feat-badge">Core</span>}
+            <BorderBeam dual={true} id={s.id} class={`card svc-card${s.feat ? ' feat' : ''}`}>
+              {s.feat && <span slot="badge" class="feat-badge">Core</span>}
               <div class:list={['sicon', { teal: s.teal }]}>{s.icon}</div>
               <h2 class="svc-title">{s.h}</h2>
               <p class="svc-lede">{s.lede}</p>
               <ul class="reveal-list">
                 {s.bullets.map((b) => <li>{b}</li>)}
               </ul>
-            </div>
+            </BorderBeam>
           ))
         }
       </div>

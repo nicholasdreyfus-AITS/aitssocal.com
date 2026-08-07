@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BorderBeam from '../components/BorderBeam.astro';
 import { SITE } from '../consts';
 
 // Capability groups — what an AITS partnership changes for the CLIENT'S
@@ -295,11 +296,11 @@ const team = [
       <div class="promise-grid">
         {
           convictions.map((c, i) => (
-            <div class="promise-card">
+            <BorderBeam dual={true} class="promise-card">
               <div class="promise-num">{String(i + 1).padStart(2, '0')}</div>
               <h3>{c.h}</h3>
               <p>{c.p}</p>
-            </div>
+            </BorderBeam>
           ))
         }
       </div>
@@ -327,7 +328,7 @@ const team = [
       <div class="cap-groups">
         {
           capabilityGroups.map((g) => (
-            <div class="cap-group">
+            <BorderBeam dual={true} class="cap-group">
               <div class="cap-group__head">
                 <span class="cap-group__icon" aria-hidden="true">{g.icon}</span>
                 <h3 class="cap-group__title">{g.label}</h3>
@@ -340,7 +341,7 @@ const team = [
                   </li>
                 ))}
               </ul>
-            </div>
+            </BorderBeam>
           ))
         }
       </div>
@@ -378,13 +379,13 @@ const team = [
       <div class="grid-auto">
         {
           results.map((r) => (
-            <div class:list={['card', { hl: r.hl }]}>
+            <BorderBeam dual={true} class={`card${r.hl ? ' hl' : ''}`}>
               <span class="result-icon">{r.icon}</span>
               <span class:list={['rtag', { p: r.hl }]}>{r.tag}</span>
               <div class="result-title">{r.title}</div>
               <p class="result-desc">{r.desc}</p>
               <div class="rstat"><span class="big">{r.big}</span><span class="lbl">{r.lbl}</span></div>
-            </div>
+            </BorderBeam>
           ))
         }
       </div>
@@ -443,8 +444,8 @@ const team = [
       <div class="grid-auto">
         {
           services.map((s) => (
-            <a href={s.href} class:list={['card', 'service-card', { feat: s.feat }]}>
-              {s.feat && <span class="feat-badge">Core</span>}
+            <BorderBeam dual={true} tag="a" href={s.href} class={`card service-card${s.feat ? ' feat' : ''}`}>
+              {s.feat && <span slot="badge" class="feat-badge">Core</span>}
               <div class:list={['sicon', { teal: s.teal }]}>{s.icon}</div>
               <div class="service-title">{s.title}</div>
               <p class="result-desc">{s.desc}</p>
@@ -452,7 +453,7 @@ const team = [
               <ul class="reveal-list">
                 {s.bullets.map((b) => <li>{b}</li>)}
               </ul>
-            </a>
+            </BorderBeam>
           ))
         }
       </div>
@@ -500,7 +501,7 @@ const team = [
       <div class="team-grid">
         {
           team.map((m) => (
-            <div class:list={['team-card', { ceo: m.roleClass === 'ceo' }]}>
+            <BorderBeam dual={true} radius="18px" class={`team-card${m.roleClass === 'ceo' ? ' ceo' : ''}`}>
               <div class="team-photo-wrap">
                 <img src={m.img} alt={`${m.name}, ${m.role}`} style={`object-position:${m.pos}`} loading="lazy" />
                 <div class="team-photo-overlay" />
@@ -514,7 +515,7 @@ const team = [
                   <a href={m.linkedin} target="_blank" rel="noopener" class="team-linkedin">Connect on LinkedIn →</a>
                 )}
               </div>
-            </div>
+            </BorderBeam>
           ))
         }
       </div>

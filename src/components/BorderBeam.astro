@@ -47,6 +47,8 @@ export interface Props {
   dual?: boolean;
   /** Second beam color; defaults to the site's teal accent. */
   color2?: string;
+  /** Root element tag -- use "a" for card-links (pass `href` via rest props). */
+  tag?: string;
   class?: string;
   [attr: string]: unknown;
 }
@@ -60,9 +62,12 @@ const {
   color = 'var(--accent2)',
   dual = false,
   color2 = 'var(--teal2)',
+  tag = 'div',
   class: className,
   ...rest
 } = Astro.props;
+
+const Tag = tag;
 
 // Second beam lands opposite the first (half the loop later) so the two
 // comets stay evenly spaced as they chase each other, matching the
@@ -72,7 +77,7 @@ const delayAttr = `${duration / 2}s`;
 const dasharray = `${segment} ${100 - segment}`;
 ---
 
-<div
+<Tag
   class:list={['beam-card', className]}
   data-beam-active={active ? 'true' : 'false'}
   data-beam-always-on={alwaysOn ? 'true' : 'false'}
@@ -114,7 +119,7 @@ const dasharray = `${segment} ${100 - segment}`;
   <div class="beam-content">
     <slot />
   </div>
-</div>
+</Tag>
 
 <style>
   .beam-card {
@@ -150,9 +155,14 @@ const dasharray = `${segment} ${100 - segment}`;
     stroke: var(--beam-color2);
     filter: drop-shadow(0 0 4px var(--beam-color2)) drop-shadow(0 0 2px var(--beam-color2));
   }
-  /* Active (hover/focus-driven) OR permanently featured -- either flag shows
-     the beams. The SMIL <animate> elements run continuously regardless
-     (native SVG animation, effectively free) -- opacity is what's gated. */
+  /* Shows on: this card's own hover/focus (works standalone, no group JS
+     needed) -- OR the data-driven states, for groups like the stage cards
+     where one card's beam needs to react to a *sibling* being hovered
+     (exclusive transfer, always-on default). The SMIL <animate> elements
+     run continuously regardless (native SVG animation, effectively free)
+     -- opacity is the only thing being gated here. */
+  .beam-card:hover .beam-track,
+  .beam-card:focus-within .beam-track,
   .beam-card[data-beam-active='true'] .beam-track,
   .beam-card[data-beam-always-on='true'] .beam-track {
     opacity: 1;

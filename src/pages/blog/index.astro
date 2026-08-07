@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import BorderBeam from '../../components/BorderBeam.astro';
 import NewsletterSignup from '../../components/NewsletterSignup.astro';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
@@ -36,7 +37,7 @@ const [featured, ...rest] = posts;
 
       {
         featured && (
-          <a href={`/blog/${featured.id}`} class="card post-card featured">
+          <BorderBeam dual={true} tag="a" href={`/blog/${featured.id}`} class="card post-card featured">
             {thumb(featured.data) && (
               <div class="thumb">
                 <img src={thumb(featured.data)} alt={featured.data.title} width="1280" height="720" loading="eager" />
@@ -53,14 +54,14 @@ const [featured, ...rest] = posts;
                 ))}
               </div>
             </div>
-          </a>
+          </BorderBeam>
         )
       }
 
       <div class="post-grid">
         {
           rest.map((post) => (
-            <a href={`/blog/${post.id}`} class="card post-card">
+            <BorderBeam dual={true} tag="a" href={`/blog/${post.id}`} class="card post-card">
               {thumb(post.data) ? (
                 <div class="thumb">
                   <img src={thumb(post.data)} alt={post.data.title} width="640" height="360" loading="lazy" />
@@ -80,7 +81,7 @@ const [featured, ...rest] = posts;
                   ))}
                 </div>
               </div>
-            </a>
+            </BorderBeam>
           ))
         }
       </div>

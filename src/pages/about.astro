@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BorderBeam from '../components/BorderBeam.astro';
 import { BUSINESS } from '../consts';
 
 const stats = [
@@ -27,10 +28,10 @@ const stats = [
       <div class="stat-strip">
         {
           stats.map((s) => (
-            <div class="stat card">
+            <BorderBeam dual={true} class="stat card">
               <div class="stat-big">{s.big}</div>
               <div class="stat-lbl">{s.lbl}</div>
-            </div>
+            </BorderBeam>
           ))
         }
       </div>
