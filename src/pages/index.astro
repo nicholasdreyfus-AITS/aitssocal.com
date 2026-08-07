@@ -382,7 +382,7 @@ const team = [
             <BorderBeam dual={true} class={`card${r.hl ? ' hl' : ''}`}>
               <span class="result-icon">{r.icon}</span>
               <span class:list={['rtag', { p: r.hl }]}>{r.tag}</span>
-              <div class="result-title">{r.title}</div>
+              <h3 class="result-title">{r.title}</h3>
               <p class="result-desc">{r.desc}</p>
               <div class="rstat"><span class="big">{r.big}</span><span class="lbl">{r.lbl}</span></div>
             </BorderBeam>
@@ -447,7 +447,7 @@ const team = [
             <BorderBeam dual={true} tag="a" href={s.href} class={`card service-card${s.feat ? ' feat' : ''}`}>
               {s.feat && <span slot="badge" class="feat-badge">Core</span>}
               <div class:list={['sicon', { teal: s.teal }]}>{s.icon}</div>
-              <div class="service-title">{s.title}</div>
+              <h3 class="service-title">{s.title}</h3>
               <p class="result-desc">{s.desc}</p>
               <div>{s.tags.map((t) => <span class:list={['tag', { t: s.teal }]}>{t}</span>)}</div>
               <ul class="reveal-list">
@@ -508,7 +508,7 @@ const team = [
               </div>
               <div class="team-info">
                 <span class:list={['team-role-badge', `role-${m.roleClass}`]}>{m.role}</span>
-                <div class="team-name">{m.name}</div>
+                <h3 class="team-name">{m.name}</h3>
                 <div class="team-title">{m.title}</div>
                 <p class="team-bio">{m.bio}</p>
                 {m.linkedin && (
