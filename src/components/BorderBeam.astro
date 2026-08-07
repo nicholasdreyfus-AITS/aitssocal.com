@@ -3,11 +3,20 @@
 //
 // A short bright segment travels around the card's perimeter, following its
 // exact outline (including rounded corners) at a constant speed. Built with
-// an SVG <rect pathLength="100"> + stroke-dasharray/dashoffset rather than a
-// conic-gradient: pathLength normalizes the perimeter to 100 user units
-// regardless of the card's real pixel size, so the beam's length and speed
-// stay correct automatically for any card dimensions or border-radius --
-// no per-card pixel math needed.
+// an SVG <rect pathLength="100"> whose stroke-dasharray/dashoffset are set
+// as native SVG attributes (not CSS properties) and animated with SMIL
+// <animate>, not CSS @keyframes.
+//
+// Why: stroke-dasharray/stroke-dashoffset are typed as <length-percentage>
+// when parsed as CSS properties, so a bare unitless number like "12" --
+// which is exactly what pathLength="100" calls for -- gets rejected as
+// invalid and silently falls back (dasharray -> none, i.e. a solid ring
+// instead of a segment). Routing calc() around it doesn't help either: some
+// engines coerce the bare number to px to make it a valid <length>, which
+// then reads as 12 *real screen pixels* instead of 12 pathLength-normalized
+// units -- the dash repeats every ~100px around the perimeter instead of
+// once. SVG presentation attributes and SMIL use SVG's own numeric grammar
+// throughout, so bare pathLength-relative numbers just work as intended.
 //
 // Supports a second, offset beam (`dual`) for a richer two-comet chase, and
 // an `alwaysOn` mode for a permanently-featured card that should never defer
@@ -19,6 +28,8 @@
 // starts highlighted by default -- see the group's own <script> (e.g. the
 // stages section) for the hover/focus transfer logic that moves
 // `data-beam-active` between siblings. `alwaysOn` cards ignore that entirely.
+// A slotted `badge` renders as a direct child of the card (not nested inside
+// the content wrapper), so it can position against the card's own edge.
 export interface Props {
   /** Whether this card shows the beam by default (before any hover/focus). */
   active?: boolean;
@@ -26,8 +37,8 @@ export interface Props {
   alwaysOn?: boolean;
   /** Must match the card's own border-radius so the beam traces it exactly. */
   radius?: string;
-  /** Full loop duration -- keep within ~4-7s per the design spec. */
-  duration?: string;
+  /** Full loop duration in seconds -- keep within ~4-7 per the design spec. */
+  duration?: number;
   /** Beam length as % of perimeter -- keep within ~8-15. */
   segment?: number;
   /** Primary beam color; defaults to the site's accent blue. */
@@ -44,7 +55,7 @@ const {
   active = false,
   alwaysOn = false,
   radius = '16px',
-  duration = '5.5s',
+  duration = 5.5,
   segment = 12,
   color = 'var(--accent2)',
   dual = false,
@@ -56,16 +67,8 @@ const {
 // Second beam lands opposite the first (half the loop later) so the two
 // comets stay evenly spaced as they chase each other, matching the
 // reference two-beam pattern.
-const durationSeconds = parseFloat(duration);
-const delay = Number.isFinite(durationSeconds) ? `${durationSeconds / 2}s` : '0s';
-
-// Precomputed as a single literal string, not `calc(100 - var(--beam-segment))`.
-// Some browsers resolve calc() over a bare-number custom property by coercing
-// it to px (since stroke-dasharray also accepts <length>), which -- combined
-// with pathLength="100" normalizing the path to unitless units -- silently
-// turns "12" into "12px", repeating the dash every 100 real screen pixels
-// instead of once per full perimeter. A plain precomputed "12 88" sidesteps
-// calc() entirely so there's no unit to get coerced.
+const durationAttr = `${duration}s`;
+const delayAttr = `${duration / 2}s`;
 const dasharray = `${segment} ${100 - segment}`;
 ---
 
@@ -73,12 +76,36 @@ const dasharray = `${segment} ${100 - segment}`;
   class:list={['beam-card', className]}
   data-beam-active={active ? 'true' : 'false'}
   data-beam-always-on={alwaysOn ? 'true' : 'false'}
-  style={`--beam-radius:${radius};--beam-duration:${duration};--beam-dasharray:${dasharray};--beam-color:${color};--beam-color2:${color2};--beam-delay:${delay}`}
+  style={`--beam-radius:${radius};--beam-color:${color};--beam-color2:${color2}`}
   {...rest}
 >
   <svg class="beam-svg" aria-hidden="true" focusable="false">
-    <rect class="beam-track beam-track-1" pathLength="100"></rect>
-    {dual && <rect class="beam-track beam-track-2" pathLength="100"></rect>}
+    <rect class="beam-track beam-track-1" pathLength="100" stroke-dasharray={dasharray} stroke-dashoffset="0">
+      <animate
+        attributeName="stroke-dashoffset"
+        from="0"
+        to="-100"
+        dur={durationAttr}
+        begin="0s"
+        repeatCount="indefinite"
+        calcMode="linear"
+      ></animate>
+    </rect>
+    {
+      dual && (
+        <rect class="beam-track beam-track-2" pathLength="100" stroke-dasharray={dasharray} stroke-dashoffset="0">
+          <animate
+            attributeName="stroke-dashoffset"
+            from="0"
+            to="-100"
+            dur={durationAttr}
+            begin={delayAttr}
+            repeatCount="indefinite"
+            calcMode="linear"
+          ></animate>
+        </rect>
+      )
+    }
   </svg>
   <!-- Direct child of .beam-card (not .beam-content) so slotted badges/
        overlays position against the card's own edge, not the content's
@@ -117,30 +144,18 @@ const dasharray = `${segment} ${100 - segment}`;
     stroke-linecap: round;
     filter: drop-shadow(0 0 4px var(--beam-color)) drop-shadow(0 0 2px var(--beam-color));
     opacity: 0;
-    stroke-dasharray: var(--beam-dasharray);
-    stroke-dashoffset: 0;
     transition: opacity 0.35s ease;
   }
   .beam-track-2 {
     stroke: var(--beam-color2);
     filter: drop-shadow(0 0 4px var(--beam-color2)) drop-shadow(0 0 2px var(--beam-color2));
-    animation-delay: var(--beam-delay);
   }
-  /* Active (hover/focus-driven) OR permanently featured -- either flag lights
-     the beams up, independent of the other. */
+  /* Active (hover/focus-driven) OR permanently featured -- either flag shows
+     the beams. The SMIL <animate> elements run continuously regardless
+     (native SVG animation, effectively free) -- opacity is what's gated. */
   .beam-card[data-beam-active='true'] .beam-track,
   .beam-card[data-beam-always-on='true'] .beam-track {
     opacity: 1;
-    animation: beam-travel var(--beam-duration) linear infinite;
-  }
-  /* Negative direction + no explicit 0->-100 midpoint keyframe: a single
-     "to" rule loops seamlessly since -100 units is exactly one full perimeter,
-     landing back on the visual start with no jump. The second beam reuses
-     the same keyframes, just started var(--beam-delay) later. */
-  @keyframes beam-travel {
-    to {
-      stroke-dashoffset: -100;
-    }
   }
   .beam-content {
     position: relative;
@@ -153,13 +168,19 @@ const dasharray = `${segment} ${100 - segment}`;
   @media (prefers-reduced-motion: reduce) {
     .beam-card[data-beam-active='true'] .beam-track,
     .beam-card[data-beam-always-on='true'] .beam-track {
-      animation: none;
       opacity: 0.6;
-      stroke-dasharray: none;
       stroke-width: 1.5px;
-    }
-    .beam-track-2 {
-      display: none;
     }
   }
 </style>
+
+<script>
+  // SMIL <animate> has no CSS-media-query equivalent, so honor
+  // prefers-reduced-motion by pausing every beam's animations in JS: a
+  // static (offset-0) highlighted outline instead of a moving one.
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.beam-svg').forEach((svg) => {
+      if (svg instanceof SVGSVGElement) svg.pauseAnimations();
+    });
+  }
+</script>
