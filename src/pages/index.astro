@@ -261,6 +261,73 @@ const team = [
     </BorderBeam>
   </section>
 
+  <!-- STAGES: the 3-stage growth path -->
+  <section class="section stages">
+    <div class="container">
+      <span class="section-label" style="text-align:center;display:block">How we take you from invisible to growing</span>
+      <h2 class="section-heading" style="text-align:center;margin-inline:auto">Three steps. One partner the whole way.</h2>
+      <p class="section-sub" style="text-align:center;margin-inline:auto">
+        We meet you wherever you are today and build in the order that actually works — a site
+        that can convert, a process that never drops a lead, then the visibility to fill the top
+        of the funnel.
+      </p>
+      <div class="stage-grid" data-beam-group>
+        <BorderBeam active={true} alwaysOn={true} dual={true} class="stage-card featured" tabindex="0">
+          <span slot="badge" class="stage-start-badge">Start here</span>
+          <div class="stage-num">STEP 01</div>
+          <h3>Website & brand</h3>
+          <p>A site built to convert, not just to look good — redesigned and rebranded if yours isn't pulling its weight yet.</p>
+          <p class="stage-note">Already love your site and logo? Keep it — skip straight to step two.</p>
+          <span class="stage-price">Starting at $750 <small>one-time</small></span>
+          <span class="stage-guarantee">You don't pay until you're happy with the website and logo — or walk away anytime.</span>
+        </BorderBeam>
+        <div class="stage-arrow" aria-hidden="true">→</div>
+        <BorderBeam dual={true} class="stage-card" tabindex="0">
+          <div class="stage-num">STEP 02</div>
+          <h3>Never miss another lead</h3>
+          <p>A real process behind every call, email, and text — captured, tracked, and followed up automatically so nothing falls through the cracks again.</p>
+          <span class="stage-guarantee">Month-to-month. Cancel anytime.</span>
+        </BorderBeam>
+        <div class="stage-arrow" aria-hidden="true">→</div>
+        <BorderBeam dual={true} class="stage-card" tabindex="0">
+          <div class="stage-num">STEP 03</div>
+          <h3>Get found, get growing</h3>
+          <p>SEO, AEO, and social — built once the foundation can actually convert what it brings in, so growth compounds instead of leaking away.</p>
+          <span class="stage-guarantee">Month-to-month. Cancel anytime.</span>
+        </BorderBeam>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Border-beam transfer: exactly one card per data-beam-group shows the
+    // traveling beam at a time. Defaults to whichever card server-rendered
+    // with data-beam-active="true" (the featured card); hover/focus on any
+    // sibling moves the beam there and back on leave. Keyboard focus behaves
+    // the same as hover. Touch devices without hover simply never fire these
+    // events, so the beam just stays on the default card, per spec.
+    document.querySelectorAll('[data-beam-group]').forEach((group) => {
+      const cards = Array.from(group.querySelectorAll(':scope > .beam-card'));
+      const defaultCard = cards.find((c) => c.dataset.beamActive === 'true') ?? cards[0];
+      if (!defaultCard) return;
+
+      const activate = (card) => {
+        cards.forEach((c) => {
+          c.dataset.beamActive = c === card ? 'true' : 'false';
+        });
+      };
+
+      cards.forEach((card) => {
+        card.addEventListener('mouseenter', () => activate(card));
+        card.addEventListener('focusin', () => activate(card));
+        card.addEventListener('mouseleave', () => activate(defaultCard));
+        card.addEventListener('focusout', (e) => {
+          if (!card.contains(e.relatedTarget)) activate(defaultCard);
+        });
+      });
+    });
+  </script>
+
   <!-- PROOF BAR -->
   <div class="proof-bar">
     <div class="container proof-inner">
@@ -671,6 +738,143 @@ const team = [
     gap: 14px;
     flex-wrap: wrap;
     justify-content: flex-start;
+  }
+
+  /* Stages */
+  .stages .section-sub {
+    max-width: 640px;
+  }
+  .stage-grid {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+    margin-top: 44px;
+  }
+  .stage-card {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #0a0d17;
+    border: 0.5px solid rgba(59, 110, 240, 0.28);
+    border-radius: 16px;
+    padding: 28px 26px;
+    transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  }
+  /* The traveling border beam itself lives in BorderBeam.astro (SVG-based,
+     shared across the group with hover/focus transfer via that section's
+     script). This card keeps its own static lift/shadow hover response. */
+  .stage-card:hover {
+    border-color: rgba(59, 110, 240, 0.7);
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  }
+  .stage-card.featured {
+    flex: 1.3;
+    padding: 40px 34px;
+    background: linear-gradient(160deg, rgba(59, 110, 240, 0.16), rgba(0, 201, 167, 0.05));
+    border: 1px solid rgba(59, 110, 240, 0.55);
+    box-shadow: 0 0 40px rgba(59, 110, 240, 0.14);
+  }
+  .stage-card.featured:hover {
+    transform: translateY(-10px) scale(1.05);
+  }
+  .stage-start-badge {
+    position: absolute;
+    top: -13px;
+    left: 34px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    font-family: var(--jak);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 100px;
+  }
+  .stage-arrow {
+    flex-shrink: 0;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    font-family: var(--fran);
+    font-size: 22px;
+    color: var(--accent2);
+    opacity: 0.6;
+  }
+  .stage-num {
+    font-family: var(--fran);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--teal2);
+    margin-bottom: 14px;
+  }
+  .stage-card.featured .stage-num {
+    font-size: 17px;
+  }
+  .stage-card h3 {
+    font-family: var(--fran);
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .stage-card.featured h3 {
+    font-size: 24px;
+  }
+  .stage-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    flex-grow: 1;
+  }
+  .stage-note {
+    font-family: var(--fran);
+    font-style: italic;
+    font-size: 13.5px;
+    color: var(--text2);
+    line-height: 1.6;
+    margin-top: 12px;
+    flex-grow: 0 !important;
+  }
+  .stage-price {
+    display: block;
+    font-family: var(--fran);
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 16px;
+  }
+  .stage-price small {
+    font-family: var(--jak);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .stage-guarantee {
+    display: block;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 0.5px solid rgba(59, 110, 240, 0.2);
+    font-family: var(--jak);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--teal2);
+    line-height: 1.5;
+  }
+  @media (max-width: 768px) {
+    .stage-grid {
+      flex-direction: column;
+    }
+    .stage-arrow {
+      width: auto;
+      transform: rotate(90deg);
+      padding: 4px 0;
+    }
   }
 
   /* Proof bar */
