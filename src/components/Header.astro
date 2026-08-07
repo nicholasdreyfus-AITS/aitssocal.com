@@ -26,8 +26,59 @@ const isActive = (href: string) =>
       }
     </ul>
     <a href="/contact" class="nav-cta">Free assessment</a>
+    <button
+      class="nav-toggle"
+      id="navToggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="mobileNav"
+      aria-label="Open menu"
+    >
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+      <span class="nav-toggle-bar"></span>
+    </button>
   </nav>
+  <div class="mobile-nav" id="mobileNav" hidden>
+    <ul class="mobile-nav-links">
+      {
+        NAV.map((item) => (
+          <li>
+            <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <a href="/contact" class="nav-cta mobile-nav-cta">Free assessment</a>
+  </div>
 </header>
+
+<script>
+  const toggle = document.getElementById('navToggle');
+  const panel = document.getElementById('mobileNav');
+  if (toggle && panel) {
+    const close = () => {
+      panel.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Open menu');
+    };
+    const open = () => {
+      panel.hidden = false;
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Close menu');
+    };
+    toggle.addEventListener('click', () => (panel.hidden ? open() : close()));
+    panel.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !panel.hidden) close();
+    });
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 820 && !panel.hidden) close();
+    });
+  }
+</script>
 
 <style>
   .site-header {
@@ -105,11 +156,79 @@ const isActive = (href: string) =>
     box-shadow: 0 4px 24px rgba(59, 110, 240, 0.45);
     text-decoration: none;
   }
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: 0.5px solid var(--border3);
+    border-radius: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .nav-toggle-bar {
+    width: 18px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .nav-toggle[aria-expanded='true'] .nav-toggle-bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav-toggle[aria-expanded='true'] .nav-toggle-bar:nth-child(2) {
+    opacity: 0;
+  }
+  .nav-toggle[aria-expanded='true'] .nav-toggle-bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+  .mobile-nav {
+    border-top: 0.5px solid var(--border2);
+    background: rgba(7, 9, 15, 0.96);
+    backdrop-filter: blur(24px);
+    padding: 20px 5vw 26px;
+  }
+  .mobile-nav-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 18px;
+  }
+  .mobile-nav-links a {
+    display: block;
+    padding: 12px 4px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text2);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .mobile-nav-links a:hover,
+  .mobile-nav-links a[aria-current='page'] {
+    color: var(--text);
+  }
+  .mobile-nav-cta {
+    display: block;
+    text-align: center;
+    padding: 13px;
+  }
   @media (max-width: 820px) {
     .nav-links {
       display: none;
     }
     .logo-full {
+      display: none;
+    }
+    .nav-toggle {
+      display: flex;
+    }
+  }
+  @media (min-width: 821px) {
+    .mobile-nav {
       display: none;
     }
   }
