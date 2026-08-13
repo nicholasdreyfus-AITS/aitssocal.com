@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BorderBeam from '../components/BorderBeam.astro';
 import { BUSINESS } from '../consts';
 
 const contactSchema = {
@@ -24,11 +25,33 @@ const expect = [
 >
   <section class="section">
     <div class="container">
-      <span class="section-label">Free assessment</span>
-      <h1 class="section-heading">Thirty minutes. <em>No pitch. A real plan.</em></h1>
-      <p class="section-sub">
-        Answer a few questions and we'll make the 30 minutes count — you leave with a prioritized
-        plan you can act on immediately, whether or not we ever work together.
+      <span class="section-label">Get started</span>
+      <h1 class="section-heading">Two ways to get started.</h1>
+
+      <div class="contact-cta-grid">
+        <BorderBeam alwaysOn={true} dual={true} class="cta-option cta-option-book" tag="div">
+          <span class="cta-option-eyebrow">Ready now</span>
+          <h2 class="cta-option-title">Book a meeting</h2>
+          <p class="cta-option-copy">
+            Already know you want to talk? Book a free 30-minute call with the AITS team right
+            now — no forms, no waiting.
+          </p>
+          <a href="https://calendly.com/gavin-aits" class="btn-primary" target="_blank" rel="noopener">Book 30 minutes →</a>
+        </BorderBeam>
+        <BorderBeam dual={true} class="cta-option cta-option-scan" tag="div">
+          <span class="cta-option-eyebrow">90 seconds</span>
+          <h2 class="cta-option-title">Take the AI Readiness Scan</h2>
+          <p class="cta-option-copy">
+            Not ready to book yet? Take the free AI Readiness Scan first — usually 90 seconds,
+            never more than 3–4 minutes — so we have even more to work with when we talk.
+          </p>
+          <a href="/scan.html" class="btn-primary">Start the free scan →</a>
+        </BorderBeam>
+      </div>
+
+      <p class="section-sub cta-sub-note">
+        Prefer to look around first? Answer a few questions on a call and you'll leave with a
+        prioritized plan you can act on immediately, whether or not we ever work together.
       </p>
 
       <div class="contact-grid">
@@ -74,21 +97,6 @@ const expect = [
             ))
           }
         </div>
-      </div>
-
-      <div class="booking card">
-        <span class="section-label">Book your free 30-minute assessment</span>
-        <p class="booking-copy">
-          Pick a time that works and we'll take it from there. No obligation, no pressure — and if
-          we do end up working together, most plans start at <strong>$297 a month</strong>,
-          month-to-month, fixes included. Add-ons available.
-        </p>
-        <a
-          href="https://calendly.com/gavin-aits"
-          class="btn-primary"
-          target="_blank"
-          rel="noopener">Book 30 minutes</a
-        >
       </div>
     </div>
   </section>
@@ -173,19 +181,54 @@ const expect = [
     color: var(--muted);
     line-height: 1.7;
   }
-  .booking {
-    text-align: center;
-    padding: 40px;
-    border-color: rgba(0, 201, 167, 0.3);
+  .contact-cta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-top: 28px;
+    margin-bottom: 24px;
   }
-  .booking-copy {
-    color: var(--muted);
-    font-size: 15px;
-    max-width: 560px;
-    margin: 4px auto 22px;
-    line-height: 1.7;
+  .cta-option {
+    padding: 34px 32px;
+    background: #0a0d17;
+    border: 0.5px solid rgba(59, 110, 240, 0.28);
+    border-radius: var(--radius);
   }
-  .booking-copy strong {
+  .cta-option-book {
+    background: linear-gradient(160deg, rgba(59, 110, 240, 0.16), rgba(0, 201, 167, 0.05));
+    border: 1px solid rgba(59, 110, 240, 0.55);
+    box-shadow: 0 0 40px rgba(59, 110, 240, 0.14);
+  }
+  .cta-option-eyebrow {
+    display: inline-block;
+    font-family: var(--jak);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--teal2);
+    margin-bottom: 12px;
+  }
+  .cta-option-title {
+    font-family: var(--fran);
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+  }
+  .cta-option-copy {
+    font-size: 14.5px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 22px;
+  }
+  .cta-sub-note {
+    max-width: 640px;
+    margin-bottom: 48px;
+  }
+  @media (max-width: 720px) {
+    .contact-cta-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
