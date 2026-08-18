@@ -19,7 +19,13 @@ const mailto =
     the people who run the business, not the people who run the servers.
   </p>
 
-  <form class="nl-form" id="nlForm" data-endpoint={`${PROXY_URL}/subscribe`} novalidate>
+  <form
+    class="nl-form"
+    id="nlForm"
+    data-endpoint={`${PROXY_URL}/subscribe`}
+    data-mailto={mailto}
+    novalidate
+  >
     <div class="nl-row">
       <label class="nl-field">
         <span class="nl-label">Email address</span>
@@ -101,10 +107,16 @@ const mailto =
       } catch (err) {
         btn.disabled = false;
         btn.textContent = original;
-        setStatus(
-          err instanceof Error && err.message ? err.message : 'Something went wrong. Please try again.',
-          'error',
-        );
+        // Never leave a dead end: on any failure, surface the mailto path
+        // that always works, so a subscriber is never simply lost.
+        const msg =
+          err instanceof Error && err.message ? err.message : 'Something went wrong.';
+        status.className = 'nl-status is-error';
+        status.innerHTML =
+          msg.replace(/</g, '&lt;') +
+          ' You can also <a href="' +
+          (form.dataset.mailto as string) +
+          '">subscribe by email</a>.';
       }
     });
   }
