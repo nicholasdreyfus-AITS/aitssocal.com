@@ -16,6 +16,13 @@
 //     4. Emails AITS the full internal version: report + audit + analyst
 //        note + raw answers + the PDF attached
 //     5. Logs the lead (console + KV when bound)
+//   POST /contact   {name, email, message, company?, phone?}
+//   POST /subscribe {email, name?}            → newsletter signup
+//
+// Optional secret: GHL_WEBHOOK_URL — inbound webhook trigger from
+// GoHighLevel. When set, /lead, /contact and /subscribe push the contact
+// there for follow-up automation. Unset, those pushes silently no-op and
+// email still works.
 // ---------------------------------------------------------------------------
 
 const MODEL = "claude-sonnet-5";
@@ -992,6 +999,67 @@ async function handleContact(body, env, json) {
 }
 
 /* ===========================================================================
+   NEWSLETTER SUBSCRIBE HANDLER
+   First-party capture for the blog's newsletter block. Notifies AITS via
+   Resend and pushes to GoHighLevel with a `Newsletter` source so the welcome
+   workflow can fire there.
+
+   Deliberately does NOT email the subscriber: the form shows an on-screen
+   confirmation, and GHL's welcome workflow is the single source of the
+   welcome email once GHL_WEBHOOK_URL is set. Sending one here too would
+   double-mail every new subscriber the day GHL is connected.
+   ======================================================================== */
+
+async function handleSubscribe(body, env, json) {
+  const email = String((body && body.email) || "").trim();
+  const name = String((body && body.name) || "").trim();
+  // Honeypot: real users never fill a hidden field. Return success so bots
+  // get no signal that they were caught.
+  if (String((body && body.company_website) || "").trim()) {
+    return json({ ok: true }, 200);
+  }
+
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return json({ error: "Please enter a valid email address." }, 400);
+  }
+  if (email.length > 320 || name.length > 200) {
+    return json({ error: "That submission looks too long." }, 400);
+  }
+  if (!env.RESEND_API_KEY) {
+    return json({ error: "Newsletter signup is not configured (missing RESEND_API_KEY)." }, 503);
+  }
+
+  const html = `<div style="background:#f3f4f6;padding:16px 8px;font-family:Arial,Helvetica,sans-serif">`
+    + `<div style="max-width:600px;margin:0 auto;background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden">`
+    + `<div style="background:#0c0f1a;color:#fff;padding:16px 22px"><div style="font:700 16px Arial,sans-serif">New newsletter subscriber</div><div style="font:400 12px Arial,sans-serif;color:#9ca3af;margin-top:2px">aits.llc/blog</div></div>`
+    + `<div style="padding:18px 22px">`
+    + `<div style="font:400 15px Arial,sans-serif;color:#111827">`
+    + (name ? `${esc(name)} &lt;<a href="mailto:${esc(email)}" style="color:#3b6ef0">${esc(email)}</a>&gt;` : `<a href="mailto:${esc(email)}" style="color:#3b6ef0">${esc(email)}</a>`)
+    + `</div></div></div></div>`;
+
+  const send = await sendResend(env, {
+    from: NOTIFY_FROM,
+    to: NOTIFY_TO,
+    reply_to: email,
+    subject: `Newsletter signup: ${name || email}`,
+    html,
+  });
+  if (!send.ok) {
+    return json({ error: "Signup failed to send", detail: send.detail }, 502);
+  }
+
+  const ghl = await postToGHL(env, { source: "Newsletter", name, email, tags: ["newsletter"] });
+
+  const logEntry = { t: "subscribe", ts: new Date().toISOString(), name, email, ghl: ghl.skipped ? "off" : ghl.ok ? "pushed" : "failed" };
+  console.log(JSON.stringify(logEntry));
+  try {
+    if (env.LEADS) await env.LEADS.put(`subscribe:${logEntry.ts}:${email}`, JSON.stringify(logEntry));
+  } catch (e) { console.log("KV log failed: " + e.message); }
+
+  return json({ ok: true }, 200);
+}
+
+/* ===========================================================================
    ROUTER + ANALYST NOTE
    ======================================================================== */
 
@@ -1044,6 +1112,9 @@ export default {
     }
     if (pathname === "/contact") {
       return handleContact(body, env, json);
+    }
+    if (pathname === "/subscribe") {
+      return handleSubscribe(body, env, json);
     }
 
     // Analyst note (or legacy passthrough).

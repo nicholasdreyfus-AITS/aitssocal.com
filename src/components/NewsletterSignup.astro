@@ -1,13 +1,12 @@
 ---
 // Newsletter capture block, shown on the blog index and under every post.
 //
-// TODO: Replace CRM_FORM_EMBED_SRC with the real form embed URL from our
-// CRM once the newsletter form is built (see docs/crm-integration.md for
-// step-by-step). Until then this renders a mailto subscribe link so the
-// block is never a dead form.
-const CRM_FORM_EMBED_SRC = 'CRM_NEWSLETTER_FORM_EMBED_SRC_HERE';
-const isConnected = !CRM_FORM_EMBED_SRC.includes('_HERE');
-
+// First-party form (no third-party iframe): posts to the AITS Worker's
+// /subscribe endpoint, which emails AITS and pushes the contact into the CRM
+// when GHL_WEBHOOK_URL is configured there. Deliberately native rather than a
+// CRM embed — it keeps the site's own styling, adds no third-party script or
+// iframe to the page weight, and degrades to a plain mailto link if JS is off.
+const PROXY_URL = 'https://aits-scan.nicholasdreyfus.workers.dev';
 const mailto =
   'mailto:gavin@aits.llc?subject=Subscribe%20me%20to%20the%20AITS%20newsletter&body=Please%20add%20me%20to%20the%20newsletter%20list.';
 ---
@@ -20,20 +19,96 @@ const mailto =
     the people who run the business, not the people who run the servers.
   </p>
 
-  {
-    isConnected ? (
-      <iframe
-        src={CRM_FORM_EMBED_SRC}
-        title="Subscribe to the AITS newsletter"
-        loading="lazy"
-        class="nl-frame"
-      />
-    ) : (
+  <form class="nl-form" id="nlForm" data-endpoint={`${PROXY_URL}/subscribe`} novalidate>
+    <div class="nl-row">
+      <label class="nl-field">
+        <span class="nl-label">Email address</span>
+        <input
+          type="email"
+          name="email"
+          id="nlEmail"
+          required
+          autocomplete="email"
+          placeholder="you@company.com"
+        />
+      </label>
+      <button type="submit" class="btn-primary nl-submit" id="nlSubmit">Subscribe</button>
+    </div>
+    <!-- Honeypot: hidden from people, tempting to bots. -->
+    <div class="nl-hp" aria-hidden="true">
+      <label>
+        Company website
+        <input type="text" name="company_website" tabindex="-1" autocomplete="off" />
+      </label>
+    </div>
+    <p class="nl-status" id="nlStatus" role="status" aria-live="polite"></p>
+    <noscript>
       <a href={mailto} class="btn-primary">Subscribe by email</a>
-    )
-  }
+    </noscript>
+  </form>
+
   <p class="nl-fine">No spam. No selling your address. Unsubscribe anytime.</p>
 </aside>
+
+<script>
+  const form = document.getElementById('nlForm') as HTMLFormElement | null;
+  if (form) {
+    const emailEl = document.getElementById('nlEmail') as HTMLInputElement;
+    const btn = document.getElementById('nlSubmit') as HTMLButtonElement;
+    const status = document.getElementById('nlStatus') as HTMLElement;
+    const endpoint = form.dataset.endpoint as string;
+
+    const setStatus = (msg: string, kind: 'error' | 'ok' | '') => {
+      status.textContent = msg;
+      status.className = 'nl-status' + (kind ? ' is-' + kind : '');
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = emailEl.value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+        setStatus('Please enter a valid email address.', 'error');
+        emailEl.focus();
+        return;
+      }
+
+      btn.disabled = true;
+      const original = btn.textContent;
+      btn.textContent = 'Subscribing…';
+      setStatus('', '');
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            company_website: (form.elements.namedItem('company_website') as HTMLInputElement).value,
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        // Require an explicit {ok:true}. A bare 200 isn't proof of a save —
+        // an older Worker build without /subscribe falls through to the
+        // analyst-note route and answers 200, which would otherwise show a
+        // false "you're subscribed" while recording nothing.
+        if (!res.ok || data.ok !== true) {
+          throw new Error(data.error || 'Something went wrong. Please try again.');
+        }
+        // Replace the row entirely — a success message where the input was
+        // reads as done, rather than an empty box that invites a re-submit.
+        form.innerHTML =
+          '<p class="nl-status is-ok">You’re on the list. Watch for the next post.</p>';
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = original;
+        setStatus(
+          err instanceof Error && err.message ? err.message : 'Something went wrong. Please try again.',
+          'error',
+        );
+      }
+    });
+  }
+</script>
 
 <style>
   .newsletter {
@@ -52,12 +127,73 @@ const mailto =
     margin-bottom: 20px;
     max-width: 560px;
   }
-  .nl-frame {
+  .nl-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .nl-field {
+    flex: 1 1 260px;
+    min-width: 0;
+  }
+  .nl-label {
+    display: block;
+    font-family: var(--jak);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal2);
+    margin-bottom: 6px;
+  }
+  .nl-field input {
     width: 100%;
-    min-height: 320px;
-    border: 0;
+    padding: 13px 15px;
+    background: var(--bg);
+    border: 0.5px solid var(--border3);
     border-radius: 10px;
-    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    -webkit-appearance: none;
+    transition: border-color 0.2s;
+  }
+  .nl-field input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .nl-field input::placeholder {
+    color: var(--muted);
+  }
+  .nl-submit {
+    flex-shrink: 0;
+    padding: 13px 28px;
+  }
+  .nl-submit:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  /* Honeypot — off-screen rather than display:none, which some bots skip. */
+  .nl-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .nl-status {
+    font-size: 13.5px;
+    line-height: 1.6;
+    margin-top: 12px;
+    min-height: 1px;
+  }
+  .nl-status.is-error {
+    color: #ff7a93;
+  }
+  .nl-status.is-ok {
+    color: var(--teal2);
+    font-weight: 600;
   }
   .nl-fine {
     color: var(--muted);
