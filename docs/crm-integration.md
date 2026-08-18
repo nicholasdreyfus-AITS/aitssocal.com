@@ -28,16 +28,64 @@ placeholder slots — this doc is the checklist for connecting the real account.
    mailto fallback to the embedded form.
 5. Rebuild + deploy.
 
-## 3. Contact page (later phase)
+## 3. Scheduling — retire Calendly, move to GHL
 
-The contact page currently uses Calendly (`https://calendly.com/gavin-aits`) — **leave it
-working until the GHL calendar is fully configured**, then swap:
+**Decision (Nick, this session): all scheduling moves to GHL.** Calendly is an unnecessary
+extra component and an extra bill; GHL's calendar is sufficient and connects to Google
+Calendar for real availability. Calendly stays live until the GHL calendar is tested — it is
+the site's primary conversion path, so do not swap on faith.
 
-1. In GHL: **Calendars** → create `Free AI Assessment (30 min)` linked to the right
-   availability.
-2. Replace the Calendly URL in `src/pages/contact.astro` with the GHL calendar link/embed.
-3. Optional: add a GHL contact form to the contact page so form fills land in the CRM with
-   source attribution, not just bookings.
+### 3.1 What to create in GHL
+
+1. **Settings → Integrations → Google Calendar** — connect Gavin's Google account with
+   *two-way* sync so outside events block GHL availability and GHL bookings appear on Google.
+2. **Calendars → Create calendar** named `Free AI Assessment (30 min)`:
+   - Duration 30 min; add a buffer (10–15 min) so back-to-back bookings don't collide.
+   - Minimum scheduling notice (a few hours minimum) and a booking window (e.g. 3 weeks out).
+   - Assign Gavin as the team member; set the timezone explicitly to America/Los_Angeles.
+   - Booking form fields must include **name, email, phone** — the scan funnel already
+     collects these, and they need to match for contact deduplication in the CRM.
+3. **Automation → Workflow** with trigger **Appointment Booked** on that calendar (see 3.3).
+4. Grab the calendar's public booking link *and* the embed snippet — both are needed.
+
+### 3.2 The three code references to swap
+
+Calendly appears in three places, not one. All three must change together:
+
+| File | Line | What it is |
+|---|---|---|
+| `src/pages/contact.astro` | ~39 | "Book a meeting" CTA link |
+| `public/scan.html` | ~320 | Embedded booking iframe in the scan funnel |
+| `public/scan.html` | ~923 | `calendly.event_scheduled` listener → fires `/booked` |
+
+That third one is the trap. It listens for a Calendly-specific `postMessage` event to trigger
+the booking-confirmation email. GHL's embed does not send that event, so **if only the URLs
+are swapped, booking confirmation emails stop silently.**
+
+### 3.3 Booking confirmation — the decision this forces
+
+`/booked` rebuilds the client PDF, which needs the full `lead` + `computed` report data. That
+data currently lives only in the browser at booking time. Three ways forward:
+
+- **A. Keep client-side detection.** Replace the Calendly event listener with GHL's equivalent.
+  Requires confirming GHL's actual `postMessage` event name/shape empirically with a test
+  booking — do not guess it. Least change, but keeps the fragile part.
+- **B. Let GHL send the confirmation (recommended).** An `Appointment Booked` workflow sends
+  the confirmation email natively. Note the client *already* received their report PDF at scan
+  submit, so the booking email's attachment is a duplicate — dropping it loses little. Most
+  aligned with "everything through GHL," and removes the `postMessage` dependency entirely.
+- **C. Server-side webhook.** Persist the report to KV at `/lead` keyed by email; GHL's
+  workflow calls `/booked` by webhook, which looks the report up. Most robust and keeps the
+  personalized PDF, but requires the `LEADS` KV namespace to actually be bound in production
+  (the code treats it as optional — verify before relying on it).
+
+Whichever is chosen, **test with a real booking** and confirm the email actually arrives
+before removing Calendly.
+
+### 3.4 Also worth doing
+
+Add a GHL contact form to the contact page so form fills land in the CRM with source
+attribution, not just bookings.
 
 ## 4. Chat widget (optional, later)
 
