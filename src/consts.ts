@@ -3,7 +3,14 @@
 
 export const SITE = {
   name: 'AITS',
-  legalName: 'Advanced Intelligent Technology Solutions',
+  // The brand is AITS; the registered entity is NGD Enterprises LLC.
+  // `legalName` is the entity alone (schema.org expects the registered
+  // company here). `legalEntity` is the full form for legal contexts —
+  // copyright line, privacy policy, contracts. Schema `name` stays "AITS"
+  // because that is what people actually search for.
+  legalName: 'NGD Enterprises LLC',
+  legalEntity: 'NGD Enterprises LLC DBA AITS',
+  fullName: 'Advanced Intelligent Technology Solutions',
   url: 'https://aits.llc',
   // Homepage <title> — keyword-rich for SEO/AEO. (OG site name is SITE.name.)
   title: 'AITS — Managed AI for Small Business, One Flat Fee',

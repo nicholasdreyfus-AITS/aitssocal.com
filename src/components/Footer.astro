@@ -9,7 +9,7 @@ const year = new Date().getFullYear();
       <img class="footer-logo" src="/images/logo.png" alt="AITS" width="38" height="38" />
       <div>
         <div class="footer-name">{SITE.name}</div>
-        <div class="footer-tagline">{SITE.legalName} — {BUSINESS.city}, {BUSINESS.region}</div>
+        <div class="footer-tagline">{SITE.fullName} — {BUSINESS.city}, {BUSINESS.region}</div>
       </div>
     </div>
     <ul class="footer-links">
@@ -19,7 +19,7 @@ const year = new Date().getFullYear();
     </ul>
   </div>
   <div class="container legal">
-    <span>© {year} {SITE.legalName}. All rights reserved.</span>
+    <span>© {year} {SITE.legalEntity}. All rights reserved.</span>
     <span>{BUSINESS.areasServed.join(' · ')}</span>
   </div>
 </footer>
