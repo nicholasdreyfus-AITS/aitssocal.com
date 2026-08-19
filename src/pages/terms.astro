@@ -1,0 +1,208 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS, SITE } from '../consts';
+
+// Terms of Service. Required by the 10DLC campaign compliance checklist
+// ("TOS and privacy policy are added to my website") and linked from the
+// footer alongside the privacy policy.
+//
+// The section that matters most is "The AI Risk Scan": the scan outputs a
+// risk score and names regulatory frameworks (HIPAA, PCI-DSS, CMMC, COPPA).
+// Without an explicit statement that it is informational and not legal,
+// compliance, or professional advice, that output is real exposure.
+const EFFECTIVE = 'August 18, 2026';
+---
+
+<BaseLayout
+  title="Terms of Service"
+  description="The terms that apply to using the AITS website, the AI Risk Scan, and AITS services."
+  path="/terms"
+>
+  <section class="section">
+    <div class="container">
+      <span class="section-label">Legal</span>
+      <h1 class="section-heading">Terms of Service</h1>
+      <p class="section-sub">
+        Effective {EFFECTIVE}. Plain-language terms for using this site and working with us.
+      </p>
+
+      <div class="prose policy">
+        <p>
+          These Terms govern your use of <a href="https://aits.llc">aits.llc</a>, the AI Risk Scan,
+          and any services provided by <strong>{SITE.legalEntity}</strong> ("AITS," "we," "us"). By
+          using the site or our services, you agree to them. If you do not agree, please do not use
+          the site.
+        </p>
+
+        <h2>Who may use this site</h2>
+        <p>
+          This site is intended for businesses and for people aged 16 or older. By using it you
+          confirm you have the authority to act for the business you are inquiring about.
+        </p>
+
+        <h2 id="scan">The AI Risk Scan</h2>
+        <div class="callout callout-strong">
+          <strong>The AI Risk Scan is informational, not professional advice.</strong> It produces
+          an automated score and observations based entirely on answers you supply. It is
+          <strong>not</strong> legal advice, compliance certification, a security audit, an
+          accounting opinion, or a substitute for a qualified professional.
+        </div>
+        <p>
+          The scan may reference regulatory frameworks such as HIPAA, PCI-DSS, CMMC, CJIS, or
+          COPPA. Those references are general context to help you decide what to look into — they
+          are not a determination of whether your business complies with any law or standard, and
+          they must not be relied on as one. Only a qualified attorney, auditor, or compliance
+          professional can assess your obligations.
+        </p>
+        <p>
+          Results depend on the accuracy of what you enter. Part of the report is generated with
+          automated tools, including AI, which can be incomplete or wrong. Do not make legal,
+          financial, or security decisions on the report alone.
+        </p>
+
+        <h2>Services, quotes and fees</h2>
+        <p>
+          Prices shown on this site are starting points, not offers or quotes. Actual scope and
+          price are set in a written proposal or service agreement. If those documents conflict with
+          this page, the signed agreement controls.
+        </p>
+        <p>
+          Monthly services are month-to-month unless agreed otherwise. Third-party costs — software
+          subscriptions, telecom and messaging fees, domain registration, advertising spend, payment
+          processing — are separate from our fees unless a written agreement says they are included.
+        </p>
+
+        <h2>Your responsibilities</h2>
+        <ul>
+          <li>Provide accurate information and timely access to systems we need.</li>
+          <li>Hold the rights to any content, brand assets, or data you give us to use.</li>
+          <li>Maintain ownership of your own domains, payment accounts, and business records.</li>
+          <li>Use anything we build lawfully, including messaging and marketing laws.</li>
+        </ul>
+
+        <h2>Messaging and communications</h2>
+        <p>
+          If you give us your phone number and check the SMS consent box, you agree to receive text
+          messages as described at the point of consent and in our
+          <a href="/privacy#sms">Privacy Policy</a>. Consent is never a condition of any purchase.
+          Reply STOP to opt out or HELP for help. Message and data rates may apply.
+        </p>
+
+        <h2>Intellectual property</h2>
+        <p>
+          The site, its content, and the AITS name and marks belong to us. Work product we create
+          specifically for you transfers as set out in your service agreement. We keep ownership of
+          our own methods, templates, configurations, and reusable components, and may continue to
+          use general knowledge and experience gained while working with you.
+        </p>
+
+        <h2>Third-party services</h2>
+        <p>
+          Our work often connects to services we do not control — hosting, payment processors,
+          messaging carriers, calendars, and other platforms. We are not responsible for their
+          outages, policy changes, pricing, rate limits, account suspensions, or defects. Where a
+          third party requires you to accept its own terms, those terms apply between you and them.
+        </p>
+
+        <h2>Disclaimers</h2>
+        <p>
+          The site and the scan are provided "as is" and "as available," without warranties of any
+          kind, express or implied, including merchantability, fitness for a particular purpose, and
+          non-infringement. We do not warrant that the site will be uninterrupted or error-free, or
+          that any result described on this site will be achieved for your business.
+        </p>
+
+        <h2>Limitation of liability</h2>
+        <p>
+          To the fullest extent permitted by law, AITS is not liable for indirect, incidental,
+          special, consequential, or punitive damages, or for lost profits, revenue, data, or
+          business opportunity, arising from your use of this site or the scan. Our total liability
+          relating to the site or the scan will not exceed one hundred dollars ($100). Liability
+          arising from paid services is governed by the applicable service agreement.
+        </p>
+        <p>
+          Some jurisdictions do not allow certain limitations, so parts of this section may not
+          apply to you.
+        </p>
+
+        <h2>Indemnification</h2>
+        <p>
+          You agree to indemnify and hold AITS harmless from claims arising out of information you
+          provide, content or data you ask us to use, your use of anything we build, or your
+          violation of these Terms or applicable law.
+        </p>
+
+        <h2>Termination</h2>
+        <p>
+          We may suspend or end access to the site or the scan at any time, including for misuse.
+          Termination of paid services is governed by your service agreement.
+        </p>
+
+        <h2>Governing law</h2>
+        <p>
+          These Terms are governed by the laws of the State of California, without regard to its
+          conflict-of-laws rules. Any dispute relating to the site or the scan will be brought in
+          the state or federal courts located in San Diego County, California, and you consent to
+          that venue.
+        </p>
+
+        <h2>Changes</h2>
+        <p>
+          We may update these Terms. Changes take effect when posted, and the effective date above
+          will be revised. Continued use of the site after a change means you accept the updated
+          Terms.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          <strong>{SITE.legalEntity}</strong><br />
+          {BUSINESS.street}<br />
+          {BUSINESS.city}, {BUSINESS.region} {BUSINESS.postalCode}<br />
+          Email: <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a><br />
+          Phone: <a href={`tel:${BUSINESS.phone}`}>{BUSINESS.phoneDisplay}</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .policy {
+    color: var(--text2);
+  }
+  .policy h2 {
+    font-family: var(--fran);
+    font-size: clamp(19px, 2.2vw, 25px);
+    font-weight: 600;
+    color: var(--text);
+    margin: 40px 0 12px;
+  }
+  .policy p {
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+  .policy ul {
+    margin: 0 0 16px 20px;
+  }
+  .policy li {
+    margin-bottom: 8px;
+    line-height: 1.75;
+  }
+  .policy strong {
+    color: var(--text);
+  }
+  .callout {
+    background: rgba(59, 110, 240, 0.06);
+    border: 0.5px solid rgba(59, 110, 240, 0.28);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+    line-height: 1.75;
+  }
+  .callout-strong {
+    background: rgba(0, 201, 167, 0.05);
+    border-color: rgba(0, 201, 167, 0.3);
+    border-left-color: var(--teal);
+  }
+</style>

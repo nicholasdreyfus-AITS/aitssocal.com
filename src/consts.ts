@@ -32,7 +32,16 @@ export const BUSINESS = {
   areasServed: ['San Diego', 'Southern California', 'United States'],
   region: 'CA',
   city: 'San Diego',
-  // Add street address + lat/long when available to strengthen local SEO.
+  // Registered business address. Published on the legal pages only (privacy,
+  // terms) because the 10DLC compliance checklist requires the address used
+  // to verify the brand to be present on the website.
+  //
+  // Deliberately NOT in LocalBusiness schema: AITS is set up with Google as a
+  // service-area business with the address hidden, and putting a street
+  // address in schema would contradict that. Keep schema at city/region +
+  // areaServed unless that GBP decision changes.
+  street: '6856 Deerrun Pl',
+  postalCode: '92120',
 } as const;
 
 // Blog author credentials (E-E-A-T) — AITS-terms only: no personal LinkedIn,
