@@ -56,6 +56,17 @@ export const AUTHORS = {
   },
 } as const;
 
+// AI + "not professional advice" disclaimers. Kept here so the site, the scan
+// report, the emails, and the PDF all say the same thing — inconsistent
+// disclaimers are weaker than one consistent one. SHORT goes in the footer;
+// FULL goes on anything that outputs findings (report screen, email, PDF).
+export const DISCLAIMER = {
+  short:
+    'This site and our reports are produced in part with AI and may contain errors. General information only — not professional advice.',
+  full:
+    'This report is generated in part with AI and may contain errors or omissions. It is provided for general information only and is not legal, compliance, security, tax, or other professional advice. Findings are based solely on the answers provided and should be independently verified before you act on them. We will walk through the details together on your review call.',
+} as const;
+
 export const NAV = [
   { label: 'Services', href: '/services' },
   { label: 'About', href: '/about' },

@@ -557,7 +557,19 @@ function buildReportPdf(lead, c, note, audit, logo, opts) {
     const lw2 = 86, lh2 = lw2 * (logo.height / logo.width);
     p2.image("Logo", PAGE_W - MARGIN - lw2, y - 8, lw2, lh2);
   }
-  p2.text("Prevalence figures are industry-informed estimates.", MARGIN, 26, 7, "F1", "0.35 0.38 0.47");
+  // AI + not-professional-advice disclaimer. Wrapped across the page width so
+  // it stays legible rather than running off the edge. Keep in sync with
+  // DISCLAIMER.full in src/consts.ts and the on-screen copy in scan.html.
+  const discLines = wrapText(
+    "This report is generated in part with AI and may contain errors or omissions. It is provided for general information only and is not legal, compliance, security, tax, or other professional advice. Findings are based solely on the answers provided and should be independently verified before you act on them. We will walk through the details together on your review call.",
+    7, false, PAGE_W - 2 * MARGIN,
+  );
+  let dy = 26 + discLines.length * 9;
+  p2.text("Prevalence figures are industry-informed estimates.", MARGIN, dy + 10, 7, "F1", "0.35 0.38 0.47");
+  discLines.forEach((ln) => {
+    p2.text(ln, MARGIN, dy, 7, "F1", "0.35 0.38 0.47");
+    dy -= 9;
+  });
   p2.textRight("Page 2 of 2", PAGE_W - MARGIN, 26, 7.5, "F1", C_MUTED, false);
 
   return assemblePdf([p1.stream(), p2.stream()], logo);
@@ -676,6 +688,8 @@ function reportHtml(lead, c, note, answers, clientUrl, opts) {
         + (internal ? auditHtml(audit) : "")
         + `<div style="text-align:center;margin:22px 0 4px"><a href="https://aits.llc/contact" style="display:inline-block;background:#3b6ef0;color:#ffffff;text-decoration:none;font:700 14px Arial,sans-serif;padding:12px 22px;border-radius:8px">Book the free 30-minute review &rarr;</a></div>`
         + `<div style="font:400 11px Arial,sans-serif;color:#9ca3af;text-align:center;margin-top:10px">AITS · aits.llc · (619) 837-3320 · gavin@aits.llc</div>`
+        // Keep in sync with DISCLAIMER.full (src/consts.ts), scan.html, and the PDF.
+        + `<div style="font:400 10px/1.6 Arial,sans-serif;color:#9ca3af;margin-top:14px;padding-top:12px;border-top:1px solid #e5e7eb">This report is generated in part with AI and may contain errors or omissions. It is provided for general information only and is not legal, compliance, security, tax, or other professional advice. Findings are based solely on the answers provided and should be independently verified before you act on them. We will walk through the details together on your review call.</div>`
         + `<div style="font:400 10px Arial,sans-serif;color:#b6bbc6;text-align:center;margin-top:6px">Prevalence figures are industry-informed estimates.</div>`
         + (internal ? `<div style="border-top:1px solid #eef0f3;margin-top:18px;padding-top:12px"><div style="font:700 10px Arial,sans-serif;color:#b6bbc6;letter-spacing:.5px;margin-bottom:6px">RAW SCAN ANSWERS</div><table style="border-collapse:collapse">${answersHtml}</table></div>` : "")
       + `</div>`
