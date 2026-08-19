@@ -193,6 +193,28 @@ const allSchemas = [...baseSchemas, ...schemas];
       )
     }
     {!landing && <ScanPopup />}
+    {/*
+      GHL chat widget — also the declared SMS opt-in mechanism for the 10DLC
+      campaign. `defer` keeps it off the critical rendering path.
+
+      ⚠️ COMPLIANCE: the A2P registration attests that NO form collecting
+      phone numbers or SMS opt-in consent exists on any page where this
+      widget is embedded. That holds today because it only renders on Astro
+      pages, and the only phone/SMS-consent form on the site is
+      public/scan.html — a standalone file that does not use this layout.
+      Before adding a phone field to any .astro page, or embedding the GHL
+      booking calendar (its form collects a phone number), either exclude
+      the widget from that page or the attestation is broken.
+    */}
+    {!landing && (
+      <script
+        src="https://widgets.leadconnectorhq.com/loader.js"
+        data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
+        data-widget-id="6a852810ecd7aeb8c7a08b5c"
+        data-source="WEB_USER"
+        defer
+      ></script>
+    )}
   </body>
 </html>
 
