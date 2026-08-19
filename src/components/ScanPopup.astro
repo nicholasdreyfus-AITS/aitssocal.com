@@ -25,21 +25,50 @@
 <script is:inline>
   (function () {
     var SEEN_KEY = 'aits_scan_fab_seen';
-    var DELAY_MS = 6000;
+    var OPEN_AFTER_MS = 20000; // expand 20s in — past the initial page scan
+    var CLOSE_AFTER_MS = 60000; // then tidy itself away after a minute open
+    var RESUME_AFTER_MS = 15000; // shorter re-arm once they stop interacting
     var fab = document.getElementById('scanFab');
     var closeBtn = document.getElementById('scanFabClose');
     if (!fab) return;
 
+    var closeTimer = null;
+
+    function collapse() {
+      clearTimeout(closeTimer);
+      fab.classList.remove('expanded');
+      // Mark seen either way: auto-collapse still counts as their look, so it
+      // does not reopen later in the session and start nagging.
+      sessionStorage.setItem(SEEN_KEY, '1');
+    }
+
+    function armClose(ms) {
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(collapse, ms);
+    }
+
     if (!sessionStorage.getItem(SEEN_KEY)) {
       setTimeout(function () {
         fab.classList.add('expanded');
-      }, DELAY_MS);
+        armClose(CLOSE_AFTER_MS);
+      }, OPEN_AFTER_MS);
     }
 
-    function collapse() {
-      fab.classList.remove('expanded');
-      sessionStorage.setItem(SEEN_KEY, '1');
-    }
+    // Never yank the card away mid-read. Pause the countdown while the
+    // pointer or keyboard focus is inside it, and re-arm once they leave.
+    fab.addEventListener('mouseenter', function () {
+      clearTimeout(closeTimer);
+    });
+    fab.addEventListener('focusin', function () {
+      clearTimeout(closeTimer);
+    });
+    fab.addEventListener('mouseleave', function () {
+      if (fab.classList.contains('expanded')) armClose(RESUME_AFTER_MS);
+    });
+    fab.addEventListener('focusout', function (e) {
+      if (fab.contains(e.relatedTarget)) return;
+      if (fab.classList.contains('expanded')) armClose(RESUME_AFTER_MS);
+    });
 
     if (closeBtn) {
       closeBtn.addEventListener('click', function (e) {
