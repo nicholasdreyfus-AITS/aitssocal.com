@@ -14,6 +14,7 @@ const year = new Date().getFullYear();
     </div>
     <ul class="footer-links">
       {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      <li><a href="/privacy">Privacy</a></li>
       <li><a href={`tel:${BUSINESS.phone}`}>{BUSINESS.phoneDisplay}</a></li>
     </ul>
   </div>
