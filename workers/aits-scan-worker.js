@@ -634,6 +634,11 @@ function reportHtml(lead, c, note, answers, clientUrl, opts) {
     ["Email", `<a href="mailto:${esc(lead.email)}" style="color:#3b6ef0">${esc(lead.email)}</a>`],
     ["Cell", esc(lead.cell)],
     (lead.contact && lead.contact.length) ? ["Best contact", `<strong>${esc(lead.contact.join(" / "))}</strong>`] : null,
+    // TCPA: state plainly whether this number may be texted. "Best contact:
+    // Text" is a preference, NOT consent — only the checkbox is consent.
+    ["Texting", lead.smsConsent
+      ? `<strong style="color:#0a7d5a">OK to text</strong> <span style="color:#6b7280">— consented ${esc(lead.smsConsentAt || "")}</span>`
+      : `<strong style="color:#b91c1c">DO NOT TEXT</strong> <span style="color:#6b7280">— no SMS consent given (call or email instead)</span>`],
   ].filter(Boolean).map((r) => `<tr><td style="padding:2px 12px 2px 0;color:#6b7280;font-size:13px;white-space:nowrap">${r[0]}</td><td style="padding:2px 0;font-size:13px;color:#111827">${r[1]}</td></tr>`).join("") : "";
 
   const answersHtml = internal ? Object.entries(answers || {})
@@ -847,6 +852,9 @@ async function handleLead(body, env, json) {
     company: lead.company,
     website: lead.website || "",
     best_contact: (lead.contact || []).join(", "),
+    // Drives SMS suppression in CRM automation — never text without this true.
+    sms_consent: lead.smsConsent ? "yes" : "no",
+    sms_consent_at: lead.smsConsentAt || "",
     ai_risk_score: c.score,
     risk_band: c.band,
     shadow_ai: c.shadowLevel,
@@ -860,6 +868,9 @@ async function handleLead(body, env, json) {
     ts: new Date().toISOString(),
     name: lead.name, company: lead.company, email: lead.email, cell: lead.cell,
     website: lead.website || "", contact: lead.contact || [],
+    // Full consent record: flag, timestamp, and the exact wording displayed.
+    smsConsent: !!lead.smsConsent, smsConsentAt: lead.smsConsentAt || "",
+    smsConsentText: lead.smsConsentText || "",
     score: c.score, band: c.band,
     audit: audit && audit.ok ? `${audit.passes}/${audit.total}` : (audit && audit.error) || "n/a",
     clientEmail: client.ok ? "sent" : "failed: " + client.detail,
