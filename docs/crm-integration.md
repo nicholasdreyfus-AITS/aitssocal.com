@@ -28,6 +28,50 @@ placeholder slots — this doc is the checklist for connecting the real account.
    mailto fallback to the embedded form.
 5. Rebuild + deploy.
 
+## 2b. Email sending domains — current DNS state (audited 2026-08-18)
+
+Live DNS for `aits.llc`:
+
+| Record | Value | Meaning |
+|---|---|---|
+| `aits.llc` MX | `aits-llc.mail.protection.outlook.com` | Microsoft 365 receives mail |
+| `aits.llc` TXT | `v=spf1 include:secureserver.net -all` | SPF authorizes GoDaddy infra, **hard fail** on anything else |
+| `send.aits.llc` MX | `feedback-smtp.us-east-1.amazonses.com` | Resend's bounce path (Resend runs on SES) |
+| `resend._domainkey.aits.llc` | present | Resend DKIM |
+
+**Resend is correctly isolated and is not at risk.** It sends with the return-path on
+`send.aits.llc` and signs DKIM on the root, so SPF and DKIM both align there. The root SPF record
+does not affect it.
+
+> ⚠️ **Verify before scaling outbound:** the root SPF authorizes `secureserver.net` (GoDaddy)
+> while mail is Microsoft 365, and it ends in `-all` (hard fail). If Gavin sends from Outlook as
+> gavin@aits.llc, confirm SPF actually passes — send a message to a Gmail address and check
+> "Show original" for `spf=pass`. If it fails, the record needs
+> `include:spf.protection.outlook.com` added. Not urgent for transactional mail (that's Resend),
+> but it matters the moment real outbound volume starts.
+
+### Why `mail.aits.llc` for GHL (and not the root)
+
+Keeping three sending paths on separate names isolates reputation — a bulk send that draws
+complaints cannot damage the domain that carries client reports or Gavin's real mail:
+
+- `aits.llc` — human mail (Microsoft 365)
+- `send.aits.llc` — transactional (Resend: scan reports, notifications) — **already working**
+- `mail.aits.llc` — marketing/nurture (GHL) — to be added
+
+### Getting the records (they cannot be pre-written)
+
+DKIM keys are generated per-account, so the exact values only exist once the domain is added
+inside GHL. Sequence:
+
+1. GHL → **Settings → Email Services → Dedicated Domain / Domain Setup**
+2. Add `mail.aits.llc`
+3. GHL displays a set of CNAME/TXT (and possibly MX) records
+4. Add them in **Cloudflare** DNS — set every one to **DNS only (grey cloud)**, never proxied;
+   proxying mail records breaks them
+5. Return to GHL and click verify — propagation is usually minutes on Cloudflare
+6. Warm up before volume: start ~15 sends/day, ramp to ~25/day
+
 ## 3. Scheduling — retire Calendly, move to GHL
 
 **Decision (Nick, this session): all scheduling moves to GHL.** Calendly is an unnecessary

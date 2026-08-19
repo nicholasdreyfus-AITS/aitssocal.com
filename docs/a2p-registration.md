@@ -21,14 +21,25 @@ Prepared 2026-08-18. Companion to [`crm-integration.md`](./crm-integration.md).
 
 | Field | Value |
 |---|---|
-| Legal company name | `NGD Enterprises LLC` — **must match EIN exactly**, watch `LLC` vs `L.L.C.` |
+| Legal company name | `NGD ENTERPRISES LLC` — verified against the EIN letter 2026-08-18 |
 | DBA / brand name | `AITS` |
 | EIN | see `Documents\Nick\AITS\LLC Information\EIN Information.pdf` |
 | Entity type | Private Company / LLC |
 | Vertical | Professional Services (or Technology) |
 | Website | `https://aits.llc` |
-| Address | same as the GHL business profile |
+| Address | **must be the address on the EIN letter** — `6856 Deerrun Pl, San Diego, CA 92120` |
 | Contact | Gavin Dreyfus · gavin@aits.llc · (619) 837-3320 |
+
+**Confirmed from the EIN letter (2026-08-18):**
+
+- Legal name is exactly `NGD ENTERPRISES LLC` — no `L.L.C.` punctuation variant to worry about.
+- **No trade name is recorded with the IRS.** The second line is the member/responsible party
+  (`NICHOLAS ADAM DREYFUS MBR`), not a DBA. So "AITS" exists as a brand, not as an
+  IRS-registered trade name — which is fine for A2P (the DBA field is informational), but see
+  the DBA note in [`crm-integration.md`](./crm-integration.md) for banking and contracts.
+- Brand vetting matches legal name + EIN + **address** against IRS records, so use the EIN
+  letter's address even though it is a home address. This is a regulatory filing, not public
+  publishing — that address must still never appear on the website or in LocalBusiness schema.
 
 ## Campaign
 
