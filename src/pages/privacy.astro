@@ -12,6 +12,10 @@ import { BUSINESS } from '../consts';
 // A legal document has to name the real entity, so it does not use
 // SITE.legalName (which is the brand expansion, not the registered name).
 const LEGAL_ENTITY = 'NGD Enterprises LLC';
+// Trade name is written out in full on first use, then "AITS" throughout —
+// a legal document should identify the business by the name it actually
+// trades under, not just the acronym.
+const TRADE_NAME = 'Advanced Intelligent Technology Solutions (AITS)';
 const EFFECTIVE = 'August 18, 2026';
 ---
 
@@ -32,7 +36,7 @@ const EFFECTIVE = 'August 18, 2026';
       <div class="prose policy">
         <p>
           This Privacy Policy applies to <strong>{LEGAL_ENTITY}</strong>, doing business as
-          <strong>AITS</strong> ("AITS," "we," "us"), and to the website at
+          <strong>{TRADE_NAME}</strong> ("AITS," "we," "us"), and to the website at
           <a href="https://aits.llc">aits.llc</a> and the tools we provide through it.
         </p>
 
@@ -151,7 +155,8 @@ const EFFECTIVE = 'August 18, 2026';
 
         <h2>Contact us</h2>
         <p>
-          <strong>{LEGAL_ENTITY} d/b/a AITS</strong><br />
+          <strong>{LEGAL_ENTITY}</strong><br />
+          d/b/a {TRADE_NAME}<br />
           {BUSINESS.city}, {BUSINESS.region}<br />
           Email: <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a><br />
           Phone: <a href={`tel:${BUSINESS.phone}`}>{BUSINESS.phoneDisplay}</a>
