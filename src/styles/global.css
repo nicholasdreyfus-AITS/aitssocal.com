@@ -391,20 +391,15 @@ a.card:focus-visible .reveal-list {
 }
 
 /* ---------- GHL / LeadConnector chat widget position ----------
-   Move the chat widget to the BOTTOM-LEFT. It ships bottom-right, which
-   collides with the "Free AI Risk Scan" button (.scan-fab) that also lives
-   bottom-right — see ScanPopup.astro.
+   The widget ships bottom-right, colliding with the "Free AI Risk Scan"
+   button (.scan-fab), which is also bottom-right — see ScanPopup.astro.
 
-   GHL exposes no position setting, so this overrides the widget host from
-   outside. The widget renders as a custom element and positions itself
-   fixed; overriding left/right on the host moves it. If a future widget
-   build nests the positioned element inside shadow DOM, external CSS can no
-   longer reach it and this stops working — in that case the fix is to move
-   .scan-fab to the left instead, which we fully control. */
-chat-widget,
-chat-widget * [class*="chat-widget"],
-#chat-widget,
-.chat-widget {
-  left: 20px !important;
-  right: auto !important;
-}
+   NOTE: position is NOT controllable from here, so there is deliberately no
+   rule below. The loader applies "position: fixed" to the <chat-widget> host
+   inline, but the actual left/right offset is set inside the widget's shadow
+   DOM, which external CSS cannot reach. The loader reads a "widget-placement"
+   key from the widget config, so placement is a setting in GHL's
+   "Customise widget" panel.
+
+   If that setting is unavailable, the reliable fallback is moving .scan-fab
+   to the left instead — that element we fully control. */
