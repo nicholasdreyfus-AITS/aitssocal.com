@@ -59,7 +59,50 @@ complaints cannot damage the domain that carries client reports or Gavin's real 
 - `send.aits.llc` — transactional (Resend: scan reports, notifications) — **already working**
 - `mail.aits.llc` — marketing/nurture (GHL) — to be added
 
-### Getting the records (they cannot be pre-written)
+### ✅ DONE 2026-08-19 — GHL sends from `m.aits.llc`
+
+Set up and verified. Dedicated Header: `AITS` / `gavin@aits.llc`. SSL issued, shared IP
+active, warmup Stage 1.
+
+**Why `m.` and not `send.`:** GHL's setup wizard defaults to `send.<domain>`, which is
+already Resend's bounce subdomain. Clicking **Auto-Configure DNS** let GHL overwrite
+`send.aits.llc` MX from `feedback-smtp.us-east-1.amazonses.com` (Resend) to
+`mxa/mxb.mailgun.org` (Mailgun) **without warning**, and appended its includes to Resend's
+SPF. That silently broke Resend's bounce handling for the scan report emails.
+
+> ⚠️ **Never use Auto-Configure DNS.** Always take the manual record list and add them by
+> hand. It does not check for conflicts with existing records.
+
+Repaired by restoring `send.aits.llc` MX to `feedback-smtp.us-east-1.amazonses.com` (pri 10),
+stripping `include:mailgun.org include:spf.leadconnectorhq.com` back out of the `send` SPF,
+and deleting GHL's `k1._domainkey.send` and `email.send` records.
+
+**Records now on `m.aits.llc`** (all DNS-only / grey cloud — proxying breaks them; a proxied
+CNAME also makes GHL's verification fail because Cloudflare hides the real target):
+
+| Type | Name | Value |
+|---|---|---|
+| TXT | `m` | `v=spf1 include:spf.leadconnectorhq.com include:mailgun.org ~all` |
+| TXT | `mailo._domainkey.m` | DKIM (selector is `mailo`, not `k1`) |
+| CNAME | `email.m` | `mailgun.org` |
+| MX | `m` | `mxa.mailgun.org` pri 10 |
+| MX | `m` | `mxb.mailgun.org` pri 10 |
+| TXT | `_dmarc.m` | `v=DMARC1;p=none;` |
+
+Note GHL's manual-setup modal only listed 5 records — `_dmarc.m` appeared later on the verify
+screen. Check the verify screen for extras.
+
+**Three sending paths, deliberately separate**, so a bad bulk send cannot damage the domain
+carrying client reports or Gavin's real mail:
+
+- `aits.llc` — Microsoft 365, human mail
+- `send.aits.llc` — Resend, transactional (scan reports)
+- `m.aits.llc` — GHL, marketing/nurture
+
+**Warmup:** ignore GHL's "aim to reach your daily limit" prompt. Start ~15/day, ramp to
+~25/day over two weeks. A fresh domain sending 1,000/day gets filtered.
+
+### Getting the records (historical — how the manual list is obtained)
 
 DKIM keys are generated per-account, so the exact values only exist once the domain is added
 inside GHL. Sequence:
