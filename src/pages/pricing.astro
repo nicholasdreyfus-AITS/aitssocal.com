@@ -1,0 +1,150 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+
+const offers = [
+  {
+    step: 'Foundation',
+    name: 'Website and brand',
+    price: '$750',
+    cadence: 'one-time, starting at',
+    description: 'A conversion-ready website and brand foundation. Skip this step if you already have a site and identity you are happy with.',
+    points: ['Website and logo redesign as needed', 'Built for a clear customer journey', 'Approve the work before you pay'],
+  },
+  {
+    step: 'Core system',
+    name: 'Lead system',
+    price: '$297',
+    cadence: 'per month, starting at',
+    featured: true,
+    description: 'GoHighLevel configured as the operating system behind your leads, without agentic AI services bundled into the base price.',
+    points: ['Lead capture and organization', 'Pipeline and follow-up foundation', 'Scheduling and conversion flow setup'],
+  },
+  {
+    step: 'Growth add-ons',
+    name: 'More qualified traffic',
+    price: '$450',
+    cadence: 'per month, starting at',
+    description: 'Add visibility services only when your website and lead system are ready to convert the traffic they generate.',
+    points: ['SEO and AEO from $450/month', 'Social media from $550/month', 'Measured and expanded around your goals'],
+  },
+];
+
+const addOns = [
+  { name: 'AI receptionist', price: 'From $450/month', detail: 'Answers, qualifies, and helps route or book new opportunities.' },
+  { name: 'SEO and AEO', price: 'From $450/month', detail: 'Improves visibility in search engines and AI-generated answers.' },
+  { name: 'Social media management', price: 'From $550/month', detail: 'Builds a consistent presence designed to send more qualified visitors to your site.' },
+  { name: 'Bespoke automations', price: 'Typically $250–$500/month each', detail: 'Purpose-built workflows based on the time, cost, or opportunity they can recover.' },
+];
+
+const pricingSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'AITS pricing and service options',
+  itemListElement: [
+    { '@type': 'Offer', position: 1, name: 'Website and brand redesign', price: '750', priceCurrency: 'USD', description: 'Starting one-time price.' },
+    { '@type': 'Offer', position: 2, name: 'AITS lead system', price: '297', priceCurrency: 'USD', description: 'Starting monthly price.' },
+    { '@type': 'Offer', position: 3, name: 'AI receptionist', price: '450', priceCurrency: 'USD', description: 'Starting monthly add-on price.' },
+    { '@type': 'Offer', position: 4, name: 'SEO and AEO', price: '450', priceCurrency: 'USD', description: 'Starting monthly add-on price.' },
+    { '@type': 'Offer', position: 5, name: 'Social media management', price: '550', priceCurrency: 'USD', description: 'Starting monthly add-on price.' },
+  ].map((item) => ({ ...item, seller: { '@id': `${SITE.url}/#organization` } })),
+};
+---
+
+<BaseLayout
+  title="Small Business AI and Lead System Pricing"
+  description="AITS pricing starts at $297/month for a GoHighLevel lead-system foundation. Add AI receptionist, SEO/AEO, social media, and bespoke automations only as needed."
+  path="/pricing"
+  schemas={[pricingSchema]}
+>
+  <section class="section pricing-hero">
+    <div class="container narrow">
+      <span class="section-label">Simple starting points</span>
+      <h1 class="section-heading">Start with the system you need.<br /><em>Add intelligence as you grow.</em></h1>
+      <p class="section-sub">
+        AITS gives small and mid-sized businesses a practical path into better technology. The
+        $297 monthly starting point is your GoHighLevel lead-system foundation. AI agents and
+        growth services are separate, so you only add what creates value for your business.
+      </p>
+      <div class="hero-actions">
+        <a href="/contact" class="btn-primary">Book a free 30-minute assessment →</a>
+        <a href="#add-ons" class="btn-secondary">See optional add-ons</a>
+      </div>
+      <p class="fine">Month-to-month after launch. No long-term lock-in. Final scope is bespoke to your business.</p>
+    </div>
+  </section>
+
+  <section class="section compact">
+    <div class="container">
+      <div class="offer-grid">
+        {offers.map((offer) => (
+          <article class:list={['offer-card', { featured: offer.featured }]}>
+            <span class="eyebrow">{offer.step}</span>
+            <h2>{offer.name}</h2>
+            <div class="price">{offer.price}</div>
+            <div class="cadence">{offer.cadence}</div>
+            <p>{offer.description}</p>
+            <ul>{offer.points.map((point) => <li>{point}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section compact" id="add-ons">
+    <div class="container">
+      <span class="section-label">Optional services</span>
+      <h2 class="section-heading">Build the next advantage when it is useful.</h2>
+      <p class="section-sub">These are not included in the $297 lead-system starting price.</p>
+      <div class="addon-list">
+        {addOns.map((addon) => (
+          <article class="addon-row">
+            <div><h3>{addon.name}</h3><p>{addon.detail}</p></div>
+            <strong>{addon.price}</strong>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section compact">
+    <div class="container value-panel">
+      <div>
+        <span class="section-label">Built for SMBs</span>
+        <h2>Enterprise discipline without enterprise overhead.</h2>
+        <p>We keep the foundation accessible, add services only when they solve a real problem, and show you the expected value before recommending more technology.</p>
+      </div>
+      <a href="/contact" class="btn-primary">See what your business needs →</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .pricing-hero { padding-bottom: 42px; }
+  .narrow { max-width: 880px; text-align: center; }
+  .narrow .section-sub { margin-inline: auto; }
+  .hero-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+  .fine { margin-top: 16px; color: var(--muted); font-size: 13px; }
+  .compact { padding-top: 44px; padding-bottom: 44px; }
+  .offer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .offer-card { background: rgba(13, 18, 29, .82); border: 1px solid var(--border2); border-radius: var(--radius); padding: 28px; }
+  .offer-card.featured { border-color: rgba(0, 201, 167, .55); box-shadow: 0 18px 50px rgba(0, 201, 167, .08); }
+  .eyebrow { color: var(--teal2); font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+  .offer-card h2 { font-family: var(--fran); font-size: 23px; margin: 10px 0 18px; }
+  .price { font-family: var(--fran); font-size: 46px; color: var(--text); line-height: 1; }
+  .cadence { color: var(--muted); font-size: 12px; margin-top: 6px; }
+  .offer-card p { color: var(--muted); line-height: 1.65; margin: 20px 0; }
+  .offer-card ul { list-style: none; display: grid; gap: 10px; }
+  .offer-card li { color: var(--text2); font-size: 14px; padding-left: 20px; position: relative; }
+  .offer-card li::before { content: '✓'; position: absolute; left: 0; color: var(--teal2); }
+  .addon-list { margin-top: 28px; border-top: 1px solid var(--border2); }
+  .addon-row { display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; padding: 24px 4px; border-bottom: 1px solid var(--border2); }
+  .addon-row h3 { font-size: 18px; margin-bottom: 6px; }
+  .addon-row p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .addon-row strong { color: var(--teal2); text-align: right; }
+  .value-panel { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 34px; border: 1px solid rgba(59, 110, 240, .35); border-radius: var(--radius); background: rgba(59, 110, 240, .06); }
+  .value-panel h2 { font-family: var(--fran); font-size: clamp(28px, 4vw, 40px); margin: 8px 0 10px; }
+  .value-panel p { color: var(--muted); max-width: 690px; line-height: 1.65; }
+  @media (max-width: 900px) { .offer-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 680px) { .addon-row, .value-panel { grid-template-columns: 1fr; display: grid; } .addon-row strong { text-align: left; } }
+</style>

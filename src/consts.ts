@@ -13,10 +13,10 @@ export const SITE = {
   fullName: 'Advanced Intelligent Technology Solutions',
   url: 'https://aits.llc',
   // Homepage <title> — keyword-rich for SEO/AEO. (OG site name is SITE.name.)
-  title: 'AITS — Managed AI for Small Business, One Flat Fee',
+  title: 'AITS — Lead Systems and Managed AI for Small Business',
   tagline: 'AI that still works in month three.',
   description:
-    'AITS is built on 25+ years of deploying technology that keeps working: tested, monitored, and fixed — for one flat monthly fee, nationwide.',
+    'AITS builds affordable lead systems, managed AI, and growth services for small and mid-sized businesses nationwide.',
   // Default social share image (place a 1200x630 PNG at /public/og-default.png).
   defaultOgImage: '/og-default.png',
   locale: 'en_US',
@@ -69,6 +69,7 @@ export const DISCLAIMER = {
 
 export const NAV = [
   { label: 'Services', href: '/services' },
+  { label: 'Pricing', href: '/pricing' },
   { label: 'About', href: '/about' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },

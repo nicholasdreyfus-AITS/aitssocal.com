@@ -220,7 +220,7 @@ const allSchemas = [...baseSchemas, ...schemas];
             alt=""
             width="300"
             height="300"
-            loading="eager"
+            loading="lazy"
           />
           <span class="alexis-chat-launcher__status" aria-hidden="true"></span>
         </button>
@@ -260,10 +260,14 @@ const allSchemas = [...baseSchemas, ...schemas];
             });
 
             const observer = new MutationObserver(syncLauncher);
+            let attempts = 0;
+            const maxAttempts = 80;
             const connect = () => {
               const widgetHost = document.querySelector('chat-widget');
               const widgetButton = getWidgetButton();
               if (!widgetHost || !(widgetButton instanceof HTMLButtonElement)) {
+                attempts += 1;
+                if (attempts >= maxAttempts) return;
                 window.setTimeout(connect, 150);
                 return;
               }

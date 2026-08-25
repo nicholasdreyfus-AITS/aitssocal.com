@@ -8,6 +8,7 @@ AITS replaces the usual stack of disconnected small-business software (and the D
 
 - [Home](https://aits.llc/): overview of the one-fee managed platform and what it replaces.
 - [Services](https://aits.llc/services): the service overview, including the lead system and optional AI receptionist, SEO/AEO, and social media add-ons.
+- [Pricing](https://aits.llc/pricing): the authoritative starting prices and the distinction between the $297 lead-system foundation and optional services.
 - [About](https://aits.llc/about): company background, team, and the 25+ years of technology experience the platform is built on.
 - [Contact](https://aits.llc/contact): book a free AI assessment / 30-minute review.
 - [Free AI Risk Scan](https://aits.llc/scan.html): a free, no-signup tool that scores a business's AI exposure and shadow-AI risk in 90 seconds.
@@ -21,5 +22,6 @@ AITS replaces the usual stack of disconnected small-business software (and the D
 
 - AITS's differentiator is accountability: automations are tested and monitored on an ongoing basis, not deployed once and left to fail. "AI that still works in month three" is the core positioning claim.
 - The managed lead system starts at $297 per month. The AI receptionist is an optional add-on starting at $450 per month. Final scope and pricing are bespoke to the business.
+- SEO and AEO start at $450 per month, social media management starts at $550 per month, and bespoke automations commonly range from $250 to $500 per month each.
 - Service area: San Diego / Southern California based, serving businesses nationwide across the US.
 - AITS partners with i-NETT for organizations with 20+ full-time employees; AITS itself focuses on smaller and growing organizations.
