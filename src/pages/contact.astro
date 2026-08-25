@@ -15,6 +15,8 @@ const expect = [
   { n: '02', h: 'You get a real plan', p: 'A prioritized list of AI opportunities ranked by ROI — yours to keep whether we work together or not.' },
   { n: '03', h: 'A win in 30 days', p: 'If we do work together, your highest-value automation goes live fast enough for the whole team to feel it.' },
 ];
+const bookingUrl = 'https://api.leadconnectorhq.com/widget/booking/MmJlaUefrCV2ah3CWyu4';
+const proxyUrl = 'https://aits-scan.nicholasdreyfus.workers.dev/contact';
 ---
 
 <BaseLayout
@@ -36,7 +38,7 @@ const expect = [
             Already know you want to talk? Book a free 30-minute call with the AITS team right
             now — no forms, no waiting.
           </p>
-          <a href="https://calendly.com/gavin-aits" class="btn-primary" target="_blank" rel="noopener">Book 30 minutes →</a>
+          <a href={bookingUrl} class="btn-primary" target="_blank" rel="noopener">Book 30 minutes →</a>
         </BorderBeam>
         <BorderBeam dual={true} class="cta-option cta-option-scan" tag="div">
           <span class="cta-option-eyebrow">90 seconds</span>
@@ -47,6 +49,24 @@ const expect = [
           </p>
           <a href="/risk-scan" class="btn-primary">Start the free scan →</a>
         </BorderBeam>
+      </div>
+
+      <div class="contact-form-wrap">
+        <span class="section-label">Send us a message</span>
+        <h2>Tell us what you want to improve.</h2>
+        <p>Every submission goes directly to Nick and Gavin. We will reply by email or phone.</p>
+        <form id="contactForm" data-endpoint={proxyUrl} novalidate>
+          <div class="form-grid">
+            <label><span>Name</span><input name="name" autocomplete="name" required /></label>
+            <label><span>Company</span><input name="company" autocomplete="organization" /></label>
+            <label><span>Work email</span><input name="email" type="email" autocomplete="email" required /></label>
+            <label><span>Phone</span><input name="phone" type="tel" autocomplete="tel" required /></label>
+          </div>
+          <label><span>How can we help?</span><textarea name="message" rows="5" required></textarea></label>
+          <div class="form-hp" aria-hidden="true"><label>Website<input name="company_website" tabindex="-1" autocomplete="off" /></label></div>
+          <button class="btn-primary" type="submit" id="contactSubmit">Send my message →</button>
+          <p id="contactStatus" class="form-status" role="status" aria-live="polite"></p>
+        </form>
       </div>
 
       <p class="section-sub cta-sub-note">
@@ -102,6 +122,30 @@ const expect = [
   </section>
 </BaseLayout>
 
+<script>
+  const contactForm = document.getElementById('contactForm') as HTMLFormElement | null;
+  contactForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const submit = document.getElementById('contactSubmit') as HTMLButtonElement;
+    const status = document.getElementById('contactStatus') as HTMLElement;
+    const values = new FormData(contactForm);
+    if (!contactForm.reportValidity()) return;
+    submit.disabled = true; submit.textContent = 'Sending…'; status.textContent = '';
+    try {
+      const response = await fetch(contactForm.dataset.endpoint || '', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: values.get('name'), company: values.get('company'), email: values.get('email'), phone: values.get('phone'), message: values.get('message'), company_website: values.get('company_website'), attribution: (window as any).aitsAttribution || {} }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.ok !== true) throw new Error(result.error || 'We could not send that message.');
+      contactForm.reset(); status.className = 'form-status is-ok'; status.textContent = 'Message received. Nick or Gavin will follow up shortly.';
+      (window as any).aitsTrack?.('generate_lead', { form_name: 'contact', page_path: location.pathname });
+    } catch (error) {
+      status.className = 'form-status is-error'; status.textContent = (error instanceof Error ? error.message : 'We could not send that message.') + ' Please call (619) 837-3320.';
+    } finally { submit.disabled = false; submit.textContent = 'Send my message →'; }
+  });
+</script>
+
 <style>
   .contact-grid {
     display: grid;
@@ -109,6 +153,18 @@ const expect = [
     gap: 14px;
     margin-bottom: 48px;
   }
+  .contact-form-wrap { margin: 0 0 56px; padding: 32px; background: #0a0d17; border: 1px solid rgba(59,110,240,.35); border-radius: var(--radius); }
+  .contact-form-wrap h2 { margin: 6px 0 8px; }
+  .contact-form-wrap > p { color: var(--muted); margin-bottom: 22px; }
+  .form-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  #contactForm label { display:block; margin-bottom:16px; }
+  #contactForm label > span { display:block; color:var(--teal2); font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px; }
+  #contactForm input, #contactForm textarea { width:100%; padding:13px 14px; color:var(--text); background:var(--bg); border:1px solid var(--border3); border-radius:10px; font:inherit; }
+  #contactForm input:focus, #contactForm textarea:focus { outline:2px solid var(--accent); outline-offset:1px; }
+  .form-hp { position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+  .form-status { margin-top:12px; min-height:22px; }
+  .form-status.is-ok { color:var(--teal2); }
+  .form-status.is-error { color:#ff7a93; }
   .contact-card {
     display: block;
     color: inherit;
@@ -230,5 +286,6 @@ const expect = [
     .contact-cta-grid {
       grid-template-columns: 1fr;
     }
+    .form-grid { grid-template-columns:1fr; gap:0; }
   }
 </style>

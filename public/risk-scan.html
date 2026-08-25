@@ -335,7 +335,7 @@
   <div class="footer">AITS · aits.llc · (619) 837-3320<br><a href="mailto:gavin@aits.llc">gavin@aits.llc</a></div>
 </div>
 
-<!-- CALENDLY MODAL -->
+<!-- GOHIGHLEVEL BOOKING MODAL -->
 <div class="cal-overlay" id="calOverlay">
   <div class="cal-box">
     <div class="cal-header">
@@ -343,7 +343,7 @@
       <button class="cal-close" id="calClose">✕</button>
     </div>
     <iframe class="cal-frame" id="calFrame"
-      src="https://calendly.com/gavin-aits?embed_domain=aits.llc&embed_type=Inline&hide_gdpr_banner=1"
+      src="https://api.leadconnectorhq.com/widget/booking/MmJlaUefrCV2ah3CWyu4"
       frameborder="0" scrolling="yes"></iframe>
   </div>
 </div>
@@ -353,6 +353,17 @@
 // renders complete even if the AI backend is unreachable. The Worker call
 // only enhances the Analyst Note with a personalized paragraph.
 var PROXY_URL = "https://aits-scan.nicholasdreyfus.workers.dev";
+function getAttribution(){
+  var keys=["utm_source","utm_medium","utm_campaign","utm_term","utm_content","gclid","fbclid","msclkid"];
+  var params=new URLSearchParams(location.search), data={};
+  try{data=JSON.parse(sessionStorage.getItem("aits_attribution")||"{}");}catch(e){}
+  keys.forEach(function(k){if(params.get(k))data[k]=params.get(k);});
+  if(!data.first_landing_page)data.first_landing_page=location.href;
+  if(!data.first_referrer)data.first_referrer=document.referrer||"direct";
+  data.current_page=location.href; data.captured_at=data.captured_at||new Date().toISOString();
+  try{sessionStorage.setItem("aits_attribution",JSON.stringify(data));}catch(e){}
+  return data;
+}
 
 var QUESTIONS = [
   {id:"industry",label:"What industry are you in?",type:"single",options:["Healthcare / Medical","Legal","Financial services","Construction / Trades","Professional services","Retail / E-commerce","Real estate","Education / Schools","Nonprofit","Technology","Other"]},
@@ -920,12 +931,14 @@ function submitLead(lead){
         hours:currentReport.hoursVal,
         findings:currentReport.findings.map(function(f){return {tag:f.tag,headline:f.head,detail:f.detail,fix:f.fix,sev:f.sev,prev:f.prev};})
       },
-      analystNote:aiNote||currentReport.fallbackNote
+      analystNote:aiNote||currentReport.fallbackNote,
+      attribution:getAttribution()
     })
   }).catch(function(){/* best-effort; the visitor already has their report */});
 }
 
-// Fired when the Calendly widget reports a completed booking. Re-sends the
+// Legacy callback retained for older embeds. GoHighLevel now owns live
+// appointment confirmation and internal booking notifications.
 // same lead/report data already in memory (the Worker is stateless) so it
 // can send the short "thanks for booking" confirmation with the same
 // client-limited PDF attached. keepalive so the request survives the
@@ -951,13 +964,6 @@ function notifyBooked(){
     }).catch(function(){/* best-effort; Calendly's own confirmation still lands */});
   }catch(e){}
 }
-
-window.addEventListener("message",function(e){
-  if(e.data&&e.data.event&&e.data.event==="calendly.event_scheduled"){
-    notifyBooked();
-    window.location.href="/thank-you.html";
-  }
-});
 
 function esc2(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 
@@ -1105,5 +1111,6 @@ function buildTextPdf(lead,r,note){
   }catch(e){return null;}
 }
 </script>
+<script src="https://links.aits.llc/js/external-tracking.js" data-tracking-id="tk_528469007c9c48eea6d3b30f27d2c96b" defer></script>
 </body>
 </html>

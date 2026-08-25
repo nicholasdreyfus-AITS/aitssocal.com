@@ -90,6 +90,7 @@ const mailto =
           body: JSON.stringify({
             email,
             company_website: (form.elements.namedItem('company_website') as HTMLInputElement).value,
+            attribution: (window as any).aitsAttribution || {},
           }),
         });
         const data = await res.json().catch(() => ({}));
@@ -104,6 +105,7 @@ const mailto =
         // reads as done, rather than an empty box that invites a re-submit.
         form.innerHTML =
           '<p class="nl-status is-ok">You’re on the list. Watch for the next post.</p>';
+        (window as any).aitsTrack?.('newsletter_signup', { page_path: location.pathname });
       } catch (err) {
         btn.disabled = false;
         btn.textContent = original;

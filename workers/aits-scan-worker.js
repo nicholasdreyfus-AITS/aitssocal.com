@@ -36,8 +36,8 @@ const CLIENT_UNLOCKED_FINDINGS = 3;
 // booking/verification framing (never the pre-form "fill out the form" one).
 const LOCKED_FINDING_NOTE = "This finding stays locked for security — until we've confirmed it's genuinely someone from your organization asking. Book your free, no-obligation 30-minute review and we'll verify who we're talking to; you'll have the complete write-up in hand right after the call.";
 
-const NOTIFY_TO = ["gavin@aits.llc"];
-const NOTIFY_CC = ["nick@aitssocal.com"];
+const NOTIFY_TO = ["gavin@aits.llc", "nick@aitssocal.com"];
+const NOTIFY_CC = [];
 const NOTIFY_FROM = "AITS <scan@aits.llc>";
 const REPLY_TO = "gavin@aits.llc";
 const LOGO_URL = "https://aits.llc/images/aits-logo-flat.jpg"; // pre-flattened on brand navy
@@ -760,6 +760,35 @@ function bookingConfirmationEmailHtml(lead) {
 // Push a captured lead into GoHighLevel via an Inbound-Webhook workflow trigger.
 // No-op unless GHL_WEBHOOK_URL is set; never blocks or fails the email flow.
 async function postToGHL(env, data) {
+  if (env.GHL_PRIVATE_TOKEN) {
+    try {
+      const campaign = [data.utm_source, data.utm_medium, data.utm_campaign].filter(Boolean).join(" / ");
+      const payload = {
+        locationId: env.GHL_LOCATION_ID || "qFOICt5rKebJNLpqVPyD",
+        name: data.name || "",
+        email: data.email || "",
+        phone: data.phone || "",
+        companyName: data.company || "",
+        website: data.website || "",
+        source: campaign ? `${data.source} | ${campaign}` : data.source,
+        tags: [...new Set([...(data.tags || []), "aits-website-lead", `source-${String(data.source || "website").toLowerCase().replace(/[^a-z0-9]+/g, "-")}`])],
+      };
+      const r = await fetch("https://services.leadconnectorhq.com/contacts/upsert", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.GHL_PRIVATE_TOKEN}`,
+          Version: "v3",
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      return { ok: r.ok, method: "private-integration", detail: r.ok ? "" : (await r.text().catch(() => "")).slice(0, 300) };
+    } catch (e) {
+      console.log("GHL private integration failed: " + e.message);
+      return { ok: false, method: "private-integration", error: e.message };
+    }
+  }
   if (!env.GHL_WEBHOOK_URL) return { skipped: true };
   try {
     const r = await fetch(env.GHL_WEBHOOK_URL, {
@@ -772,6 +801,14 @@ async function postToGHL(env, data) {
     console.log("GHL push failed: " + e.message);
     return { ok: false, error: e.message };
   }
+}
+
+function attributionFields(body) {
+  const a = (body && body.attribution) || {};
+  const allowed = ["utm_source","utm_medium","utm_campaign","utm_term","utm_content","gclid","fbclid","msclkid","first_landing_page","first_referrer","current_page","captured_at"];
+  const out = {};
+  allowed.forEach((key) => { if (a[key]) out[key] = String(a[key]).slice(0, 1000); });
+  return out;
 }
 
 async function sendResend(env, payload) {
@@ -874,6 +911,7 @@ async function handleLead(body, env, json) {
     shadow_ai: c.shadowLevel,
     recoverable_hours: c.hours,
     compliance_flags: (c.flags || []).join("; "),
+    ...attributionFields(body),
   });
 
   // 5. Log the lead (console always; KV when bound).
@@ -966,9 +1004,10 @@ async function handleContact(body, env, json) {
   const message = String((body && body.message) || "").trim();
   const company = String((body && body.company) || "").trim();
   const phone = String((body && body.phone) || "").trim();
+  if (String((body && body.company_website) || "").trim()) return json({ ok: true }, 200);
 
-  if (!name || !email || !message) {
-    return json({ error: "Name, email, and a message are all required." }, 400);
+  if (!name || !email || !phone || !message) {
+    return json({ error: "Name, email, phone, and a message are all required." }, 400);
   }
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return json({ error: "Please enter a valid email address." }, 400);
@@ -1012,7 +1051,7 @@ async function handleContact(body, env, json) {
   }
 
   // Push into GoHighLevel for follow-up automation (no-op if unconfigured).
-  const ghl = await postToGHL(env, { source: "Contact Form", name, email, phone, company, message });
+  const ghl = await postToGHL(env, { source: "Contact Form", name, email, phone, company, message, ...attributionFields(body) });
 
   const logEntry = { t: "contact", ts: new Date().toISOString(), name, company, email, phone, message, ghl: ghl.skipped ? "off" : ghl.ok ? "pushed" : "failed" };
   console.log(JSON.stringify(logEntry));
@@ -1065,6 +1104,7 @@ async function handleSubscribe(body, env, json) {
   const send = await sendResend(env, {
     from: NOTIFY_FROM,
     to: NOTIFY_TO,
+    cc: NOTIFY_CC,
     reply_to: email,
     subject: `Newsletter signup: ${name || email}`,
     html,
@@ -1073,7 +1113,7 @@ async function handleSubscribe(body, env, json) {
     return json({ error: "Signup failed to send", detail: send.detail }, 502);
   }
 
-  const ghl = await postToGHL(env, { source: "Newsletter", name, email, tags: ["newsletter"] });
+  const ghl = await postToGHL(env, { source: "Newsletter", name, email, tags: ["newsletter"], ...attributionFields(body) });
 
   const logEntry = { t: "subscribe", ts: new Date().toISOString(), name, email, ghl: ghl.skipped ? "off" : ghl.ok ? "pushed" : "failed" };
   console.log(JSON.stringify(logEntry));

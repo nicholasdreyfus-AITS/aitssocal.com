@@ -112,6 +112,32 @@ const allSchemas = [...baseSchemas, ...schemas];
 
       gtag('config', 'G-XD7CWJNMG8');
     </script>
+    <script is:inline>
+      (function () {
+        var keys = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','fbclid','msclkid'];
+        var params = new URLSearchParams(window.location.search);
+        var stored = {};
+        try { stored = JSON.parse(sessionStorage.getItem('aits_attribution') || '{}'); } catch (e) {}
+        var data = Object.assign({}, stored);
+        keys.forEach(function (key) { if (params.get(key)) data[key] = params.get(key); });
+        if (!data.first_landing_page) data.first_landing_page = window.location.href;
+        if (!data.first_referrer) data.first_referrer = document.referrer || 'direct';
+        data.current_page = window.location.href;
+        data.captured_at = data.captured_at || new Date().toISOString();
+        try { sessionStorage.setItem('aits_attribution', JSON.stringify(data)); } catch (e) {}
+        window.aitsAttribution = data;
+        window.aitsTrack = function (name, details) {
+          if (typeof window.gtag === 'function') window.gtag('event', name, details || {});
+        };
+        document.addEventListener('click', function (event) {
+          var link = event.target && event.target.closest ? event.target.closest('a,button') : null;
+          if (!link) return;
+          var label = (link.textContent || link.getAttribute('aria-label') || '').trim().slice(0, 120);
+          var destination = link.getAttribute('href') || '';
+          window.aitsTrack('cta_click', { cta_label: label, destination: destination, page_path: location.pathname });
+        });
+      })();
+    </script>
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
@@ -255,6 +281,7 @@ const allSchemas = [...baseSchemas, ...schemas];
             launcher.addEventListener('click', () => {
               const widgetButton = getWidgetButton();
               if (!(widgetButton instanceof HTMLButtonElement)) return;
+              window.aitsTrack?.('chat_open', { assistant: 'Alexis', page_path: location.pathname });
               widgetButton.click();
               launcher.hidden = true;
             });
@@ -285,6 +312,11 @@ const allSchemas = [...baseSchemas, ...schemas];
         </script>
       </>
     )}
+    <script
+      src="https://links.aits.llc/js/external-tracking.js"
+      data-tracking-id="tk_528469007c9c48eea6d3b30f27d2c96b"
+      defer
+    ></script>
   </body>
 </html>
 
