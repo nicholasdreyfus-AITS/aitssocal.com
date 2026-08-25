@@ -207,12 +207,79 @@ const allSchemas = [...baseSchemas, ...schemas];
       the widget from that page or the attestation is broken.
     */}
     {!landing && (
-      <script
-        src="https://widgets.leadconnectorhq.com/loader.js"
-        data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
-        data-widget-id="6a65209ab92307bb1e76cb3e"
-        defer
-      ></script>
+      <>
+        <button
+          id="alexis-chat-launcher"
+          class="alexis-chat-launcher"
+          type="button"
+          aria-label="Chat with Alexis, the AITS AI assistant"
+          hidden
+        >
+          <img
+            src="/images/alexis-avatar.jpg"
+            alt=""
+            width="300"
+            height="300"
+            loading="eager"
+          />
+          <span class="alexis-chat-launcher__status" aria-hidden="true"></span>
+        </button>
+        <script
+          src="https://widgets.leadconnectorhq.com/loader.js"
+          data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
+          data-widget-id="6a65209ab92307bb1e76cb3e"
+          defer
+        ></script>
+        <script is:inline>
+          (() => {
+            const launcher = document.getElementById('alexis-chat-launcher');
+            if (!(launcher instanceof HTMLButtonElement)) return;
+
+            const getWidgetButton = () =>
+              document
+                .querySelector('chat-widget')
+                ?.shadowRoot
+                ?.querySelector('button[aria-label*="chat widget"]');
+
+            const syncLauncher = () => {
+              const widgetButton = getWidgetButton();
+              if (!(widgetButton instanceof HTMLButtonElement)) return;
+
+              const chatIsOpen = widgetButton
+                .getAttribute('aria-label')
+                ?.toLowerCase()
+                .includes('close');
+              launcher.hidden = Boolean(chatIsOpen);
+            };
+
+            launcher.addEventListener('click', () => {
+              const widgetButton = getWidgetButton();
+              if (!(widgetButton instanceof HTMLButtonElement)) return;
+              widgetButton.click();
+              launcher.hidden = true;
+            });
+
+            const observer = new MutationObserver(syncLauncher);
+            const connect = () => {
+              const widgetHost = document.querySelector('chat-widget');
+              const widgetButton = getWidgetButton();
+              if (!widgetHost || !(widgetButton instanceof HTMLButtonElement)) {
+                window.setTimeout(connect, 150);
+                return;
+              }
+
+              launcher.hidden = false;
+              observer.observe(widgetButton, {
+                attributes: true,
+                attributeFilter: ['aria-label'],
+              });
+              syncLauncher();
+            };
+
+            connect();
+          })();
+        </script>
+      </>
     )}
   </body>
 </html>
@@ -234,6 +301,64 @@ const allSchemas = [...baseSchemas, ...schemas];
   }
   .skip-link:focus {
     top: 12px;
+  }
+
+  .alexis-chat-launcher {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    z-index: 2147483647;
+    width: 64px;
+    height: 64px;
+    padding: 3px;
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    background: #132a52;
+    box-shadow: 0 10px 30px rgba(10, 24, 48, 0.28);
+    cursor: pointer;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+
+  .alexis-chat-launcher[hidden] {
+    display: none;
+  }
+
+  .alexis-chat-launcher:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 14px 34px rgba(10, 24, 48, 0.34);
+  }
+
+  .alexis-chat-launcher:focus-visible {
+    outline: 3px solid #7cb8ff;
+    outline-offset: 4px;
+  }
+
+  .alexis-chat-launcher img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .alexis-chat-launcher__status {
+    position: absolute;
+    right: 1px;
+    bottom: 3px;
+    width: 15px;
+    height: 15px;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    background: #12b76a;
+  }
+
+  @media (max-width: 640px) {
+    .alexis-chat-launcher {
+      left: 14px;
+      bottom: 14px;
+      width: 58px;
+      height: 58px;
+    }
   }
 
   /* Minimal landing chrome — logo-only header, slim footer. Keyboard focus
