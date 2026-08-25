@@ -1,4 +1,5 @@
 /homepage-v2  /  301
 /homepage-v2/ /  301
-/ai-scan      /scan  301
-/ai-scan/     /scan  301
+/ai-scan      /risk-scan  301
+/ai-scan/     /risk-scan  301
+/scan.html    /risk-scan  301

@@ -11,7 +11,7 @@ AITS replaces the usual stack of disconnected small-business software (and the D
 - [Pricing](https://aits.llc/pricing): the authoritative starting prices and the distinction between the $297 lead-system foundation and optional services.
 - [About](https://aits.llc/about): company background, team, and the 25+ years of technology experience the platform is built on.
 - [Contact](https://aits.llc/contact): book a free AI assessment / 30-minute review.
-- [Free AI Risk Scan](https://aits.llc/scan): a free, no-signup tool that scores a business's AI exposure and shadow-AI risk in 90 seconds.
+- [Free AI Risk Scan](https://aits.llc/risk-scan): a free, no-signup tool that scores a business's AI exposure and shadow-AI risk in 90 seconds.
 
 ## Blog
 
