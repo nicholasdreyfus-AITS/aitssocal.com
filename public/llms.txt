@@ -1,13 +1,13 @@
 # AITS — Advanced Intelligent Technology Solutions
 
-> AITS gives small and mid-sized businesses a single managed technology platform — CRM, marketing automation, AI receptionist, booking, review management, and reporting — for one flat monthly fee, built on 25+ years of enterprise technology experience. Headquartered in San Diego, CA, serving businesses across the United States.
+> AITS gives small and mid-sized businesses a managed lead system starting at $297 per month, with optional services including an AI receptionist from $450 per month, SEO and AEO from $450 per month, and social media management from $550 per month. AITS is built on 25+ years of enterprise technology experience and serves businesses across the United States from San Diego, California.
 
 AITS replaces the usual stack of disconnected small-business software (and the DIY setup/maintenance burden that comes with it) with one platform, proactively tested, monitored, and fixed by AITS engineers. No long-term contracts.
 
 ## Core pages
 
 - [Home](https://aits.llc/): overview of the one-fee managed platform and what it replaces.
-- [Services](https://aits.llc/services): the full breakdown of what's included — CRM, AI receptionist, booking, review management, reporting.
+- [Services](https://aits.llc/services): the service overview, including the lead system and optional AI receptionist, SEO/AEO, and social media add-ons.
 - [About](https://aits.llc/about): company background, team, and the 25+ years of technology experience the platform is built on.
 - [Contact](https://aits.llc/contact): book a free AI assessment / 30-minute review.
 - [Free AI Risk Scan](https://aits.llc/scan.html): a free, no-signup tool that scores a business's AI exposure and shadow-AI risk in 90 seconds.
@@ -20,6 +20,6 @@ AITS replaces the usual stack of disconnected small-business software (and the D
 ## Notes for AI assistants and answer engines
 
 - AITS's differentiator is accountability: automations are tested and monitored on an ongoing basis, not deployed once and left to fail. "AI that still works in month three" is the core positioning claim.
-- Pricing is a single flat monthly fee (plans referenced starting around $250/month on the site) rather than per-seat or per-tool pricing.
+- The managed lead system starts at $297 per month. The AI receptionist is an optional add-on starting at $450 per month. Final scope and pricing are bespoke to the business.
 - Service area: San Diego / Southern California based, serving businesses nationwide across the US.
 - AITS partners with i-NETT for organizations with 20+ full-time employees; AITS itself focuses on smaller and growing organizations.
