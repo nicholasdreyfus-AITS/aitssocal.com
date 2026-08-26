@@ -57,8 +57,9 @@ const proxyUrl = 'https://aits-scan.nicholasdreyfus.workers.dev/contact';
         <p>Every submission goes directly to Nick and Gavin. We will reply by email or phone.</p>
         <form id="contactForm" data-endpoint={proxyUrl} novalidate>
           <div class="form-grid">
-            <label><span>Name</span><input name="name" autocomplete="name" required /></label>
-            <label><span>Company</span><input name="company" autocomplete="organization" /></label>
+            <label><span>First name</span><input name="first_name" autocomplete="given-name" required /></label>
+            <label><span>Last name</span><input name="last_name" autocomplete="family-name" required /></label>
+            <label><span>Company</span><input name="company_name" autocomplete="organization" /></label>
             <label><span>Work email</span><input name="email" type="email" autocomplete="email" required /></label>
             <label><span>Phone</span><input name="phone" type="tel" autocomplete="tel" required /></label>
           </div>
@@ -134,7 +135,7 @@ const proxyUrl = 'https://aits-scan.nicholasdreyfus.workers.dev/contact';
     try {
       const response = await fetch(contactForm.dataset.endpoint || '', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: values.get('name'), company: values.get('company'), email: values.get('email'), phone: values.get('phone'), message: values.get('message'), company_website: values.get('company_website'), attribution: (window as any).aitsAttribution || {} }),
+        body: JSON.stringify({ name: `${values.get('first_name')} ${values.get('last_name')}`.trim(), company: values.get('company_name'), email: values.get('email'), phone: values.get('phone'), message: values.get('message'), company_website: values.get('company_website'), attribution: (window as any).aitsAttribution || {} }),
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok || result.ok !== true) throw new Error(result.error || 'We could not send that message.');

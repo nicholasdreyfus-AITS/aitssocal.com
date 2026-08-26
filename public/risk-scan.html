@@ -270,16 +270,17 @@
         <div id="lockedCards"></div>
 
         <!-- LEAD GATE FORM: unlocks one more finding + shows the analyst note -->
-        <div id="gateSection">
+        <form id="gateSection" name="riskScanLeadForm">
           <div class="gate">
             <div class="gate-title">Unlock one more finding</div>
             <div class="gate-sub">One more finding with what to do about it, plus your analyst note — on screen immediately. Our senior analyst also gets a copy to prepare recommendations before we reach out.</div>
             <div class="gate-fields">
-              <input class="gate-input" id="leadName" type="text" autocomplete="name" placeholder="Your name">
-              <input class="gate-input" id="leadCompany" type="text" autocomplete="organization" placeholder="Company name">
-              <input class="gate-input gate-input--wide" id="leadWebsite" type="text" autocomplete="url" placeholder="Company website (or type 'none')">
-              <input class="gate-input" id="leadEmail" type="email" autocomplete="email" placeholder="Work email">
-              <input class="gate-input" id="leadCell" type="tel" autocomplete="tel" placeholder="Cell phone">
+              <input class="gate-input" id="leadFirstName" name="first_name" type="text" autocomplete="given-name" placeholder="First name">
+              <input class="gate-input" id="leadLastName" name="last_name" type="text" autocomplete="family-name" placeholder="Last name">
+              <input class="gate-input" id="leadCompany" name="company_name" type="text" autocomplete="organization" placeholder="Company name">
+              <input class="gate-input gate-input--wide" id="leadWebsite" name="website" type="text" autocomplete="url" placeholder="Company website (or type 'none')">
+              <input class="gate-input" id="leadEmail" name="email" type="email" autocomplete="email" placeholder="Work email">
+              <input class="gate-input" id="leadCell" name="phone" type="tel" autocomplete="tel" placeholder="Cell phone">
             </div>
             <div class="gate-contact">
               <span class="gate-contact__label">Best way(s) to reach you</span>
@@ -295,14 +296,14 @@
                  the report. The exact text shown here is logged with the lead
                  so there is an auditable record of what was agreed to. -->
             <label class="gate-consent">
-              <input type="checkbox" id="leadSmsConsent">
+              <input type="checkbox" id="leadSmsConsent" name="sms_consent" value="yes">
               <span id="smsConsentText">Text me about my results. By checking this box, I agree to receive text messages from AITS at the number provided about my AI Risk Scan results and any consultation I schedule. Message frequency varies (typically 2–5 messages). Message and data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of any purchase. See our <a href="/privacy" target="_blank" rel="noopener" style="color:var(--accent2)">Privacy Policy</a>.</span>
             </label>
             <div class="gate-error" id="gateError" style="display:none"></div>
-            <button class="btn-cta" id="unlockBtn">UNLOCK ONE MORE FINDING →</button>
+            <button class="btn-cta" id="unlockBtn" type="submit">UNLOCK ONE MORE FINDING →</button>
             <div class="gate-fine">No spam. One follow-up from a real person — usually with something useful.</div>
           </div>
-        </div>
+        </form>
 
         <div class="analyst-box" id="analystBox" style="display:none">
           <div class="analyst-label">ANALYST NOTE</div>
@@ -832,16 +833,19 @@ function renderFinding(f,i){
   b.addEventListener("click",function(){b.classList.toggle("is-on");});
 });
 
-document.getElementById("unlockBtn").addEventListener("click",function(){
-  var name=document.getElementById("leadName");
+document.getElementById("gateSection").addEventListener("submit",function(event){
+  event.preventDefault();
+  var firstName=document.getElementById("leadFirstName");
+  var lastName=document.getElementById("leadLastName");
   var company=document.getElementById("leadCompany");
   var website=document.getElementById("leadWebsite");
   var email=document.getElementById("leadEmail");
   var cell=document.getElementById("leadCell");
   var err=document.getElementById("gateError");
-  [name,company,email,cell].forEach(function(el){el.classList.remove("invalid");});
+  [firstName,lastName,company,email,cell].forEach(function(el){el.classList.remove("invalid");});
   var problems=[];
-  if(!name.value.trim()){problems.push("name");name.classList.add("invalid");}
+  if(!firstName.value.trim()){problems.push("first name");firstName.classList.add("invalid");}
+  if(!lastName.value.trim()){problems.push("last name");lastName.classList.add("invalid");}
   if(!company.value.trim()){problems.push("company");company.classList.add("invalid");}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())){problems.push("a valid email");email.classList.add("invalid");}
   if((cell.value.replace(/\D/g,"")).length<7){problems.push("cell phone");cell.classList.add("invalid");}
@@ -857,7 +861,7 @@ document.getElementById("unlockBtn").addEventListener("click",function(){
   var smsBox=document.getElementById("leadSmsConsent");
   var smsConsent=!!(smsBox&&smsBox.checked);
   currentLead={
-    name:name.value.trim(),
+    name:(firstName.value.trim()+" "+lastName.value.trim()).trim(),
     company:company.value.trim(),
     website:website.value.trim(),
     email:email.value.trim(),
