@@ -16,7 +16,12 @@ const { data } = post;
 const url = new URL(`/blog/${post.id}`, SITE.url).href;
 
 const fmt = (d: Date) =>
-  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
 
 // Everywhere The Digital Dilemma can be followed — shown on every post so
 // readers can subscribe on whatever platform they already use.
@@ -53,7 +58,9 @@ const articleSchema = {
   author: authorSchema,
   publisher: { '@id': `${SITE.url}/#organization` },
   mainEntityOfPage: url,
-  ...(data.image ? { image: new URL(data.image, SITE.url).href } : {}),
+  ...(data.heroImage || data.image
+    ? { image: new URL(data.heroImage ?? data.image!, SITE.url).href }
+    : {}),
 };
 
 // FAQPage schema — high-value for AEO; lets engines lift direct Q&A answers.
@@ -128,7 +135,7 @@ const schemas = [
   description={data.description}
   path={`/blog/${post.id}`}
   ogType="article"
-  image={data.image ?? SITE.defaultOgImage}
+  image={data.heroImage ?? data.image ?? SITE.defaultOgImage}
   schemas={schemas}
 >
   <article class="section">
