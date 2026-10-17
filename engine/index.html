@@ -360,7 +360,12 @@ const ENGINES = [
    idle:850, red:7500, gears:6, vmax:210, spread:3.1, shiftMs:120,
    formants:[[90,8,1.1],[500,3,1.3],[1600,2,1.4]], lpBase:300, lpMul:9, drive:3.0, rasp:.45, lope:.3, jitter:.3,
    turbo:.75, boostAt:.35, antilag:true, bov:true, pops:.8, psi:22, pipe:.006, pipeFb:.4},
-  {id:"i6", tag:"I6", year:"1998", group:"Rally & turbo", color:"#a874ff", name:"JDM Twin-turbo I6", sub:"3.0L twin turbo · 7,200 rpm", cyl:6,
+  {id:"skyline", tag:"I6", year:"1999", group:"JDM", color:"#2a5bd7", name:"Skyline GT-R R34 (RB26)", sub:"2.6L twin-turbo inline-6, turbo flutter · 8,000 rpm", cyl:6,
+   amps:[1,.94,.98,.93,1,.95], offs:[0,.003,-.002,.003,0,-.002], w:.016,
+   idle:950, red:8000, gears:6, vmax:280, spread:3.0, shiftMs:150,
+   formants:[[160,5,1],[900,6,1.2],[2600,4,1.4]], lpBase:550, lpMul:8, drive:2.4, rasp:.45, lope:.05, jitter:.1,
+   turbo:.95, boostAt:.38, bov:true, flutter:true, pops:.4, psi:18, pipe:.0045, pipeFb:.32},
+  {id:"i6", tag:"I6", year:"1998", group:"JDM", color:"#a874ff", name:"JDM Twin-turbo I6", sub:"3.0L twin turbo · 7,200 rpm", cyl:6,
    amps:[1,.95,.98,.94,1,.96], offs:[0,.003,0,-.003,0,0], w:.017,
    idle:800, red:7200, gears:6, vmax:260, spread:3.1, shiftMs:180,
    formants:[[140,5,1],[800,4,1.2],[2200,3,1.4]], lpBase:500, lpMul:7.5, drive:2.2, rasp:.3, lope:.06,
@@ -568,6 +573,15 @@ function blowOff(s){
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.35*s,t+.015);g.gain.exponentialRampToValueAtTime(.001,t+.5);
   src.connect(hp);hp.connect(bp);bp.connect(g);g.connect(A.master);src.start(t,Math.random());src.stop(t+.6);
 }
+function flutter(s){
+  const t0=ctx.currentTime, src=ctx.createBufferSource(); src.buffer=noiseBuf;
+  const bp=bq("bandpass",1400,1.3), lp2=bq("lowpass",3200,.7), g=gn(0);
+  src.connect(bp); bp.connect(lp2); lp2.connect(g); g.connect(A.master);
+  let t=t0, f=28, a=.5*s; const end=t0+.7;
+  g.gain.setValueAtTime(0,t0);
+  while(t<end&&a>.01){const p=1/f; g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(a,t+p*.25); g.gain.linearRampToValueAtTime(0,t+p*.8); t+=p; f*=.985; a*=.93}
+  src.start(t0,Math.random()); src.stop(end+.05);
+}
 function antiLag(){const n=3+Math.floor(Math.random()*5);for(let i=0;i<n;i++)pop(.5+Math.random()*.6,i*.06+Math.random()*.08)}
 
 /* ============ SIMULATION ============ */
@@ -575,7 +589,7 @@ function gearK(g){const e=S.e,top=e.red/(e.vmax*S.gearing);return top*Math.pow(e
 function startShift(dir){
   const e=S.e; S.gear+=dir; S.shift={t:0,dur:(e.shiftMs/1000)*(dir<0?1.4:1),dir};
   if(dir>0&&(e.pops>=.8||e.shiftMs<=60)&&S.load>.5) pop(.45);
-  if(dir>0&&e.bov&&S.spool>.45) blowOff(S.spool*.6);
+  if(dir>0&&S.spool>.45){if(e.flutter)flutter(S.spool*.7);else if(e.bov)blowOff(S.spool*.6)}
 }
 function step(dt,now){
   const e=S.e;
@@ -620,7 +634,7 @@ function step(dt,now){
   if(e.turbo){
     const ba=e.boostAt||.35, want=L>.35?clamp((S.rpm/e.red-ba)/(1-ba)*1.3,0,1)*L:0;
     S.spool+=(want-S.spool)*(1-Math.exp(-dt/(want>S.spool?.8:(e.antilag?1.2:.35))));
-    if(S.loadPrev>.5&&S.load<.3&&!S.shift){if(e.bov&&S.spool>.35)blowOff(S.spool);if(e.antilag)antiLag()}
+    if(S.loadPrev>.5&&S.load<.3&&!S.shift){if(e.flutter&&S.spool>.35)flutter(S.spool);else if(e.bov&&S.spool>.35)blowOff(S.spool);if(e.antilag)antiLag()}
   }
   if(e.pops&&L<.1&&S.rpm>e.red*.4&&Math.random()<e.pops*5*dt) pop(.25+Math.random()*.45*e.pops);
   if(cut<1&&Math.random()<6*dt) pop(.4);
